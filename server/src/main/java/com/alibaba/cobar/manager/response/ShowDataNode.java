@@ -45,7 +45,7 @@ import com.alibaba.cobar.util.TimeUtil;
 
 /**
  * 查看数据节点信息
- * 
+ *
  * @author wenfeng.cenwf 2011-4-28
  * @author xianmao.hexm
  */
@@ -56,6 +56,7 @@ public final class ShowDataNode {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         nf.setMaximumFractionDigits(3);
 

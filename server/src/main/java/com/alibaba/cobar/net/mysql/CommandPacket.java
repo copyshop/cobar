@@ -26,23 +26,23 @@ import com.alibaba.cobar.net.BackendConnection;
 
 /**
  * From client to server whenever the client wants the server to do something.
- * 
+ * <p>
  * <pre>
  * Bytes         Name
  * -----         ----
  * 1             command
  * n             arg
- * 
+ *
  * command:      The most common value is 03 COM_QUERY, because
  *               INSERT UPDATE DELETE SELECT etc. have this code.
  *               The possible values at time of writing (taken
  *               from /include/mysql_com.h for enum_server_command) are:
- * 
+ *
  *               #      Name                Associated client function
  *               -      ----                --------------------------
  *               0x00   COM_SLEEP           (none, this is an internal thread state)
  *               0x01   COM_QUIT            mysql_close
- *               0x02   COM_INIT_DB         mysql_select_db 
+ *               0x02   COM_INIT_DB         mysql_select_db
  *               0x03   COM_QUERY           mysql_real_query
  *               0x04   COM_FIELD_LIST      mysql_list_fields
  *               0x05   COM_CREATE_DB       mysql_create_db (deprecated)
@@ -69,16 +69,16 @@ import com.alibaba.cobar.net.BackendConnection;
  *               0x1a   COM_STMT_RESET      mysql_stmt_reset
  *               0x1b   COM_SET_OPTION      mysql_set_server_option
  *               0x1c   COM_STMT_FETCH      mysql_stmt_fetch
- * 
+ *
  * arg:          The text of the command is just the way the user typed it, there is no processing
  *               by the client (except removal of the final ';').
  *               This field is not a null-terminated string; however,
  *               the size can be calculated from the packet size,
  *               and the MySQL client appends '\0' when receiving.
- *               
+ *
  * @see http://forge.mysql.com/wiki/MySQL_Internals_ClientServer_Protocol#Command_Packet_.28Overview.29
  * </pre>
- * 
+ *
  * @author xianmao.hexm 2010-7-15 下午04:35:34
  */
 public class CommandPacket extends MySQLPacket {

@@ -34,7 +34,7 @@ import com.alibaba.cobar.util.StringUtil;
 
 /**
  * 查询有效数据节点的当前数据源
- * 
+ *
  * @author xianmao.hexm
  */
 public class ShowDataSources {
@@ -43,6 +43,7 @@ public class ShowDataSources {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;

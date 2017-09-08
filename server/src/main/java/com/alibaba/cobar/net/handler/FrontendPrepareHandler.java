@@ -17,7 +17,7 @@ package com.alibaba.cobar.net.handler;
 
 /**
  * SQL预处理处理器
- * 
+ *
  * @author xianmao.hexm 2012-8-28
  */
 public interface FrontendPrepareHandler {

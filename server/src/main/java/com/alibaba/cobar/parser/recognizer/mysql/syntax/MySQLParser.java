@@ -57,6 +57,7 @@ public abstract class MySQLParser {
     }
 
     private static final Map<String, SpecialIdentifier> specialIdentifiers = new HashMap<String, SpecialIdentifier>();
+
     static {
         specialIdentifiers.put("GLOBAL", SpecialIdentifier.GLOBAL);
         specialIdentifiers.put("SESSION", SpecialIdentifier.SESSION);
@@ -75,33 +76,33 @@ public abstract class MySQLParser {
         }
         Identifier id;
         switch (lexer.token()) {
-        case OP_ASTERISK:
-            lexer.nextToken();
-            Wildcard wc = new Wildcard(null);
-            wc.setCacheEvalRst(cacheEvalRst);
-            return wc;
-        case IDENTIFIER:
-            id = new Identifier(null, lexer.stringValue(), lexer.stringValueUppercase());
-            id.setCacheEvalRst(cacheEvalRst);
-            lexer.nextToken();
-            break;
-        default:
-            throw err("expect id or * after '.'");
-        }
-        for (; lexer.token() == PUNC_DOT;) {
-            switch (lexer.nextToken()) {
             case OP_ASTERISK:
                 lexer.nextToken();
-                Wildcard wc = new Wildcard(id);
+                Wildcard wc = new Wildcard(null);
                 wc.setCacheEvalRst(cacheEvalRst);
                 return wc;
             case IDENTIFIER:
-                id = new Identifier(id, lexer.stringValue(), lexer.stringValueUppercase());
+                id = new Identifier(null, lexer.stringValue(), lexer.stringValueUppercase());
                 id.setCacheEvalRst(cacheEvalRst);
                 lexer.nextToken();
                 break;
             default:
                 throw err("expect id or * after '.'");
+        }
+        for (; lexer.token() == PUNC_DOT; ) {
+            switch (lexer.nextToken()) {
+                case OP_ASTERISK:
+                    lexer.nextToken();
+                    Wildcard wc = new Wildcard(id);
+                    wc.setCacheEvalRst(cacheEvalRst);
+                    return wc;
+                case IDENTIFIER:
+                    id = new Identifier(id, lexer.stringValue(), lexer.stringValueUppercase());
+                    id.setCacheEvalRst(cacheEvalRst);
+                    lexer.nextToken();
+                    break;
+                default:
+                    throw err("expect id or * after '.'");
             }
         }
         return id;
@@ -119,17 +120,17 @@ public abstract class MySQLParser {
         SpecialIdentifier si = specialIdentifiers.get(strUp);
         if (si != null) {
             switch (si) {
-            case GLOBAL:
-                scope = VariableScope.GLOBAL;
-            case SESSION:
-            case LOCAL:
-                match(PUNC_DOT);
-                str = lexer.stringValue();
-                strUp = lexer.stringValueUppercase();
-                match(IDENTIFIER);
-                sys = new SysVarPrimary(scope, str, strUp);
-                sys.setCacheEvalRst(cacheEvalRst);
-                return sys;
+                case GLOBAL:
+                    scope = VariableScope.GLOBAL;
+                case SESSION:
+                case LOCAL:
+                    match(PUNC_DOT);
+                    str = lexer.stringValue();
+                    strUp = lexer.stringValueUppercase();
+                    match(IDENTIFIER);
+                    sys = new SysVarPrimary(scope, str, strUp);
+                    sys.setCacheEvalRst(cacheEvalRst);
+                    return sys;
             }
         }
         sys = new SysVarPrimary(scope, str, strUp);
@@ -151,7 +152,7 @@ public abstract class MySQLParser {
 
     /**
      * nothing has been pre-consumed
-     * 
+     *
      * @return null if there is no order limit
      */
     protected Limit limit() throws SQLSyntaxErrorException {
@@ -162,81 +163,81 @@ public abstract class MySQLParser {
         int paramIndex2;
         Number num1;
         switch (lexer.nextToken()) {
-        case LITERAL_NUM_PURE_DIGIT:
-            num1 = lexer.integerValue();
-            switch (lexer.nextToken()) {
-            case PUNC_COMMA:
+            case LITERAL_NUM_PURE_DIGIT:
+                num1 = lexer.integerValue();
                 switch (lexer.nextToken()) {
-                case LITERAL_NUM_PURE_DIGIT:
-                    Number num2 = lexer.integerValue();
-                    lexer.nextToken();
-                    return new Limit(num1, num2);
-                case QUESTION_MARK:
-                    paramIndex1 = lexer.paramIndex();
-                    lexer.nextToken();
-                    return new Limit(num1, createParam(paramIndex1));
-                default:
-                    throw err("expect digit or ? after , for limit");
+                    case PUNC_COMMA:
+                        switch (lexer.nextToken()) {
+                            case LITERAL_NUM_PURE_DIGIT:
+                                Number num2 = lexer.integerValue();
+                                lexer.nextToken();
+                                return new Limit(num1, num2);
+                            case QUESTION_MARK:
+                                paramIndex1 = lexer.paramIndex();
+                                lexer.nextToken();
+                                return new Limit(num1, createParam(paramIndex1));
+                            default:
+                                throw err("expect digit or ? after , for limit");
+                        }
+                    case IDENTIFIER:
+                        if ("OFFSET".equals(lexer.stringValueUppercase())) {
+                            switch (lexer.nextToken()) {
+                                case LITERAL_NUM_PURE_DIGIT:
+                                    Number num2 = lexer.integerValue();
+                                    lexer.nextToken();
+                                    return new Limit(num2, num1);
+                                case QUESTION_MARK:
+                                    paramIndex1 = lexer.paramIndex();
+                                    lexer.nextToken();
+                                    return new Limit(createParam(paramIndex1), num1);
+                                default:
+                                    throw err("expect digit or ? after , for limit");
+                            }
+                        }
                 }
-            case IDENTIFIER:
-                if ("OFFSET".equals(lexer.stringValueUppercase())) {
-                    switch (lexer.nextToken()) {
-                    case LITERAL_NUM_PURE_DIGIT:
-                        Number num2 = lexer.integerValue();
-                        lexer.nextToken();
-                        return new Limit(num2, num1);
-                    case QUESTION_MARK:
-                        paramIndex1 = lexer.paramIndex();
-                        lexer.nextToken();
-                        return new Limit(createParam(paramIndex1), num1);
-                    default:
-                        throw err("expect digit or ? after , for limit");
-                    }
-                }
-            }
-            return new Limit(new Integer(0), num1);
-        case QUESTION_MARK:
-            paramIndex1 = lexer.paramIndex();
-            switch (lexer.nextToken()) {
-            case PUNC_COMMA:
+                return new Limit(new Integer(0), num1);
+            case QUESTION_MARK:
+                paramIndex1 = lexer.paramIndex();
                 switch (lexer.nextToken()) {
-                case LITERAL_NUM_PURE_DIGIT:
-                    num1 = lexer.integerValue();
-                    lexer.nextToken();
-                    return new Limit(createParam(paramIndex1), num1);
-                case QUESTION_MARK:
-                    paramIndex2 = lexer.paramIndex();
-                    lexer.nextToken();
-                    return new Limit(createParam(paramIndex1), createParam(paramIndex2));
-                default:
-                    throw err("expect digit or ? after , for limit");
+                    case PUNC_COMMA:
+                        switch (lexer.nextToken()) {
+                            case LITERAL_NUM_PURE_DIGIT:
+                                num1 = lexer.integerValue();
+                                lexer.nextToken();
+                                return new Limit(createParam(paramIndex1), num1);
+                            case QUESTION_MARK:
+                                paramIndex2 = lexer.paramIndex();
+                                lexer.nextToken();
+                                return new Limit(createParam(paramIndex1), createParam(paramIndex2));
+                            default:
+                                throw err("expect digit or ? after , for limit");
+                        }
+                    case IDENTIFIER:
+                        if ("OFFSET".equals(lexer.stringValueUppercase())) {
+                            switch (lexer.nextToken()) {
+                                case LITERAL_NUM_PURE_DIGIT:
+                                    num1 = lexer.integerValue();
+                                    lexer.nextToken();
+                                    return new Limit(num1, createParam(paramIndex1));
+                                case QUESTION_MARK:
+                                    paramIndex2 = lexer.paramIndex();
+                                    lexer.nextToken();
+                                    return new Limit(createParam(paramIndex2), createParam(paramIndex1));
+                                default:
+                                    throw err("expect digit or ? after , for limit");
+                            }
+                        }
                 }
-            case IDENTIFIER:
-                if ("OFFSET".equals(lexer.stringValueUppercase())) {
-                    switch (lexer.nextToken()) {
-                    case LITERAL_NUM_PURE_DIGIT:
-                        num1 = lexer.integerValue();
-                        lexer.nextToken();
-                        return new Limit(num1, createParam(paramIndex1));
-                    case QUESTION_MARK:
-                        paramIndex2 = lexer.paramIndex();
-                        lexer.nextToken();
-                        return new Limit(createParam(paramIndex2), createParam(paramIndex1));
-                    default:
-                        throw err("expect digit or ? after , for limit");
-                    }
-                }
-            }
-            return new Limit(new Integer(0), createParam(paramIndex1));
-        default:
-            throw err("expect digit or ? after limit");
+                return new Limit(new Integer(0), createParam(paramIndex1));
+            default:
+                throw err("expect digit or ? after limit");
         }
     }
 
     /**
      * @param expectTextUppercase must be upper-case
      * @return index (start from 0) of expected text which is first matched. -1
-     *         if none is matched.
+     * if none is matched.
      */
     protected int equalsIdentifier(String... expectTextUppercases) throws SQLSyntaxErrorException {
         if (lexer.token() == MySQLToken.IDENTIFIER) {

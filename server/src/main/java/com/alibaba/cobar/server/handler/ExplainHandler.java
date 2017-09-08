@@ -47,6 +47,7 @@ public class ExplainHandler {
     private static final RouteResultsetNode[] EMPTY_ARRAY = new RouteResultsetNode[0];
     private static final int FIELD_COUNT = 2;
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
+
     static {
         fields[0] = PacketUtil.getField("DATA_NODE", Fields.FIELD_TYPE_VAR_STRING);
         fields[1] = PacketUtil.getField("SQL", Fields.FIELD_TYPE_VAR_STRING);

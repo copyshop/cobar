@@ -164,11 +164,11 @@ public class CobarDetector extends BackendConnection {
     public void error(int errCode, Throwable t) {
         LOGGER.warn(toString(), t);
         switch (errCode) {
-        case ErrorCode.ERR_HANDLE_DATA:
-            heartbeat.setResult(CobarHeartbeat.ERROR_STATUS, this, false, null);
-            break;
-        default:
-            heartbeat.setResult(CobarHeartbeat.ERROR_STATUS, this, true, null);
+            case ErrorCode.ERR_HANDLE_DATA:
+                heartbeat.setResult(CobarHeartbeat.ERROR_STATUS, this, false, null);
+                break;
+            default:
+                heartbeat.setResult(CobarHeartbeat.ERROR_STATUS, this, true, null);
         }
     }
 

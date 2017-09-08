@@ -30,7 +30,7 @@ import com.alibaba.cobar.parser.util.Pair;
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public abstract class ArithmeticBinaryOperatorExpression extends BinaryOperatorExpression
-        implements BinaryOperandCalculator {
+    implements BinaryOperandCalculator {
     protected ArithmeticBinaryOperatorExpression(Expression leftOprand, Expression rightOprand, int precedence) {
         super(leftOprand, rightOprand, precedence, true);
     }

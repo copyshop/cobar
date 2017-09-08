@@ -42,7 +42,9 @@ public final class PartitionByString extends PartitionFunction implements RuleAl
     }
 
     private int hashSliceStart = 0;
-    /** 0 means str.length(), -1 means str.length()-1 */
+    /**
+     * 0 means str.length(), -1 means str.length()-1
+     */
     private int hashSliceEnd = 8;
 
     public void setHashLength(int hashLength) {
@@ -79,7 +81,7 @@ public final class PartitionByString extends PartitionFunction implements RuleAl
     public FunctionExpression constructFunction(List<Expression> arguments) {
         if (arguments == null || arguments.size() != 1) {
             throw new IllegalArgumentException("function " + getFunctionName() + " must have 1 argument but is "
-                    + arguments);
+                + arguments);
         }
         Object[] args = new Object[arguments.size()];
         int i = -1;

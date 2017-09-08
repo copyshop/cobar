@@ -48,8 +48,8 @@ public class MySQLDMLInsertParserTest extends AbstractSyntaxTest {
         parser.match(MySQLToken.EOF);
         output = output2MySQL(insert, sql);
         Assert.assertEquals(
-                "INSERT IGNORE INTO test.t1 (t1.id1) VALUES (?) ON DUPLICATE KEY UPDATE ex.col1 = ?, col2 = 12",
-                output);
+            "INSERT IGNORE INTO test.t1 (t1.id1) VALUES (?) ON DUPLICATE KEY UPDATE ex.col1 = ?, col2 = 12",
+            output);
 
         sql = "insErt t1 value (123,?) oN dupLicatE key UPDATE ex.col1=?";
         lexer = new MySQLLexer(sql);
@@ -90,8 +90,8 @@ public class MySQLDMLInsertParserTest extends AbstractSyntaxTest {
         parser.match(MySQLToken.EOF);
         output = output2MySQL(insert, sql);
         Assert.assertEquals(
-                "INSERT LOW_PRIORITY INTO t1 SELECT id FROM t1 ON DUPLICATE KEY UPDATE ex.col1 = ?, col2 = 12",
-                output);
+            "INSERT LOW_PRIORITY INTO t1 SELECT id FROM t1 ON DUPLICATE KEY UPDATE ex.col1 = ?, col2 = 12",
+            output);
 
         sql = "insErt LOW_PRIORITY t1 (t1.col1) valueS (123),('12''34')";
         lexer = new MySQLLexer(sql);
@@ -108,8 +108,8 @@ public class MySQLDMLInsertParserTest extends AbstractSyntaxTest {
         parser.match(MySQLToken.EOF);
         output = output2MySQL(insert, sql);
         Assert.assertEquals(
-                "INSERT LOW_PRIORITY INTO t1 (col1, t1.col2) VALUES (123, '123\\'4') ON DUPLICATE KEY UPDATE ex.col1 = ?",
-                output);
+            "INSERT LOW_PRIORITY INTO t1 (col1, t1.col2) VALUES (123, '123\\'4') ON DUPLICATE KEY UPDATE ex.col1 = ?",
+            output);
 
         sql = "insErt LOW_PRIORITY t1 (col1, t1.col2) select id from t3 oN dupLicatE key UPDATE ex.col1=?";
         lexer = new MySQLLexer(sql);
@@ -118,8 +118,8 @@ public class MySQLDMLInsertParserTest extends AbstractSyntaxTest {
         parser.match(MySQLToken.EOF);
         output = output2MySQL(insert, sql);
         Assert.assertEquals(
-                "INSERT LOW_PRIORITY INTO t1 (col1, t1.col2) SELECT id FROM t3 ON DUPLICATE KEY UPDATE ex.col1 = ?",
-                output);
+            "INSERT LOW_PRIORITY INTO t1 (col1, t1.col2) SELECT id FROM t3 ON DUPLICATE KEY UPDATE ex.col1 = ?",
+            output);
 
         sql = "insErt LOW_PRIORITY IGNORE intO t1 (col1) ( select id from t3) ";
         lexer = new MySQLLexer(sql);

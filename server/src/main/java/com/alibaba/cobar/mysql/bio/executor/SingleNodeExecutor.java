@@ -48,7 +48,7 @@ import com.alibaba.cobar.util.StringUtil;
 
 /**
  * 单节点数据执行器
- * 
+ *
  * @author xianmao.hexm
  */
 public final class SingleNodeExecutor extends NodeExecutor {
@@ -187,31 +187,31 @@ public final class SingleNodeExecutor extends NodeExecutor {
 
             // 接收和处理数据
             switch (bin.data[0]) {
-            case OkPacket.FIELD_COUNT: {
-                mc.setRunning(false);
-                if (mc.isAutocommit()) {
-                    ss.clear();
+                case OkPacket.FIELD_COUNT: {
+                    mc.setRunning(false);
+                    if (mc.isAutocommit()) {
+                        ss.clear();
+                    }
+                    endRunning();
+                    bin.packetId = ++packetId;// OK_PACKET
+                    // set lastInsertId
+                    setLastInsertId(bin, sc);
+                    sc.write(bin.write(sc.allocate(), sc));
+                    break;
                 }
-                endRunning();
-                bin.packetId = ++packetId;// OK_PACKET
-                // set lastInsertId
-                setLastInsertId(bin, sc);
-                sc.write(bin.write(sc.allocate(), sc));
-                break;
-            }
-            case ErrorPacket.FIELD_COUNT: {
-                LOGGER.warn(mc.getErrLog(rrn.getStatement(), mc.getErrMessage(bin), sc));
-                mc.setRunning(false);
-                if (mc.isAutocommit()) {
-                    ss.clear();
+                case ErrorPacket.FIELD_COUNT: {
+                    LOGGER.warn(mc.getErrLog(rrn.getStatement(), mc.getErrMessage(bin), sc));
+                    mc.setRunning(false);
+                    if (mc.isAutocommit()) {
+                        ss.clear();
+                    }
+                    endRunning();
+                    bin.packetId = ++packetId;// ERROR_PACKET
+                    sc.write(bin.write(sc.allocate(), sc));
+                    break;
                 }
-                endRunning();
-                bin.packetId = ++packetId;// ERROR_PACKET
-                sc.write(bin.write(sc.allocate(), sc));
-                break;
-            }
-            default: // HEADER|FIELDS|FIELD_EOF|ROWS|LAST_EOF
-                handleResultSet(rrn, ss, mc, bin, flag);
+                default: // HEADER|FIELDS|FIELD_EOF|ROWS|LAST_EOF
+                    handleResultSet(rrn, ss, mc, bin, flag);
             }
         } catch (IOException e) {
             LOGGER.warn(new StringBuilder().append(sc).append(rrn).toString(), e);
@@ -230,49 +230,49 @@ public final class SingleNodeExecutor extends NodeExecutor {
      * 处理结果集数据
      */
     private void handleResultSet(RouteResultsetNode rrn, BlockingSession ss, MySQLChannel mc, BinaryPacket bin, int flag)
-            throws IOException {
+        throws IOException {
         final ServerConnection sc = ss.getSource();
 
         bin.packetId = ++packetId;// HEADER
         List<MySQLPacket> headerList = new LinkedList<MySQLPacket>();
         headerList.add(bin);
-        for (;;) {
+        for (; ; ) {
             bin = mc.receive();
             switch (bin.data[0]) {
-            case ErrorPacket.FIELD_COUNT: {
-                LOGGER.warn(mc.getErrLog(rrn.getStatement(), mc.getErrMessage(bin), sc));
-                mc.setRunning(false);
-                if (mc.isAutocommit()) {
-                    ss.clear();
+                case ErrorPacket.FIELD_COUNT: {
+                    LOGGER.warn(mc.getErrLog(rrn.getStatement(), mc.getErrMessage(bin), sc));
+                    mc.setRunning(false);
+                    if (mc.isAutocommit()) {
+                        ss.clear();
+                    }
+                    endRunning();
+                    bin.packetId = ++packetId;// ERROR_PACKET
+                    sc.write(bin.write(sc.allocate(), sc));
+                    return;
                 }
-                endRunning();
-                bin.packetId = ++packetId;// ERROR_PACKET
-                sc.write(bin.write(sc.allocate(), sc));
-                return;
-            }
-            case EOFPacket.FIELD_COUNT: {
-                bin.packetId = ++packetId;// FIELD_EOF
-                ByteBuffer bb = sc.allocate();
-                for (MySQLPacket packet : headerList) {
-                    bb = packet.write(bb, sc);
+                case EOFPacket.FIELD_COUNT: {
+                    bin.packetId = ++packetId;// FIELD_EOF
+                    ByteBuffer bb = sc.allocate();
+                    for (MySQLPacket packet : headerList) {
+                        bb = packet.write(bb, sc);
+                    }
+                    bb = bin.write(bb, sc);
+                    headerList = null;
+                    handleRowData(rrn, ss, mc, bb, packetId);
+                    return;
                 }
-                bb = bin.write(bb, sc);
-                headerList = null;
-                handleRowData(rrn, ss, mc, bb, packetId);
-                return;
-            }
-            default:
-                bin.packetId = ++packetId;// FIELDS
-                switch (flag) {
-                case RouteResultset.REWRITE_FIELD:
-                    StringBuilder fieldName = new StringBuilder();
-                    fieldName.append("Tables_in_").append(ss.getSource().getSchema());
-                    FieldPacket field = PacketUtil.getField(bin, fieldName.toString());
-                    headerList.add(field);
-                    break;
                 default:
-                    headerList.add(bin);
-                }
+                    bin.packetId = ++packetId;// FIELDS
+                    switch (flag) {
+                        case RouteResultset.REWRITE_FIELD:
+                            StringBuilder fieldName = new StringBuilder();
+                            fieldName.append("Tables_in_").append(ss.getSource().getSchema());
+                            FieldPacket field = PacketUtil.getField(bin, fieldName.toString());
+                            headerList.add(field);
+                            break;
+                        default:
+                            headerList.add(bin);
+                    }
             }
         }
     }
@@ -281,44 +281,44 @@ public final class SingleNodeExecutor extends NodeExecutor {
      * 处理RowData数据
      */
     private void handleRowData(RouteResultsetNode rrn, BlockingSession ss, MySQLChannel mc, ByteBuffer bb, byte id)
-            throws IOException {
+        throws IOException {
         final ServerConnection sc = ss.getSource();
         this.packetId = id;
         BinaryPacket bin = null;
         int size = 0;
         try {
-            for (;;) {
+            for (; ; ) {
                 bin = mc.receive();
                 switch (bin.data[0]) {
-                case ErrorPacket.FIELD_COUNT:
-                    LOGGER.warn(mc.getErrLog(rrn.getStatement(), mc.getErrMessage(bin), sc));
-                    mc.setRunning(false);
-                    if (mc.isAutocommit()) {
-                        ss.clear();
-                    }
-                    endRunning();
-                    bin.packetId = ++packetId;// ERROR_PACKET
-                    bb = bin.write(bb, sc);
-                    sc.write(bb);
-                    return;
-                case EOFPacket.FIELD_COUNT:
-                    mc.setRunning(false);
-                    if (mc.isAutocommit()) {
-                        ss.clear();
-                    }
-                    endRunning();
-                    bin.packetId = ++packetId;// LAST_EOF
-                    bb = bin.write(bb, sc);
-                    sc.write(bb);
-                    return;
-                default:
-                    bin.packetId = ++packetId;// ROWS
-                    bb = bin.write(bb, sc);
-                    size += bin.packetLength;
-                    if (size > RECEIVE_CHUNK_SIZE) {
-                        handleNext(rrn, ss, mc, bb, packetId);
+                    case ErrorPacket.FIELD_COUNT:
+                        LOGGER.warn(mc.getErrLog(rrn.getStatement(), mc.getErrMessage(bin), sc));
+                        mc.setRunning(false);
+                        if (mc.isAutocommit()) {
+                            ss.clear();
+                        }
+                        endRunning();
+                        bin.packetId = ++packetId;// ERROR_PACKET
+                        bb = bin.write(bb, sc);
+                        sc.write(bb);
                         return;
-                    }
+                    case EOFPacket.FIELD_COUNT:
+                        mc.setRunning(false);
+                        if (mc.isAutocommit()) {
+                            ss.clear();
+                        }
+                        endRunning();
+                        bin.packetId = ++packetId;// LAST_EOF
+                        bb = bin.write(bb, sc);
+                        sc.write(bb);
+                        return;
+                    default:
+                        bin.packetId = ++packetId;// ROWS
+                        bb = bin.write(bb, sc);
+                        size += bin.packetLength;
+                        if (size > RECEIVE_CHUNK_SIZE) {
+                            handleNext(rrn, ss, mc, bb, packetId);
+                            return;
+                        }
                 }
             }
         } catch (IOException e) {

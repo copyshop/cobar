@@ -26,14 +26,14 @@ import java.io.PrintWriter;
 
 /**
  * (created at 2010-9-26)
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class Main {
     public static void main(String[] args) throws Exception {
         Main main = new Main();
         main.dir(new File(
-                "/media/BC4CF85E4CF814BC/work/cobar/cobar-1.1.0-dev/cobar-parser/src/main/java/com/alibaba/cobar/parser/ast/expression"));
+            "/media/BC4CF85E4CF814BC/work/cobar/cobar-1.1.0-dev/cobar-parser/src/main/java/com/alibaba/cobar/parser/ast/expression"));
     }
 
     private void dir(File dir) throws Exception {
@@ -68,7 +68,7 @@ public class Main {
             try {
                 tout = new PrintWriter(new OutputStreamWriter(new FileOutputStream(tmp), "gbk"));
                 StringBuilder sb = new StringBuilder();
-                for (String line = null; (line = fin.readLine()) != null;) {
+                for (String line = null; (line = fin.readLine()) != null; ) {
                     sb.append(line).append("\r\n");
                 }
                 int index = sb.lastIndexOf("}");
@@ -100,7 +100,8 @@ public class Main {
     private File getTmpFile(File file) throws Exception {
         File[] sub = file.getParentFile().listFiles();
         String newName = file.getName() + ".temp";
-        loop1: while (true) {
+        loop1:
+        while (true) {
             for (File s : sub) {
                 if (newName.equalsIgnoreCase(s.getName())) {
                     newName = newName + "1";

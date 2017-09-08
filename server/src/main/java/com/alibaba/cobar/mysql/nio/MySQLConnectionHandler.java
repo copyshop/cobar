@@ -27,7 +27,7 @@ import com.alibaba.cobar.net.mysql.OkPacket;
 
 /**
  * life cycle: from connection establish to close <br/>
- * 
+ *
  * @author xianmao.hexm 2012-4-12
  */
 public class MySQLConnectionHandler extends BackendAsyncHandler {
@@ -74,50 +74,50 @@ public class MySQLConnectionHandler extends BackendAsyncHandler {
     @Override
     protected void handleData(byte[] data) {
         switch (resultStatus) {
-        case RESULT_STATUS_INIT:
-            switch (data[4]) {
-            case OkPacket.FIELD_COUNT:
-                handleOkPacket(data);
+            case RESULT_STATUS_INIT:
+                switch (data[4]) {
+                    case OkPacket.FIELD_COUNT:
+                        handleOkPacket(data);
+                        break;
+                    case ErrorPacket.FIELD_COUNT:
+                        handleErrorPacket(data);
+                        break;
+                    default:
+                        resultStatus = RESULT_STATUS_HEADER;
+                        header = data;
+                        fields = new ArrayList<byte[]>((int) ByteUtil.readLength(data, 4));
+                }
                 break;
-            case ErrorPacket.FIELD_COUNT:
-                handleErrorPacket(data);
+            case RESULT_STATUS_HEADER:
+                switch (data[4]) {
+                    case ErrorPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_INIT;
+                        handleErrorPacket(data);
+                        break;
+                    case EOFPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_FIELD_EOF;
+                        handleFieldEofPacket(data);
+                        break;
+                    default:
+                        fields.add(data);
+                }
+                break;
+            case RESULT_STATUS_FIELD_EOF:
+                switch (data[4]) {
+                    case ErrorPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_INIT;
+                        handleErrorPacket(data);
+                        break;
+                    case EOFPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_INIT;
+                        handleRowEofPacket(data);
+                        break;
+                    default:
+                        handleRowPacket(data);
+                }
                 break;
             default:
-                resultStatus = RESULT_STATUS_HEADER;
-                header = data;
-                fields = new ArrayList<byte[]>((int) ByteUtil.readLength(data, 4));
-            }
-            break;
-        case RESULT_STATUS_HEADER:
-            switch (data[4]) {
-            case ErrorPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_INIT;
-                handleErrorPacket(data);
-                break;
-            case EOFPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_FIELD_EOF;
-                handleFieldEofPacket(data);
-                break;
-            default:
-                fields.add(data);
-            }
-            break;
-        case RESULT_STATUS_FIELD_EOF:
-            switch (data[4]) {
-            case ErrorPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_INIT;
-                handleErrorPacket(data);
-                break;
-            case EOFPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_INIT;
-                handleRowEofPacket(data);
-                break;
-            default:
-                handleRowPacket(data);
-            }
-            break;
-        default:
-            throw new RuntimeException("unknown status!");
+                throw new RuntimeException("unknown status!");
         }
     }
 

@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * SQL统计排序记录器
- * 
+ *
  * @author xianmao.hexm 2010-9-30 上午10:48:28
  */
 public final class SQLRecorder {
@@ -88,20 +88,20 @@ public final class SQLRecorder {
     private void swap(SQLRecord record) {
         int x = find(record.executeTime, 0, lastIndex);
         switch (x) {
-        case 0:
-            break;
-        case 1:
-            minValue = record.executeTime;
-            records[0] = record;
-            break;
-        default:
-            --x;// 向左移动一格
-            final SQLRecord[] records = this.records;
-            for (int i = 0; i < x; i++) {
-                records[i] = records[i + 1];
-            }
-            records[x] = record;
-            minValue = records[0].executeTime;
+            case 0:
+                break;
+            case 1:
+                minValue = record.executeTime;
+                records[0] = record;
+                break;
+            default:
+                --x;// 向左移动一格
+                final SQLRecord[] records = this.records;
+                for (int i = 0; i < x; i++) {
+                    records[i] = records[i + 1];
+                }
+                records[x] = record;
+                minValue = records[0].executeTime;
         }
     }
 

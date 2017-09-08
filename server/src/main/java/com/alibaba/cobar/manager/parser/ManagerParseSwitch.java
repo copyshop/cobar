@@ -31,16 +31,16 @@ public final class ManagerParseSwitch {
         int i = offset;
         for (; i < stmt.length(); i++) {
             switch (stmt.charAt(i)) {
-            case ' ':
-                continue;
-            case '/':
-            case '#':
-                i = ParseUtil.comment(stmt, i);
-                continue;
-            case '@':
-                return switch2Check(stmt, i);
-            default:
-                return OTHER;
+                case ' ':
+                    continue;
+                case '/':
+                case '#':
+                    i = ParseUtil.comment(stmt, i);
+                    continue;
+                case '@':
+                    return switch2Check(stmt, i);
+                default:
+                    return OTHER;
             }
         }
         return OTHER;
@@ -75,9 +75,9 @@ public final class ManagerParseSwitch {
                 char c9 = stmt.charAt(++offset);
                 char c10 = stmt.charAt(++offset);
                 if ((c1 == 'D' || c1 == 'd') && (c2 == 'A' || c2 == 'a') && (c3 == 'T' || c3 == 't')
-                        && (c4 == 'A' || c4 == 'a') && (c5 == 'S' || c5 == 's') && (c6 == 'O' || c6 == 'o')
-                        && (c7 == 'U' || c7 == 'u') && (c8 == 'R' || c8 == 'r') && (c9 == 'C' || c9 == 'c')
-                        && (c10 == 'E' || c10 == 'e')) {
+                    && (c4 == 'A' || c4 == 'a') && (c5 == 'S' || c5 == 's') && (c6 == 'O' || c6 == 'o')
+                    && (c7 == 'U' || c7 == 'u') && (c8 == 'R' || c8 == 'r') && (c9 == 'C' || c9 == 'c')
+                    && (c10 == 'E' || c10 == 'e')) {
                     if (stmt.length() > ++offset && stmt.charAt(offset) != ' ') {
                         return OTHER;
                     }

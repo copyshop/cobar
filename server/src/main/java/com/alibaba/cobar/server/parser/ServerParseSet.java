@@ -38,32 +38,32 @@ public final class ServerParseSet {
         int i = offset;
         for (; i < stmt.length(); i++) {
             switch (stmt.charAt(i)) {
-            case ' ':
-            case '\r':
-            case '\n':
-            case '\t':
-                continue;
-            case '/':
-            case '#':
-                i = ParseUtil.comment(stmt, i);
-                continue;
-            case 'A':
-            case 'a':
-                return autocommit(stmt, i);
-            case 'C':
-            case 'c':
-                return characterSet(stmt, i, 0);
-            case 'N':
-            case 'n':
-                return names(stmt, i);
-            case 'S':
-            case 's':
-                return session(stmt, i);
-            case 'T':
-            case 't':
-                return transaction(stmt, i);
-            default:
-                return OTHER;
+                case ' ':
+                case '\r':
+                case '\n':
+                case '\t':
+                    continue;
+                case '/':
+                case '#':
+                    i = ParseUtil.comment(stmt, i);
+                    continue;
+                case 'A':
+                case 'a':
+                    return autocommit(stmt, i);
+                case 'C':
+                case 'c':
+                    return characterSet(stmt, i, 0);
+                case 'N':
+                case 'n':
+                    return names(stmt, i);
+                case 'S':
+                case 's':
+                    return session(stmt, i);
+                case 'T':
+                case 't':
+                    return transaction(stmt, i);
+                default:
+                    return OTHER;
             }
         }
         return OTHER;
@@ -82,19 +82,19 @@ public final class ServerParseSet {
             char c8 = stmt.charAt(++offset);
             char c9 = stmt.charAt(++offset);
             if ((c1 == 'U' || c1 == 'u') && (c2 == 'T' || c2 == 't') && (c3 == 'O' || c3 == 'o')
-                    && (c4 == 'C' || c4 == 'c') && (c5 == 'O' || c5 == 'o') && (c6 == 'M' || c6 == 'm')
-                    && (c7 == 'M' || c7 == 'm') && (c8 == 'I' || c8 == 'i') && (c9 == 'T' || c9 == 't')) {
+                && (c4 == 'C' || c4 == 'c') && (c5 == 'O' || c5 == 'o') && (c6 == 'M' || c6 == 'm')
+                && (c7 == 'M' || c7 == 'm') && (c8 == 'I' || c8 == 'i') && (c9 == 'T' || c9 == 't')) {
                 while (stmt.length() > ++offset) {
                     switch (stmt.charAt(offset)) {
-                    case ' ':
-                    case '\r':
-                    case '\n':
-                    case '\t':
-                        continue;
-                    case '=':
-                        return autocommitValue(stmt, offset);
-                    default:
-                        return OTHER;
+                        case ' ':
+                        case '\r':
+                        case '\n':
+                        case '\t':
+                            continue;
+                        case '=':
+                            return autocommitValue(stmt, offset);
+                        default:
+                            return OTHER;
                     }
                 }
             }
@@ -103,34 +103,34 @@ public final class ServerParseSet {
     }
 
     private static int autocommitValue(String stmt, int offset) {
-        for (;;) {
+        for (; ; ) {
             offset++;
             if (stmt.length() <= offset) {
                 return OTHER;
             }
             switch (stmt.charAt(offset)) {
-            case ' ':
-            case '\r':
-            case '\n':
-            case '\t':
-                continue;
-            case '1':
-                if (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset))) {
-                    return AUTOCOMMIT_ON;
-                } else {
+                case ' ':
+                case '\r':
+                case '\n':
+                case '\t':
+                    continue;
+                case '1':
+                    if (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset))) {
+                        return AUTOCOMMIT_ON;
+                    } else {
+                        return OTHER;
+                    }
+                case '0':
+                    if (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset))) {
+                        return AUTOCOMMIT_OFF;
+                    } else {
+                        return OTHER;
+                    }
+                case 'O':
+                case 'o':
+                    return autocommitOn(stmt, offset);
+                default:
                     return OTHER;
-                }
-            case '0':
-                if (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset))) {
-                    return AUTOCOMMIT_OFF;
-                } else {
-                    return OTHER;
-                }
-            case 'O':
-            case 'o':
-                return autocommitOn(stmt, offset);
-            default:
-                return OTHER;
             }
         }
     }
@@ -138,18 +138,18 @@ public final class ServerParseSet {
     private static int autocommitOn(String stmt, int offset) {
         if (stmt.length() > ++offset) {
             switch (stmt.charAt(offset)) {
-            case 'N':
-            case 'n':
-                if (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset))) {
-                    return AUTOCOMMIT_ON;
-                } else {
+                case 'N':
+                case 'n':
+                    if (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset))) {
+                        return AUTOCOMMIT_ON;
+                    } else {
+                        return OTHER;
+                    }
+                case 'F':
+                case 'f':
+                    return autocommitOff(stmt, offset);
+                default:
                     return OTHER;
-                }
-            case 'F':
-            case 'f':
-                return autocommitOff(stmt, offset);
-            default:
-                return OTHER;
             }
         }
         return OTHER;
@@ -159,15 +159,15 @@ public final class ServerParseSet {
     private static int autocommitOff(String stmt, int offset) {
         if (stmt.length() > ++offset) {
             switch (stmt.charAt(offset)) {
-            case 'F':
-            case 'f':
-                if (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset))) {
-                    return AUTOCOMMIT_OFF;
-                } else {
+                case 'F':
+                case 'f':
+                    if (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset))) {
+                        return AUTOCOMMIT_OFF;
+                    } else {
+                        return OTHER;
+                    }
+                default:
                     return OTHER;
-                }
-            default:
-                return OTHER;
             }
         }
         return OTHER;
@@ -181,7 +181,7 @@ public final class ServerParseSet {
             char c3 = stmt.charAt(++offset);
             char c4 = stmt.charAt(++offset);
             if ((c1 == 'A' || c1 == 'a') && (c2 == 'M' || c2 == 'm') && (c3 == 'E' || c3 == 'e')
-                    && (c4 == 'S' || c4 == 's') && stmt.charAt(++offset) == ' ') {
+                && (c4 == 'S' || c4 == 's') && stmt.charAt(++offset) == ' ') {
                 return (offset << 8) | NAMES;
             }
         }
@@ -206,19 +206,19 @@ public final class ServerParseSet {
             char c13 = stmt.charAt(++offset);
             char c14 = stmt.charAt(++offset);
             if ((c1 == 'H' || c1 == 'h') && (c2 == 'A' || c2 == 'a') && (c3 == 'R' || c3 == 'r')
-                    && (c4 == 'A' || c4 == 'a') && (c5 == 'C' || c5 == 'c') && (c6 == 'T' || c6 == 't')
-                    && (c7 == 'E' || c7 == 'e') && (c8 == 'R' || c8 == 'r') && (c9 == '_')
-                    && (c10 == 'S' || c10 == 's') && (c11 == 'E' || c11 == 'e') && (c12 == 'T' || c12 == 't')
-                    && (c13 == '_')) {
+                && (c4 == 'A' || c4 == 'a') && (c5 == 'C' || c5 == 'c') && (c6 == 'T' || c6 == 't')
+                && (c7 == 'E' || c7 == 'e') && (c8 == 'R' || c8 == 'r') && (c9 == '_')
+                && (c10 == 'S' || c10 == 's') && (c11 == 'E' || c11 == 'e') && (c12 == 'T' || c12 == 't')
+                && (c13 == '_')) {
                 switch (c14) {
-                case 'R':
-                case 'r':
-                    return characterSetResults(stmt, offset);
-                case 'C':
-                case 'c':
-                    return characterSetC(stmt, offset);
-                default:
-                    return OTHER;
+                    case 'R':
+                    case 'r':
+                        return characterSetResults(stmt, offset);
+                    case 'C':
+                    case 'c':
+                        return characterSetC(stmt, offset);
+                    default:
+                        return OTHER;
                 }
             }
         }
@@ -235,29 +235,29 @@ public final class ServerParseSet {
             char c5 = stmt.charAt(++offset);
             char c6 = stmt.charAt(++offset);
             if ((c1 == 'E' || c1 == 'e') && (c2 == 'S' || c2 == 's') && (c3 == 'U' || c3 == 'u')
-                    && (c4 == 'L' || c4 == 'l') && (c5 == 'T' || c5 == 't') && (c6 == 'S' || c6 == 's')) {
+                && (c4 == 'L' || c4 == 'l') && (c5 == 'T' || c5 == 't') && (c6 == 'S' || c6 == 's')) {
                 while (stmt.length() > ++offset) {
                     switch (stmt.charAt(offset)) {
-                    case ' ':
-                    case '\r':
-                    case '\n':
-                    case '\t':
-                        continue;
-                    case '=':
-                        while (stmt.length() > ++offset) {
-                            switch (stmt.charAt(offset)) {
-                            case ' ':
-                            case '\r':
-                            case '\n':
-                            case '\t':
-                                continue;
-                            default:
-                                return (offset << 8) | CHARACTER_SET_RESULTS;
+                        case ' ':
+                        case '\r':
+                        case '\n':
+                        case '\t':
+                            continue;
+                        case '=':
+                            while (stmt.length() > ++offset) {
+                                switch (stmt.charAt(offset)) {
+                                    case ' ':
+                                    case '\r':
+                                    case '\n':
+                                    case '\t':
+                                        continue;
+                                    default:
+                                        return (offset << 8) | CHARACTER_SET_RESULTS;
+                                }
                             }
-                        }
-                        return OTHER;
-                    default:
-                        return OTHER;
+                            return OTHER;
+                        default:
+                            return OTHER;
                     }
                 }
             }
@@ -270,14 +270,14 @@ public final class ServerParseSet {
         if (stmt.length() > offset + 1) {
             char c1 = stmt.charAt(++offset);
             switch (c1) {
-            case 'o':
-            case 'O':
-                return characterSetConnection(stmt, offset);
-            case 'l':
-            case 'L':
-                return characterSetClient(stmt, offset);
-            default:
-                return OTHER;
+                case 'o':
+                case 'O':
+                    return characterSetConnection(stmt, offset);
+                case 'l':
+                case 'L':
+                    return characterSetClient(stmt, offset);
+                default:
+                    return OTHER;
             }
         }
         return OTHER;
@@ -295,30 +295,30 @@ public final class ServerParseSet {
             char c7 = stmt.charAt(++offset);
             char c8 = stmt.charAt(++offset);
             if ((c1 == 'N' || c1 == 'n') && (c2 == 'N' || c2 == 'n') && (c3 == 'E' || c3 == 'e')
-                    && (c4 == 'C' || c4 == 'c') && (c5 == 'T' || c5 == 't') && (c6 == 'I' || c6 == 'i')
-                    && (c7 == 'O' || c7 == 'o') && (c8 == 'N' || c8 == 'n')) {
+                && (c4 == 'C' || c4 == 'c') && (c5 == 'T' || c5 == 't') && (c6 == 'I' || c6 == 'i')
+                && (c7 == 'O' || c7 == 'o') && (c8 == 'N' || c8 == 'n')) {
                 while (stmt.length() > ++offset) {
                     switch (stmt.charAt(offset)) {
-                    case ' ':
-                    case '\r':
-                    case '\n':
-                    case '\t':
-                        continue;
-                    case '=':
-                        while (stmt.length() > ++offset) {
-                            switch (stmt.charAt(offset)) {
-                            case ' ':
-                            case '\r':
-                            case '\n':
-                            case '\t':
-                                continue;
-                            default:
-                                return (offset << 8) | CHARACTER_SET_CONNECTION;
+                        case ' ':
+                        case '\r':
+                        case '\n':
+                        case '\t':
+                            continue;
+                        case '=':
+                            while (stmt.length() > ++offset) {
+                                switch (stmt.charAt(offset)) {
+                                    case ' ':
+                                    case '\r':
+                                    case '\n':
+                                    case '\t':
+                                        continue;
+                                    default:
+                                        return (offset << 8) | CHARACTER_SET_CONNECTION;
+                                }
                             }
-                        }
-                        return OTHER;
-                    default:
-                        return OTHER;
+                            return OTHER;
+                        default:
+                            return OTHER;
                     }
                 }
             }
@@ -334,29 +334,29 @@ public final class ServerParseSet {
             char c3 = stmt.charAt(++offset);
             char c4 = stmt.charAt(++offset);
             if ((c1 == 'I' || c1 == 'i') && (c2 == 'E' || c2 == 'e') && (c3 == 'N' || c3 == 'n')
-                    && (c4 == 'T' || c4 == 't')) {
+                && (c4 == 'T' || c4 == 't')) {
                 while (stmt.length() > ++offset) {
                     switch (stmt.charAt(offset)) {
-                    case ' ':
-                    case '\r':
-                    case '\n':
-                    case '\t':
-                        continue;
-                    case '=':
-                        while (stmt.length() > ++offset) {
-                            switch (stmt.charAt(offset)) {
-                            case ' ':
-                            case '\r':
-                            case '\n':
-                            case '\t':
-                                continue;
-                            default:
-                                return (offset << 8) | CHARACTER_SET_CLIENT;
+                        case ' ':
+                        case '\r':
+                        case '\n':
+                        case '\t':
+                            continue;
+                        case '=':
+                            while (stmt.length() > ++offset) {
+                                switch (stmt.charAt(offset)) {
+                                    case ' ':
+                                    case '\r':
+                                    case '\n':
+                                    case '\t':
+                                        continue;
+                                    default:
+                                        return (offset << 8) | CHARACTER_SET_CLIENT;
+                                }
                             }
-                        }
-                        return OTHER;
-                    default:
-                        return OTHER;
+                            return OTHER;
+                        default:
+                            return OTHER;
                     }
                 }
             }
@@ -374,21 +374,21 @@ public final class ServerParseSet {
             char c5 = stmt.charAt(++offset);
             char c6 = stmt.charAt(++offset);
             if ((c1 == 'E' || c1 == 'e') && (c2 == 'S' || c2 == 's') && (c3 == 'S' || c3 == 's')
-                    && (c4 == 'I' || c4 == 'i') && (c5 == 'O' || c5 == 'o') && (c6 == 'N' || c6 == 'n')
-                    && stmt.charAt(++offset) == ' ') {
-                for (;;) {
+                && (c4 == 'I' || c4 == 'i') && (c5 == 'O' || c5 == 'o') && (c6 == 'N' || c6 == 'n')
+                && stmt.charAt(++offset) == ' ') {
+                for (; ; ) {
                     if (stmt.length() > ++offset) {
                         switch (stmt.charAt(offset)) {
-                        case ' ':
-                        case '\r':
-                        case '\n':
-                        case '\t':
-                            continue;
-                        case 'T':
-                        case 't':
-                            return transaction(stmt, offset);
-                        default:
-                            return OTHER;
+                            case ' ':
+                            case '\r':
+                            case '\n':
+                            case '\t':
+                                continue;
+                            case 'T':
+                            case 't':
+                                return transaction(stmt, offset);
+                            default:
+                                return OTHER;
                         }
                     }
                     return OTHER;
@@ -412,22 +412,22 @@ public final class ServerParseSet {
             char c9 = stmt.charAt(++offset);
             char c10 = stmt.charAt(++offset);
             if ((c1 == 'R' || c1 == 'r') && (c2 == 'A' || c2 == 'a') && (c3 == 'N' || c3 == 'n')
-                    && (c4 == 'S' || c4 == 's') && (c5 == 'A' || c5 == 'a') && (c6 == 'C' || c6 == 'c')
-                    && (c7 == 'T' || c7 == 't') && (c8 == 'I' || c8 == 'i') && (c9 == 'O' || c9 == 'o')
-                    && (c10 == 'N' || c10 == 'n') && stmt.charAt(++offset) == ' ') {
-                for (;;) {
+                && (c4 == 'S' || c4 == 's') && (c5 == 'A' || c5 == 'a') && (c6 == 'C' || c6 == 'c')
+                && (c7 == 'T' || c7 == 't') && (c8 == 'I' || c8 == 'i') && (c9 == 'O' || c9 == 'o')
+                && (c10 == 'N' || c10 == 'n') && stmt.charAt(++offset) == ' ') {
+                for (; ; ) {
                     if (stmt.length() > ++offset) {
                         switch (stmt.charAt(offset)) {
-                        case ' ':
-                        case '\r':
-                        case '\n':
-                        case '\t':
-                            continue;
-                        case 'I':
-                        case 'i':
-                            return isolation(stmt, offset);
-                        default:
-                            return OTHER;
+                            case ' ':
+                            case '\r':
+                            case '\n':
+                            case '\t':
+                                continue;
+                            case 'I':
+                            case 'i':
+                                return isolation(stmt, offset);
+                            default:
+                                return OTHER;
                         }
                     }
                     return OTHER;
@@ -449,21 +449,21 @@ public final class ServerParseSet {
             char c7 = stmt.charAt(++offset);
             char c8 = stmt.charAt(++offset);
             if ((c1 == 'S' || c1 == 's') && (c2 == 'O' || c2 == 'o') && (c3 == 'L' || c3 == 'l')
-                    && (c4 == 'A' || c4 == 'a') && (c5 == 'T' || c5 == 't') && (c6 == 'I' || c6 == 'i')
-                    && (c7 == 'O' || c7 == 'o') && (c8 == 'N' || c8 == 'n') && stmt.charAt(++offset) == ' ') {
-                for (;;) {
+                && (c4 == 'A' || c4 == 'a') && (c5 == 'T' || c5 == 't') && (c6 == 'I' || c6 == 'i')
+                && (c7 == 'O' || c7 == 'o') && (c8 == 'N' || c8 == 'n') && stmt.charAt(++offset) == ' ') {
+                for (; ; ) {
                     if (stmt.length() > ++offset) {
                         switch (stmt.charAt(offset)) {
-                        case ' ':
-                        case '\r':
-                        case '\n':
-                        case '\t':
-                            continue;
-                        case 'L':
-                        case 'l':
-                            return level(stmt, offset);
-                        default:
-                            return OTHER;
+                            case ' ':
+                            case '\r':
+                            case '\n':
+                            case '\t':
+                                continue;
+                            case 'L':
+                            case 'l':
+                                return level(stmt, offset);
+                            default:
+                                return OTHER;
                         }
                     }
                     return OTHER;
@@ -481,23 +481,23 @@ public final class ServerParseSet {
             char c3 = stmt.charAt(++offset);
             char c4 = stmt.charAt(++offset);
             if ((c1 == 'E' || c1 == 'e') && (c2 == 'V' || c2 == 'v') && (c3 == 'E' || c3 == 'e')
-                    && (c4 == 'L' || c4 == 'l') && stmt.charAt(++offset) == ' ') {
-                for (;;) {
+                && (c4 == 'L' || c4 == 'l') && stmt.charAt(++offset) == ' ') {
+                for (; ; ) {
                     if (stmt.length() > ++offset) {
                         switch (stmt.charAt(offset)) {
-                        case ' ':
-                        case '\r':
-                        case '\n':
-                        case '\t':
-                            continue;
-                        case 'R':
-                        case 'r':
-                            return rCheck(stmt, offset);
-                        case 'S':
-                        case 's':
-                            return serializable(stmt, offset);
-                        default:
-                            return OTHER;
+                            case ' ':
+                            case '\r':
+                            case '\n':
+                            case '\t':
+                                continue;
+                            case 'R':
+                            case 'r':
+                                return rCheck(stmt, offset);
+                            case 'S':
+                            case 's':
+                                return serializable(stmt, offset);
+                            default:
+                                return OTHER;
                         }
                     }
                     return OTHER;
@@ -522,10 +522,10 @@ public final class ServerParseSet {
             char c10 = stmt.charAt(++offset);
             char c11 = stmt.charAt(++offset);
             if ((c1 == 'E' || c1 == 'e') && (c2 == 'R' || c2 == 'r') && (c3 == 'I' || c3 == 'i')
-                    && (c4 == 'A' || c4 == 'a') && (c5 == 'L' || c5 == 'l') && (c6 == 'I' || c6 == 'i')
-                    && (c7 == 'Z' || c7 == 'z') && (c8 == 'A' || c8 == 'a') && (c9 == 'B' || c9 == 'b')
-                    && (c10 == 'L' || c10 == 'l') && (c11 == 'E' || c11 == 'e')
-                    && (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset)))) {
+                && (c4 == 'A' || c4 == 'a') && (c5 == 'L' || c5 == 'l') && (c6 == 'I' || c6 == 'i')
+                && (c7 == 'Z' || c7 == 'z') && (c8 == 'A' || c8 == 'a') && (c9 == 'B' || c9 == 'b')
+                && (c10 == 'L' || c10 == 'l') && (c11 == 'E' || c11 == 'e')
+                && (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset)))) {
                 return TX_SERIALIZABLE;
             }
         }
@@ -536,11 +536,11 @@ public final class ServerParseSet {
     private static int rCheck(String stmt, int offset) {
         if (stmt.length() > ++offset) {
             switch (stmt.charAt(offset)) {
-            case 'E':
-            case 'e':
-                return eCheck(stmt, offset);
-            default:
-                return OTHER;
+                case 'E':
+                case 'e':
+                    return eCheck(stmt, offset);
+                default:
+                    return OTHER;
             }
         }
         return OTHER;
@@ -550,14 +550,14 @@ public final class ServerParseSet {
     private static int eCheck(String stmt, int offset) {
         if (stmt.length() > ++offset) {
             switch (stmt.charAt(offset)) {
-            case 'A':
-            case 'a':
-                return aCheck(stmt, offset);
-            case 'P':
-            case 'p':
-                return pCheck(stmt, offset);
-            default:
-                return OTHER;
+                case 'A':
+                case 'a':
+                    return aCheck(stmt, offset);
+                case 'P':
+                case 'p':
+                    return pCheck(stmt, offset);
+                default:
+                    return OTHER;
             }
         }
         return OTHER;
@@ -568,22 +568,22 @@ public final class ServerParseSet {
         if (stmt.length() > offset + 2) {
             char c1 = stmt.charAt(++offset);
             if ((c1 == 'D' || c1 == 'd') && stmt.charAt(++offset) == ' ') {
-                for (;;) {
+                for (; ; ) {
                     if (stmt.length() > ++offset) {
                         switch (stmt.charAt(offset)) {
-                        case ' ':
-                        case '\r':
-                        case '\n':
-                        case '\t':
-                            continue;
-                        case 'C':
-                        case 'c':
-                            return committed(stmt, offset);
-                        case 'U':
-                        case 'u':
-                            return uncommitted(stmt, offset);
-                        default:
-                            return OTHER;
+                            case ' ':
+                            case '\r':
+                            case '\n':
+                            case '\t':
+                                continue;
+                            case 'C':
+                            case 'c':
+                                return committed(stmt, offset);
+                            case 'U':
+                            case 'u':
+                                return uncommitted(stmt, offset);
+                            default:
+                                return OTHER;
                         }
                     }
                     return OTHER;
@@ -605,9 +605,9 @@ public final class ServerParseSet {
             char c7 = stmt.charAt(++offset);
             char c8 = stmt.charAt(++offset);
             if ((c1 == 'O' || c1 == 'o') && (c2 == 'M' || c2 == 'm') && (c3 == 'M' || c3 == 'm')
-                    && (c4 == 'I' || c4 == 'i') && (c5 == 'T' || c5 == 't') && (c6 == 'T' || c6 == 't')
-                    && (c7 == 'E' || c7 == 'e') && (c8 == 'D' || c8 == 'd')
-                    && (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset)))) {
+                && (c4 == 'I' || c4 == 'i') && (c5 == 'T' || c5 == 't') && (c6 == 'T' || c6 == 't')
+                && (c7 == 'E' || c7 == 'e') && (c8 == 'D' || c8 == 'd')
+                && (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset)))) {
                 return TX_READ_COMMITTED;
             }
         }
@@ -628,10 +628,10 @@ public final class ServerParseSet {
             char c9 = stmt.charAt(++offset);
             char c10 = stmt.charAt(++offset);
             if ((c1 == 'N' || c1 == 'n') && (c2 == 'C' || c2 == 'c') && (c3 == 'O' || c3 == 'o')
-                    && (c4 == 'M' || c4 == 'm') && (c5 == 'M' || c5 == 'm') && (c6 == 'I' || c6 == 'i')
-                    && (c7 == 'T' || c7 == 't') && (c8 == 'T' || c8 == 't') && (c9 == 'E' || c9 == 'e')
-                    && (c10 == 'D' || c10 == 'd')
-                    && (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset)))) {
+                && (c4 == 'M' || c4 == 'm') && (c5 == 'M' || c5 == 'm') && (c6 == 'I' || c6 == 'i')
+                && (c7 == 'T' || c7 == 't') && (c8 == 'T' || c8 == 't') && (c9 == 'E' || c9 == 'e')
+                && (c10 == 'D' || c10 == 'd')
+                && (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset)))) {
                 return TX_READ_UNCOMMITTED;
             }
         }
@@ -649,21 +649,21 @@ public final class ServerParseSet {
             char c6 = stmt.charAt(++offset);
             char c7 = stmt.charAt(++offset);
             if ((c1 == 'E' || c1 == 'e') && (c2 == 'A' || c2 == 'a') && (c3 == 'T' || c3 == 't')
-                    && (c4 == 'A' || c4 == 'a') && (c5 == 'B' || c5 == 'b') && (c6 == 'L' || c6 == 'l')
-                    && (c7 == 'E' || c7 == 'e') && stmt.charAt(++offset) == ' ') {
-                for (;;) {
+                && (c4 == 'A' || c4 == 'a') && (c5 == 'B' || c5 == 'b') && (c6 == 'L' || c6 == 'l')
+                && (c7 == 'E' || c7 == 'e') && stmt.charAt(++offset) == ' ') {
+                for (; ; ) {
                     if (stmt.length() > ++offset) {
                         switch (stmt.charAt(offset)) {
-                        case ' ':
-                        case '\r':
-                        case '\n':
-                        case '\t':
-                            continue;
-                        case 'R':
-                        case 'r':
-                            return prCheck(stmt, offset);
-                        default:
-                            return OTHER;
+                            case ' ':
+                            case '\r':
+                            case '\n':
+                            case '\t':
+                                continue;
+                            case 'R':
+                            case 'r':
+                                return prCheck(stmt, offset);
+                            default:
+                                return OTHER;
                         }
                     }
                     return OTHER;
@@ -680,7 +680,7 @@ public final class ServerParseSet {
             char c2 = stmt.charAt(++offset);
             char c3 = stmt.charAt(++offset);
             if ((c1 == 'E' || c1 == 'e') && (c2 == 'A' || c2 == 'a') && (c3 == 'D' || c3 == 'd')
-                    && (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset)))) {
+                && (stmt.length() == ++offset || ParseUtil.isEOF(stmt.charAt(offset)))) {
                 return TX_REPEATED_READ;
             }
         }

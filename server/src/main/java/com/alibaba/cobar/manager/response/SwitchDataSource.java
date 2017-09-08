@@ -26,7 +26,7 @@ import com.alibaba.cobar.parser.util.Pair;
 
 /**
  * 切换数据节点的数据源
- * 
+ *
  * @author xianmao.hexm 2011-5-31 下午01:19:36
  */
 public final class SwitchDataSource {

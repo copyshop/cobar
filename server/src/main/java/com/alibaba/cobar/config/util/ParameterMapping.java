@@ -32,7 +32,7 @@ public class ParameterMapping {
     private static final Map<Class<?>, PropertyDescriptor[]> descriptors = new HashMap<Class<?>, PropertyDescriptor[]>();
 
     public static void mapping(Object object, Map<String, ? extends Object> parameter) throws IllegalAccessException,
-            InvocationTargetException {
+        InvocationTargetException {
         PropertyDescriptor[] pds = getDescriptors(object.getClass());
         for (int i = 0; i < pds.length; i++) {
             PropertyDescriptor pd = pds[i];
@@ -60,7 +60,7 @@ public class ParameterMapping {
                 if (value != null) {
                     Method method = pd.getWriteMethod();
                     if (method != null) {
-                        method.invoke(object, new Object[] { value });
+                        method.invoke(object, new Object[]{value});
                     }
                 }
             }
@@ -134,11 +134,11 @@ public class ParameterMapping {
         } else if (cls.equals(Float.TYPE)) {
             value = Float.valueOf(string);
         } else if ((cls.equals(Boolean.class)) || (cls.equals(Byte.class)) || (cls.equals(Short.class))
-                || (cls.equals(Integer.class)) || (cls.equals(Long.class)) || (cls.equals(Float.class))
-                || (cls.equals(Double.class))) {
+            || (cls.equals(Integer.class)) || (cls.equals(Long.class)) || (cls.equals(Float.class))
+            || (cls.equals(Double.class))) {
             try {
-                method = cls.getMethod("valueOf", new Class[] { String.class });
-                value = method.invoke(null, new Object[] { string });
+                method = cls.getMethod("valueOf", new Class[]{String.class});
+                value = method.invoke(null, new Object[]{string});
             } catch (Throwable t) {
                 value = null;
             }
@@ -156,10 +156,10 @@ public class ParameterMapping {
 
     private static boolean isPrimitiveType(Class<?> cls) {
         if (cls.equals(String.class) || cls.equals(Boolean.TYPE) || cls.equals(Byte.TYPE) || cls.equals(Short.TYPE)
-                || cls.equals(Integer.TYPE) || cls.equals(Long.TYPE) || cls.equals(Double.TYPE)
-                || cls.equals(Float.TYPE) || cls.equals(Boolean.class) || cls.equals(Byte.class)
-                || cls.equals(Short.class) || cls.equals(Integer.class) || cls.equals(Long.class)
-                || cls.equals(Float.class) || cls.equals(Double.class) || cls.equals(Class.class)) {
+            || cls.equals(Integer.TYPE) || cls.equals(Long.TYPE) || cls.equals(Double.TYPE)
+            || cls.equals(Float.TYPE) || cls.equals(Boolean.class) || cls.equals(Byte.class)
+            || cls.equals(Short.class) || cls.equals(Integer.class) || cls.equals(Long.class)
+            || cls.equals(Float.class) || cls.equals(Double.class) || cls.equals(Class.class)) {
             return true;
         } else {
             return false;

@@ -17,7 +17,7 @@ package com.alibaba.cobar.config;
 
 /**
  * 事务隔离级别定义
- * 
+ *
  * @author xianmao.hexm
  */
 public interface Isolations {

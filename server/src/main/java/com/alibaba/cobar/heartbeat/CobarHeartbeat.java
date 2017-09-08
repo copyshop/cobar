@@ -186,54 +186,54 @@ public class CobarHeartbeat {
      */
     public void setResult(int result, CobarDetector detector, boolean isTransferError, byte[] message) {
         switch (result) {
-        case OK_STATUS:
-            setOk(detector);
-            if (HEARTBEAT.isInfoEnabled()) {
-                HEARTBEAT.info(requestMessage(OK_STATUS, message));
-            }
-            break;
-        case OFF_STATUS:
-            setOff(detector);
-            if (HEARTBEAT.isInfoEnabled()) {
-                HEARTBEAT.info(requestMessage(OFF_STATUS, message));
-            }
-            break;
-        case ERROR_STATUS:
-            if (detector.isQuit()) {
-                isChecking.set(false);
-            } else {
-                if (isTransferError) {
-                    detector.close();
+            case OK_STATUS:
+                setOk(detector);
+                if (HEARTBEAT.isInfoEnabled()) {
+                    HEARTBEAT.info(requestMessage(OK_STATUS, message));
                 }
-                setError(detector);
-            }
-            if (HEARTBEAT.isInfoEnabled()) {
-                HEARTBEAT.info(requestMessage(ERROR_STATUS, message));
-            }
-            break;
+                break;
+            case OFF_STATUS:
+                setOff(detector);
+                if (HEARTBEAT.isInfoEnabled()) {
+                    HEARTBEAT.info(requestMessage(OFF_STATUS, message));
+                }
+                break;
+            case ERROR_STATUS:
+                if (detector.isQuit()) {
+                    isChecking.set(false);
+                } else {
+                    if (isTransferError) {
+                        detector.close();
+                    }
+                    setError(detector);
+                }
+                if (HEARTBEAT.isInfoEnabled()) {
+                    HEARTBEAT.info(requestMessage(ERROR_STATUS, message));
+                }
+                break;
         }
     }
 
     private void setOk(CobarDetector detector) {
         recorder.set(detector.lastReadTime() - detector.lastWriteTime());
         switch (status) {
-        case TIMEOUT_STATUS:
-            this.status = INIT_STATUS;
-            this.errorCount = 0;
-            this.isChecking.set(false);
-            if (isStop.get()) {
-                detector.quit();
-            } else {
-                heartbeat();// 超时状态，再次执行心跳。
-            }
-            break;
-        default:
-            this.status = OK_STATUS;
-            this.errorCount = 0;
-            this.isChecking.set(false);
-            if (isStop.get()) {
-                detector.quit();
-            }
+            case TIMEOUT_STATUS:
+                this.status = INIT_STATUS;
+                this.errorCount = 0;
+                this.isChecking.set(false);
+                if (isStop.get()) {
+                    detector.quit();
+                } else {
+                    heartbeat();// 超时状态，再次执行心跳。
+                }
+                break;
+            default:
+                this.status = OK_STATUS;
+                this.errorCount = 0;
+                this.isChecking.set(false);
+                if (isStop.get()) {
+                    detector.quit();
+                }
         }
     }
 
@@ -287,16 +287,16 @@ public class CobarHeartbeat {
     private String alarmMessage(String reason) {
         CobarNodeConfig cnc = node.getConfig();
         return new StringBuilder().append(Alarms.DEFAULT)
-                                  .append("[name=")
-                                  .append(cnc.getName())
-                                  .append(",host=")
-                                  .append(cnc.getHost())
-                                  .append(",port=")
-                                  .append(cnc.getPort())
-                                  .append(",reason=")
-                                  .append(reason)
-                                  .append(']')
-                                  .toString();
+            .append("[name=")
+            .append(cnc.getName())
+            .append(",host=")
+            .append(cnc.getHost())
+            .append(",port=")
+            .append(cnc.getPort())
+            .append(",reason=")
+            .append(reason)
+            .append(']')
+            .toString();
     }
 
     /**
@@ -306,41 +306,41 @@ public class CobarHeartbeat {
         String action = null;
         String id = null;
         switch (type) {
-        case OK_STATUS:
-            action = "OK";
-            OkPacket ok = new OkPacket();
-            ok.read(message);
-            id = String.valueOf(ok.affectedRows);
-            break;
-        case OFF_STATUS:
-            action = "OFFLINE";
-            if (message != null) {
-                id = new String(message);
-            }
-            break;
-        case ERROR_STATUS:
-            action = "ERROR";
-            if (message != null) {
-                id = new String(message);
-            }
-            break;
-        case TIMEOUT_STATUS:
-            action = "TIMEOUT";
-            if (message != null) {
-                id = new String(message);
-            }
-            break;
-        case SEND:
-            action = "SEND";
-            if (message != null) {
-                id = new String(message);
-            }
-            break;
-        default:
-            action = "UNKNOWN";
-            if (message != null) {
-                id = new String(message);
-            }
+            case OK_STATUS:
+                action = "OK";
+                OkPacket ok = new OkPacket();
+                ok.read(message);
+                id = String.valueOf(ok.affectedRows);
+                break;
+            case OFF_STATUS:
+                action = "OFFLINE";
+                if (message != null) {
+                    id = new String(message);
+                }
+                break;
+            case ERROR_STATUS:
+                action = "ERROR";
+                if (message != null) {
+                    id = new String(message);
+                }
+                break;
+            case TIMEOUT_STATUS:
+                action = "TIMEOUT";
+                if (message != null) {
+                    id = new String(message);
+                }
+                break;
+            case SEND:
+                action = "SEND";
+                if (message != null) {
+                    id = new String(message);
+                }
+                break;
+            default:
+                action = "UNKNOWN";
+                if (message != null) {
+                    id = new String(message);
+                }
         }
 
         // 如果取不到从服务端返回的id，则从本地取得。
@@ -349,16 +349,16 @@ public class CobarHeartbeat {
         }
 
         return new StringBuilder().append("REQUEST:")
-                                  .append(action)
-                                  .append(", id=")
-                                  .append(id)
-                                  .append(", host=")
-                                  .append(node.getConfig().getHost())
-                                  .append(", port=")
-                                  .append(node.getConfig().getPort())
-                                  .append(", time=")
-                                  .append(TimeUtil.currentTimeMillis())
-                                  .toString();
+            .append(action)
+            .append(", id=")
+            .append(id)
+            .append(", host=")
+            .append(node.getConfig().getHost())
+            .append(", port=")
+            .append(node.getConfig().getPort())
+            .append(", time=")
+            .append(TimeUtil.currentTimeMillis())
+            .toString();
     }
 
 }

@@ -67,7 +67,7 @@ public final class ServerRouter {
     private static final Logger LOGGER = Logger.getLogger(ServerRouter.class);
 
     public static RouteResultset route(SchemaConfig schema, String stmt, String charset, Object info)
-            throws SQLNonTransientException {
+        throws SQLNonTransientException {
         RouteResultset rrs = new RouteResultset(stmt);
 
         // 检查是否含有cobar hint
@@ -81,7 +81,7 @@ public final class ServerRouter {
         if (schema.isNoSharding()) {
             if (schema.isKeepSqlSchema()) {
                 SQLStatement ast = SQLParserDelegate.parse(stmt, charset == null
-                        ? MySQLParser.DEFAULT_CHARSET : charset);
+                    ? MySQLParser.DEFAULT_CHARSET : charset);
                 PartitionKeyVisitor visitor = new PartitionKeyVisitor(schema.getTables());
                 visitor.setTrimSchema(schema.getName());
                 ast.accept(visitor);
@@ -127,7 +127,8 @@ public final class ServerRouter {
         Map<String, List<Object>> columnValues = null;
         Map<String, Map<String, List<Object>>> astExt = visitor.getColumnValue();
         Map<String, TableConfig> tables = schema.getTables();
-        ft: for (Entry<String, Map<String, List<Object>>> e : astExt.entrySet()) {
+        ft:
+        for (Entry<String, Map<String, List<Object>>> e : astExt.entrySet()) {
             Map<String, List<Object>> col2Val = e.getValue();
             TableConfig tc = tables.get(e.getKey());
             if (tc == null) {
@@ -171,7 +172,7 @@ public final class ServerRouter {
         if (rule == null) {
             if (matchedTable.isRuleRequired()) {
                 throw new IllegalArgumentException("route rule for table " + matchedTable.getName() + " is required: "
-                        + stmt);
+                    + stmt);
             }
             String[] dataNodes = matchedTable.getDataNodes();
             String sql = visitor.isSchemaTrimmed() ? genSQL(ast, stmt) : stmt;
@@ -218,11 +219,11 @@ public final class ServerRouter {
             int i = 0;
             for (; i < sql.length(); ++i) {
                 switch (sql.charAt(i)) {
-                case ' ':
-                case '\t':
-                case '\r':
-                case '\n':
-                    continue;
+                    case ' ':
+                    case '\t':
+                    case '\r':
+                    case '\n':
+                        continue;
                 }
                 break;
             }
@@ -250,7 +251,7 @@ public final class ServerRouter {
                 if (dataNodes != null && !dataNodes.isEmpty()) {
                     Integer replicaIndex = dataNodes.get(0).getValue();
                     if (replicaIndex != null
-                            && RouteResultsetNode.DEFAULT_REPLICA_INDEX.intValue() != replicaIndex.intValue()) {
+                        && RouteResultsetNode.DEFAULT_REPLICA_INDEX.intValue() != replicaIndex.intValue()) {
                         // replica index indicated in dataNodes references
                         nodes[0] = new RouteResultsetNode(schema.getDataNode(), replicaIndex, outputSql);
                         logExplicitReplicaSet(frontConn, sql, rrs);
@@ -273,7 +274,7 @@ public final class ServerRouter {
                     String dataNodeName = tableConfig.getDataNodes()[pair.getKey()];
                     Integer replicaIndex = dataNodes.get(i).getValue();
                     if (replicaIndex != null
-                            && RouteResultsetNode.DEFAULT_REPLICA_INDEX.intValue() != replicaIndex.intValue()) {
+                        && RouteResultsetNode.DEFAULT_REPLICA_INDEX.intValue() != replicaIndex.intValue()) {
                         replicaSet = true;
                         nodes[i] = new RouteResultsetNode(dataNodeName, replicaIndex, outputSql);
                     } else {
@@ -454,7 +455,7 @@ public final class ServerRouter {
     }
 
     private static void validateAST(SQLStatement ast, TableConfig tc, RuleConfig rule, PartitionKeyVisitor visitor)
-            throws SQLNonTransientException {
+        throws SQLNonTransientException {
         if (ast instanceof DMLUpdateStatement) {
             List<Identifier> columns = null;
             List<String> ruleCols = rule.getColumns();
@@ -506,15 +507,15 @@ public final class ServerRouter {
     private static void setGroupFlagAndLimit(RouteResultset rrs, PartitionKeyVisitor visitor) {
         rrs.setLimitSize(visitor.getLimitSize());
         switch (visitor.getGroupFuncType()) {
-        case PartitionKeyVisitor.GROUP_SUM:
-            rrs.setFlag(RouteResultset.SUM_FLAG);
-            break;
-        case PartitionKeyVisitor.GROUP_MAX:
-            rrs.setFlag(RouteResultset.MAX_FLAG);
-            break;
-        case PartitionKeyVisitor.GROUP_MIN:
-            rrs.setFlag(RouteResultset.MIN_FLAG);
-            break;
+            case PartitionKeyVisitor.GROUP_SUM:
+                rrs.setFlag(RouteResultset.SUM_FLAG);
+                break;
+            case PartitionKeyVisitor.GROUP_MAX:
+                rrs.setFlag(RouteResultset.MAX_FLAG);
+                break;
+            case PartitionKeyVisitor.GROUP_MIN:
+                rrs.setFlag(RouteResultset.MIN_FLAG);
+                break;
         }
     }
 
@@ -539,7 +540,7 @@ public final class ServerRouter {
         }
 
         try {
-            for (Iterator<Object> mainIter = colsValIter.get(0); mainIter.hasNext();) {
+            for (Iterator<Object> mainIter = colsValIter.get(0); mainIter.hasNext(); ) {
                 Object[] tuple = new Object[cols.size()];
                 for (int i = 0, len = cols.size(); i < len; ++i) {
                     Object value = colsValIter.get(i).next();
@@ -693,12 +694,12 @@ public final class ServerRouter {
             return;
         }
         Map<String, Map<Object, Set<Pair<Expression, ASTNode>>>> colsIndex = visitor.getColumnIndex(stmt.getTable()
-                                                                                                        .getIdTextUpUnescape());
+            .getIdTextUpUnescape());
         if (colsIndex == null || colsIndex.isEmpty()) {
             throw new IllegalArgumentException("columns index is empty: " + originalSQL);
         }
         ArrayList<Map<Object, Set<Pair<Expression, ASTNode>>>> colsIndexList = new ArrayList<Map<Object, Set<Pair<Expression, ASTNode>>>>(
-                ruleColumns.size());
+            ruleColumns.size());
         for (int i = 0, len = ruleColumns.size(); i < len; ++i) {
             colsIndexList.add(colsIndex.get(ruleColumns.get(i)));
         }
@@ -716,7 +717,7 @@ public final class ServerRouter {
                 }
                 if (tupleExprs == null || tupleExprs.isEmpty()) {
                     throw new IllegalArgumentException("route: empty expression list for insertReplace stmt: "
-                            + originalSQL);
+                        + originalSQL);
                 }
                 for (Pair<Expression, ASTNode> p : tupleExprs) {
                     if (p.getValue() == stmt && p.getKey() instanceof RowExpression) {

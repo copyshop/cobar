@@ -17,7 +17,7 @@ package com.alibaba.cobar.config.model;
 
 /**
  * 描述一个数据源的配置
- * 
+ *
  * @author xianmao.hexm 2011-1-11 下午02:14:38
  */
 public final class DataSourceConfig {
@@ -109,15 +109,15 @@ public final class DataSourceConfig {
     @Override
     public String toString() {
         return new StringBuilder().append("[name=")
-                                  .append(name)
-                                  .append(",host=")
-                                  .append(host)
-                                  .append(",port=")
-                                  .append(port)
-                                  .append(",database=")
-                                  .append(database)
-                                  .append(']')
-                                  .toString();
+            .append(name)
+            .append(",host=")
+            .append(host)
+            .append(",port=")
+            .append(port)
+            .append(",database=")
+            .append(database)
+            .append(']')
+            .toString();
     }
 
 }

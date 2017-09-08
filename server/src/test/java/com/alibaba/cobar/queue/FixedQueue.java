@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 固定容量的阻塞队列
- * 
+ *
  * @author xianmao.hexm 2010-7-21 下午07:07:36
  */
 public final class FixedQueue<E> {

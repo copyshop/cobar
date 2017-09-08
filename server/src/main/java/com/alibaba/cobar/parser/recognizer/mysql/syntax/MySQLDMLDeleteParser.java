@@ -52,6 +52,7 @@ public class MySQLDMLDeleteParser extends MySQLDMLParser {
     }
 
     private static final Map<String, SpecialIdentifier> specialIdentifiers = new HashMap<String, SpecialIdentifier>();
+
     static {
         specialIdentifiers.put("QUICK", SpecialIdentifier.QUICK);
     }
@@ -59,7 +60,7 @@ public class MySQLDMLDeleteParser extends MySQLDMLParser {
     /**
      * first token is {@link MySQLToken#KW_DELETE} <code><pre>
      * 'DELETE' 'LOW_PRIORITY'? 'QUICK'? 'IGNORE'? (
-     *     'FROM' tid ( (',' tid)* 'USING' table_refs ('WHERE' cond)?  
+     *     'FROM' tid ( (',' tid)* 'USING' table_refs ('WHERE' cond)?
      *                | ('WHERE' cond)? ('ORDER' 'BY' ids)? ('LIMIT' count)?  )  // single table
      *    | tid (',' tid)* 'FROM' table_refs ('WHERE' cond)? )
      * </pre></code>
@@ -69,22 +70,23 @@ public class MySQLDMLDeleteParser extends MySQLDMLParser {
         boolean lowPriority = false;
         boolean quick = false;
         boolean ignore = false;
-        loopOpt: for (;; lexer.nextToken()) {
+        loopOpt:
+        for (; ; lexer.nextToken()) {
             switch (lexer.token()) {
-            case KW_LOW_PRIORITY:
-                lowPriority = true;
-                break;
-            case KW_IGNORE:
-                ignore = true;
-                break;
-            case IDENTIFIER:
-                SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
-                if (SpecialIdentifier.QUICK == si) {
-                    quick = true;
+                case KW_LOW_PRIORITY:
+                    lowPriority = true;
                     break;
-                }
-            default:
-                break loopOpt;
+                case KW_IGNORE:
+                    ignore = true;
+                    break;
+                case IDENTIFIER:
+                    SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
+                    if (SpecialIdentifier.QUICK == si) {
+                        quick = true;
+                        break;
+                    }
+                default:
+                    break loopOpt;
             }
         }
         List<Identifier> tempList;
@@ -96,23 +98,23 @@ public class MySQLDMLDeleteParser extends MySQLDMLParser {
             tempList = new ArrayList<Identifier>(1);
             tempList.add(id);
             switch (lexer.token()) {
-            case PUNC_COMMA:
-                tempList = buildIdList(id);
-            case KW_USING:
-                lexer.nextToken();
-                tempRefs = tableRefs();
-                if (lexer.token() == KW_WHERE) {
+                case PUNC_COMMA:
+                    tempList = buildIdList(id);
+                case KW_USING:
                     lexer.nextToken();
-                    tempWhere = exprParser.expression();
-                    return new DMLDeleteStatement(lowPriority, quick, ignore, tempList, tempRefs, tempWhere);
-                }
-                return new DMLDeleteStatement(lowPriority, quick, ignore, tempList, tempRefs);
-            case KW_WHERE:
-            case KW_ORDER:
-            case KW_LIMIT:
-                break;
-            default:
-                return new DMLDeleteStatement(lowPriority, quick, ignore, id);
+                    tempRefs = tableRefs();
+                    if (lexer.token() == KW_WHERE) {
+                        lexer.nextToken();
+                        tempWhere = exprParser.expression();
+                        return new DMLDeleteStatement(lowPriority, quick, ignore, tempList, tempRefs, tempWhere);
+                    }
+                    return new DMLDeleteStatement(lowPriority, quick, ignore, tempList, tempRefs);
+                case KW_WHERE:
+                case KW_ORDER:
+                case KW_LIMIT:
+                    break;
+                default:
+                    return new DMLDeleteStatement(lowPriority, quick, ignore, id);
             }
             tempWhere = null;
             OrderBy orderBy = null;

@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * an operator with arity of 3<br/>
  * left conbine in default
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public abstract class BinaryOperatorExpression extends AbstractExpression {

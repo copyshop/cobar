@@ -73,7 +73,7 @@ public abstract class MySQLDMLParser extends MySQLParser {
 
     /**
      * nothing has been pre-consumed
-     * 
+     *
      * @return null if there is no order by
      */
     protected GroupBy groupBy() throws SQLSyntaxErrorException {
@@ -86,34 +86,34 @@ public abstract class MySQLDMLParser extends MySQLParser {
         SortOrder order = SortOrder.ASC;
         GroupBy groupBy;
         switch (lexer.token()) {
-        case KW_DESC:
-            order = SortOrder.DESC;
-        case KW_ASC:
-            lexer.nextToken();
-        default:
-            break;
-        }
-        switch (lexer.token()) {
-        case KW_WITH:
-            lexer.nextToken();
-            matchIdentifier("ROLLUP");
-            return new GroupBy(expr, order, true);
-        case PUNC_COMMA:
-            break;
-        default:
-            return new GroupBy(expr, order, false);
-        }
-        for (groupBy = new GroupBy().addOrderByItem(expr, order); lexer.token() == PUNC_COMMA;) {
-            lexer.nextToken();
-            order = SortOrder.ASC;
-            expr = exprParser.expression();
-            switch (lexer.token()) {
             case KW_DESC:
                 order = SortOrder.DESC;
             case KW_ASC:
                 lexer.nextToken();
             default:
                 break;
+        }
+        switch (lexer.token()) {
+            case KW_WITH:
+                lexer.nextToken();
+                matchIdentifier("ROLLUP");
+                return new GroupBy(expr, order, true);
+            case PUNC_COMMA:
+                break;
+            default:
+                return new GroupBy(expr, order, false);
+        }
+        for (groupBy = new GroupBy().addOrderByItem(expr, order); lexer.token() == PUNC_COMMA; ) {
+            lexer.nextToken();
+            order = SortOrder.ASC;
+            expr = exprParser.expression();
+            switch (lexer.token()) {
+                case KW_DESC:
+                    order = SortOrder.DESC;
+                case KW_ASC:
+                    lexer.nextToken();
+                default:
+                    break;
             }
             groupBy.addOrderByItem(expr, order);
             if (lexer.token() == KW_WITH) {
@@ -127,7 +127,7 @@ public abstract class MySQLDMLParser extends MySQLParser {
 
     /**
      * nothing has been pre-consumed
-     * 
+     *
      * @return null if there is no order by
      */
     protected OrderBy orderBy() throws SQLSyntaxErrorException {
@@ -140,28 +140,28 @@ public abstract class MySQLDMLParser extends MySQLParser {
         SortOrder order = SortOrder.ASC;
         OrderBy orderBy;
         switch (lexer.token()) {
-        case KW_DESC:
-            order = SortOrder.DESC;
-        case KW_ASC:
-            if (lexer.nextToken() != PUNC_COMMA) {
+            case KW_DESC:
+                order = SortOrder.DESC;
+            case KW_ASC:
+                if (lexer.nextToken() != PUNC_COMMA) {
+                    return new OrderBy(expr, order);
+                }
+            case PUNC_COMMA:
+                orderBy = new OrderBy();
+                orderBy.addOrderByItem(expr, order);
+                break;
+            default:
                 return new OrderBy(expr, order);
-            }
-        case PUNC_COMMA:
-            orderBy = new OrderBy();
-            orderBy.addOrderByItem(expr, order);
-            break;
-        default:
-            return new OrderBy(expr, order);
         }
-        for (; lexer.token() == PUNC_COMMA;) {
+        for (; lexer.token() == PUNC_COMMA; ) {
             lexer.nextToken();
             order = SortOrder.ASC;
             expr = exprParser.expression();
             switch (lexer.token()) {
-            case KW_DESC:
-                order = SortOrder.DESC;
-            case KW_ASC:
-                lexer.nextToken();
+                case KW_DESC:
+                    order = SortOrder.DESC;
+                case KW_ASC:
+                    lexer.nextToken();
             }
             orderBy.addOrderByItem(expr, order);
         }
@@ -179,7 +179,7 @@ public abstract class MySQLDMLParser extends MySQLParser {
         }
         List<Identifier> list = new LinkedList<Identifier>();
         list.add(id);
-        for (; lexer.token() == PUNC_COMMA;) {
+        for (; lexer.token() == PUNC_COMMA; ) {
             lexer.nextToken();
             id = identifier();
             list.add(id);
@@ -189,7 +189,7 @@ public abstract class MySQLDMLParser extends MySQLParser {
 
     /**
      * <code>(id (',' id)*)?</code>
-     * 
+     *
      * @return never null or empty. {@link LinkedList} is possible
      */
     protected List<Identifier> idList() throws SQLSyntaxErrorException {
@@ -198,7 +198,7 @@ public abstract class MySQLDMLParser extends MySQLParser {
 
     /**
      * <code>( idName (',' idName)*)? ')'</code>
-     * 
+     *
      * @return empty list if emtpy id list
      */
     protected List<String> idNameList() throws SQLSyntaxErrorException {
@@ -211,7 +211,7 @@ public abstract class MySQLDMLParser extends MySQLParser {
         if (lexer.nextToken() == PUNC_COMMA) {
             list = new LinkedList<String>();
             list.add(str);
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 list.add(lexer.stringValue());
                 match(IDENTIFIER);
@@ -237,7 +237,7 @@ public abstract class MySQLDMLParser extends MySQLParser {
         if (lexer.token() == PUNC_COMMA) {
             list = new LinkedList<TableReference>();
             list.add(ref);
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 ref = tableReference();
                 list.add(ref);
@@ -256,86 +256,50 @@ public abstract class MySQLDMLParser extends MySQLParser {
 
     @SuppressWarnings("unchecked")
     private TableReference buildTableReference(TableReference ref) throws SQLSyntaxErrorException {
-        for (;;) {
+        for (; ; ) {
             Expression on;
             List<String> using;
             TableReference temp;
             boolean isOut = false;
             boolean isLeft = true;
             switch (lexer.token()) {
-            case KW_INNER:
-            case KW_CROSS:
-                lexer.nextToken();
-            case KW_JOIN:
-                lexer.nextToken();
-                temp = tableFactor();
-                switch (lexer.token()) {
-                case KW_ON:
+                case KW_INNER:
+                case KW_CROSS:
                     lexer.nextToken();
-                    on = exprParser.expression();
-                    ref = new InnerJoin(ref, temp, on);
-                    break;
-                case KW_USING:
+                case KW_JOIN:
                     lexer.nextToken();
-                    match(PUNC_LEFT_PAREN);
-                    using = idNameList();
-                    ref = new InnerJoin(ref, temp, using);
-                    break;
-                default:
-                    ref = new InnerJoin(ref, temp);
-                    break;
-                }
-                break;
-            case KW_STRAIGHT_JOIN:
-                lexer.nextToken();
-                temp = tableFactor();
-                switch (lexer.token()) {
-                case KW_ON:
-                    lexer.nextToken();
-                    on = exprParser.expression();
-                    ref = new StraightJoin(ref, temp, on);
-                    break;
-                default:
-                    ref = new StraightJoin(ref, temp);
-                    break;
-                }
-                break;
-            case KW_RIGHT:
-                isLeft = false;
-            case KW_LEFT:
-                lexer.nextToken();
-                if (lexer.token() == KW_OUTER) {
-                    lexer.nextToken();
-                }
-                match(KW_JOIN);
-                temp = tableReference();
-                switch (lexer.token()) {
-                case KW_ON:
-                    lexer.nextToken();
-                    on = exprParser.expression();
-                    ref = new OuterJoin(isLeft, ref, temp, on);
-                    break;
-                case KW_USING:
-                    lexer.nextToken();
-                    match(PUNC_LEFT_PAREN);
-                    using = idNameList();
-                    ref = new OuterJoin(isLeft, ref, temp, using);
-                    break;
-                default:
-                    Object condition = temp.removeLastConditionElement();
-                    if (condition instanceof Expression) {
-                        ref = new OuterJoin(isLeft, ref, temp, (Expression) condition);
-                    } else if (condition instanceof List) {
-                        ref = new OuterJoin(isLeft, ref, temp, (List<String>) condition);
-                    } else {
-                        throw err("conditionExpr cannot be null for outer join");
+                    temp = tableFactor();
+                    switch (lexer.token()) {
+                        case KW_ON:
+                            lexer.nextToken();
+                            on = exprParser.expression();
+                            ref = new InnerJoin(ref, temp, on);
+                            break;
+                        case KW_USING:
+                            lexer.nextToken();
+                            match(PUNC_LEFT_PAREN);
+                            using = idNameList();
+                            ref = new InnerJoin(ref, temp, using);
+                            break;
+                        default:
+                            ref = new InnerJoin(ref, temp);
+                            break;
                     }
                     break;
-                }
-                break;
-            case KW_NATURAL:
-                lexer.nextToken();
-                switch (lexer.token()) {
+                case KW_STRAIGHT_JOIN:
+                    lexer.nextToken();
+                    temp = tableFactor();
+                    switch (lexer.token()) {
+                        case KW_ON:
+                            lexer.nextToken();
+                            on = exprParser.expression();
+                            ref = new StraightJoin(ref, temp, on);
+                            break;
+                        default:
+                            ref = new StraightJoin(ref, temp);
+                            break;
+                    }
+                    break;
                 case KW_RIGHT:
                     isLeft = false;
                 case KW_LEFT:
@@ -343,18 +307,54 @@ public abstract class MySQLDMLParser extends MySQLParser {
                     if (lexer.token() == KW_OUTER) {
                         lexer.nextToken();
                     }
-                    isOut = true;
-                case KW_JOIN:
+                    match(KW_JOIN);
+                    temp = tableReference();
+                    switch (lexer.token()) {
+                        case KW_ON:
+                            lexer.nextToken();
+                            on = exprParser.expression();
+                            ref = new OuterJoin(isLeft, ref, temp, on);
+                            break;
+                        case KW_USING:
+                            lexer.nextToken();
+                            match(PUNC_LEFT_PAREN);
+                            using = idNameList();
+                            ref = new OuterJoin(isLeft, ref, temp, using);
+                            break;
+                        default:
+                            Object condition = temp.removeLastConditionElement();
+                            if (condition instanceof Expression) {
+                                ref = new OuterJoin(isLeft, ref, temp, (Expression) condition);
+                            } else if (condition instanceof List) {
+                                ref = new OuterJoin(isLeft, ref, temp, (List<String>) condition);
+                            } else {
+                                throw err("conditionExpr cannot be null for outer join");
+                            }
+                            break;
+                    }
+                    break;
+                case KW_NATURAL:
                     lexer.nextToken();
-                    temp = tableFactor();
-                    ref = new NaturalJoin(isOut, isLeft, ref, temp);
+                    switch (lexer.token()) {
+                        case KW_RIGHT:
+                            isLeft = false;
+                        case KW_LEFT:
+                            lexer.nextToken();
+                            if (lexer.token() == KW_OUTER) {
+                                lexer.nextToken();
+                            }
+                            isOut = true;
+                        case KW_JOIN:
+                            lexer.nextToken();
+                            temp = tableFactor();
+                            ref = new NaturalJoin(isOut, isLeft, ref, temp);
+                            break;
+                        default:
+                            throw err("unexpected token after NATURAL for natural join:" + lexer.token());
+                    }
                     break;
                 default:
-                    throw err("unexpected token after NATURAL for natural join:" + lexer.token());
-                }
-                break;
-            default:
-                return ref;
+                    return ref;
             }
         }
     }
@@ -362,28 +362,28 @@ public abstract class MySQLDMLParser extends MySQLParser {
     private TableReference tableFactor() throws SQLSyntaxErrorException {
         String alias = null;
         switch (lexer.token()) {
-        case PUNC_LEFT_PAREN:
-            lexer.nextToken();
-            Object ref = trsOrQuery();
-            match(PUNC_RIGHT_PAREN);
-            if (ref instanceof QueryExpression) {
+            case PUNC_LEFT_PAREN:
+                lexer.nextToken();
+                Object ref = trsOrQuery();
+                match(PUNC_RIGHT_PAREN);
+                if (ref instanceof QueryExpression) {
+                    alias = as();
+                    return new SubqueryFactor((QueryExpression) ref, alias);
+                }
+                return (TableReferences) ref;
+            case IDENTIFIER:
+                Identifier table = identifier();
                 alias = as();
-                return new SubqueryFactor((QueryExpression) ref, alias);
-            }
-            return (TableReferences) ref;
-        case IDENTIFIER:
-            Identifier table = identifier();
-            alias = as();
-            List<IndexHint> hintList = hintList();
-            return new TableRefFactor(table, alias, hintList);
-        default:
-            throw err("unexpected token for tableFactor: " + lexer.token());
+                List<IndexHint> hintList = hintList();
+                return new TableRefFactor(table, alias, hintList);
+            default:
+                throw err("unexpected token for tableFactor: " + lexer.token());
         }
     }
 
     /**
      * @return never empty. upper-case if id format.
-     *         <code>"alias1" |"`al`ias1`" | "'alias1'" | "_latin1'alias1'"</code>
+     * <code>"alias1" |"`al`ias1`" | "'alias1'" | "_latin1'alias1'"</code>
      */
     protected String as() throws SQLSyntaxErrorException {
         if (lexer.token() == KW_AS) {
@@ -411,40 +411,40 @@ public abstract class MySQLDMLParser extends MySQLParser {
     private Object trsOrQuery() throws SQLSyntaxErrorException {
         Object ref;
         switch (lexer.token()) {
-        case KW_SELECT:
-            DMLSelectStatement select = selectPrimary();
-            return buildUnionSelect(select);
-        case PUNC_LEFT_PAREN:
-            lexer.nextToken();
-            ref = trsOrQuery();
-            match(PUNC_RIGHT_PAREN);
-            if (ref instanceof QueryExpression) {
-                if (ref instanceof DMLSelectStatement) {
-                    QueryExpression rst = buildUnionSelect((DMLSelectStatement) ref);
-                    if (rst != ref) {
-                        return rst;
+            case KW_SELECT:
+                DMLSelectStatement select = selectPrimary();
+                return buildUnionSelect(select);
+            case PUNC_LEFT_PAREN:
+                lexer.nextToken();
+                ref = trsOrQuery();
+                match(PUNC_RIGHT_PAREN);
+                if (ref instanceof QueryExpression) {
+                    if (ref instanceof DMLSelectStatement) {
+                        QueryExpression rst = buildUnionSelect((DMLSelectStatement) ref);
+                        if (rst != ref) {
+                            return rst;
+                        }
+                    }
+                    String alias = as();
+                    if (alias != null) {
+                        ref = new SubqueryFactor((QueryExpression) ref, alias);
+                    } else {
+                        return ref;
                     }
                 }
-                String alias = as();
-                if (alias != null) {
-                    ref = new SubqueryFactor((QueryExpression) ref, alias);
-                } else {
-                    return ref;
-                }
-            }
-            // ---- build factor complete---------------
-            ref = buildTableReference((TableReference) ref);
-            // ---- build ref complete---------------
-            break;
-        default:
-            ref = tableReference();
+                // ---- build factor complete---------------
+                ref = buildTableReference((TableReference) ref);
+                // ---- build ref complete---------------
+                break;
+            default:
+                ref = tableReference();
         }
 
         List<TableReference> list;
         if (lexer.token() == PUNC_COMMA) {
             list = new LinkedList<TableReference>();
             list.add((TableReference) ref);
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 ref = tableReference();
                 list.add((TableReference) ref);
@@ -473,7 +473,7 @@ public abstract class MySQLDMLParser extends MySQLParser {
         list = new LinkedList<IndexHint>();
         list.add(hint);
         list.add(hint2);
-        for (; (hint2 = hint()) != null; list.add(hint2));
+        for (; (hint2 = hint()) != null; list.add(hint2)) ;
         return list;
     }
 
@@ -483,48 +483,48 @@ public abstract class MySQLDMLParser extends MySQLParser {
     private IndexHint hint() throws SQLSyntaxErrorException {
         IndexHint.IndexAction action;
         switch (lexer.token()) {
-        case KW_USE:
-            action = IndexHint.IndexAction.USE;
-            break;
-        case KW_IGNORE:
-            action = IndexHint.IndexAction.IGNORE;
-            break;
-        case KW_FORCE:
-            action = IndexHint.IndexAction.FORCE;
-            break;
-        default:
-            return null;
+            case KW_USE:
+                action = IndexHint.IndexAction.USE;
+                break;
+            case KW_IGNORE:
+                action = IndexHint.IndexAction.IGNORE;
+                break;
+            case KW_FORCE:
+                action = IndexHint.IndexAction.FORCE;
+                break;
+            default:
+                return null;
         }
         IndexHint.IndexType type;
         switch (lexer.nextToken()) {
-        case KW_INDEX:
-            type = IndexHint.IndexType.INDEX;
-            break;
-        case KW_KEY:
-            type = IndexHint.IndexType.KEY;
-            break;
-        default:
-            throw err("must be INDEX or KEY for hint type, not " + lexer.token());
+            case KW_INDEX:
+                type = IndexHint.IndexType.INDEX;
+                break;
+            case KW_KEY:
+                type = IndexHint.IndexType.KEY;
+                break;
+            default:
+                throw err("must be INDEX or KEY for hint type, not " + lexer.token());
         }
         IndexHint.IndexScope scope = IndexHint.IndexScope.ALL;
         if (lexer.nextToken() == KW_FOR) {
             switch (lexer.nextToken()) {
-            case KW_JOIN:
-                lexer.nextToken();
-                scope = IndexHint.IndexScope.JOIN;
-                break;
-            case KW_ORDER:
-                lexer.nextToken();
-                match(KW_BY);
-                scope = IndexHint.IndexScope.ORDER_BY;
-                break;
-            case KW_GROUP:
-                lexer.nextToken();
-                match(KW_BY);
-                scope = IndexHint.IndexScope.GROUP_BY;
-                break;
-            default:
-                throw err("must be JOIN or ORDER or GROUP for hint scope, not " + lexer.token());
+                case KW_JOIN:
+                    lexer.nextToken();
+                    scope = IndexHint.IndexScope.JOIN;
+                    break;
+                case KW_ORDER:
+                    lexer.nextToken();
+                    match(KW_BY);
+                    scope = IndexHint.IndexScope.ORDER_BY;
+                    break;
+                case KW_GROUP:
+                    lexer.nextToken();
+                    match(KW_BY);
+                    scope = IndexHint.IndexScope.GROUP_BY;
+                    break;
+                default:
+                    throw err("must be JOIN or ORDER or GROUP for hint scope, not " + lexer.token());
             }
         }
 
@@ -541,15 +541,15 @@ public abstract class MySQLDMLParser extends MySQLParser {
             return select;
         }
         DMLSelectUnionStatement union = new DMLSelectUnionStatement(select);
-        for (; lexer.token() == KW_UNION;) {
+        for (; lexer.token() == KW_UNION; ) {
             lexer.nextToken();
             boolean isAll = false;
             switch (lexer.token()) {
-            case KW_ALL:
-                isAll = true;
-            case KW_DISTINCT:
-                lexer.nextToken();
-                break;
+                case KW_ALL:
+                    isAll = true;
+                case KW_DISTINCT:
+                    lexer.nextToken();
+                    break;
             }
             select = selectPrimary();
             union.addSelect(select, isAll);
@@ -560,15 +560,15 @@ public abstract class MySQLDMLParser extends MySQLParser {
 
     protected DMLSelectStatement selectPrimary() throws SQLSyntaxErrorException {
         switch (lexer.token()) {
-        case KW_SELECT:
-            return select();
-        case PUNC_LEFT_PAREN:
-            lexer.nextToken();
-            DMLSelectStatement select = selectPrimary();
-            match(PUNC_RIGHT_PAREN);
-            return select;
-        default:
-            throw err("unexpected token: " + lexer.token());
+            case KW_SELECT:
+                return select();
+            case PUNC_LEFT_PAREN:
+                lexer.nextToken();
+                DMLSelectStatement select = selectPrimary();
+                match(PUNC_RIGHT_PAREN);
+                return select;
+            default:
+                throw err("unexpected token: " + lexer.token());
         }
     }
 

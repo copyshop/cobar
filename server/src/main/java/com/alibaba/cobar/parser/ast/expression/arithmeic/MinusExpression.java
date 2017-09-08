@@ -29,7 +29,7 @@ import com.alibaba.cobar.parser.util.UnaryOperandCalculator;
 
 /**
  * <code>'-' higherExpr</code>
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class MinusExpression extends UnaryOperatorExpression implements UnaryOperandCalculator {

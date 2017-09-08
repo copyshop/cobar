@@ -27,7 +27,7 @@ import com.alibaba.cobar.net.mysql.RowDataPacket;
 
 /**
  * 基于MySQL协议的返回数据包[header|field,field,...|eof|row,row,...|eof]
- * 
+ *
  * @author xianmao.hexm
  */
 public class SampleResponseHandler {

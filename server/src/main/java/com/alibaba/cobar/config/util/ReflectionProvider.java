@@ -53,7 +53,7 @@ public class ReflectionProvider {
                 return instantiateUsingSerialization(type);
             } else {
                 throw new ObjectAccessException("Cannot construct " + type.getName()
-                        + " as it does not have a no-args constructor");
+                    + " as it does not have a no-args constructor");
             }
         } catch (InstantiationException e) {
             throw new ObjectAccessException("Cannot construct " + type.getName(), e);
@@ -66,14 +66,14 @@ public class ReflectionProvider {
                 throw (Error) e.getTargetException();
             } else {
                 throw new ObjectAccessException(
-                        "Constructor for " + type.getName() + " threw an exception",
-                        e.getTargetException());
+                    "Constructor for " + type.getName() + " threw an exception",
+                    e.getTargetException());
             }
         }
     }
 
     public void visitSerializableFields(Object object, Visitor visitor) {
-        for (Iterator<Field> iterator = fieldDictionary.serializableFieldsFor(object.getClass()); iterator.hasNext();) {
+        for (Iterator<Field> iterator = fieldDictionary.serializableFieldsFor(object.getClass()); iterator.hasNext(); ) {
             Field field = iterator.next();
             if (!fieldModifiersSupported(field)) {
                 continue;
@@ -104,8 +104,8 @@ public class ReflectionProvider {
 
     public void invokeMethod(Object object, String methodName, Object value, Class<?> definedIn) {
         try {
-            Method method = object.getClass().getMethod(methodName, new Class[] { value.getClass() });
-            method.invoke(object, new Object[] { value });
+            Method method = object.getClass().getMethod(methodName, new Class[]{value.getClass()});
+            method.invoke(object, new Object[]{value});
         } catch (Exception e) {
             throw new ObjectAccessException("Could not invoke " + object.getClass() + "." + methodName, e);
         }
@@ -169,7 +169,7 @@ public class ReflectionProvider {
                 field.setAccessible(true);
             } else {
                 throw new ObjectAccessException("Invalid final field " + field.getDeclaringClass().getName() + "."
-                        + field.getName());
+                    + field.getName());
             }
         }
     }

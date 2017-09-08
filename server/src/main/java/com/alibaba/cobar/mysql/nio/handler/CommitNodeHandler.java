@@ -141,20 +141,20 @@ public class CommitNodeHandler extends MultiNodeHandler {
     @Override
     public void fieldEofResponse(byte[] header, List<byte[]> fields, byte[] eof, MySQLConnection conn) {
         logger.error(new StringBuilder().append("unexpected packet for ")
-                                        .append(conn)
-                                        .append(" bound by ")
-                                        .append(session.getSource())
-                                        .append(": field's eof")
-                                        .toString());
+            .append(conn)
+            .append(" bound by ")
+            .append(session.getSource())
+            .append(": field's eof")
+            .toString());
     }
 
     @Override
     public void rowResponse(byte[] row, MySQLConnection conn) {
         logger.warn(new StringBuilder().append("unexpected packet for ")
-                                       .append(conn)
-                                       .append(" bound by ")
-                                       .append(session.getSource())
-                                       .append(": row data packet")
-                                       .toString());
+            .append(conn)
+            .append(" bound by ")
+            .append(session.getSource())
+            .append(": row data packet")
+            .toString());
     }
 }

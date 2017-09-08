@@ -31,16 +31,16 @@ public final class ManagerParseReload {
         int i = offset;
         for (; i < stmt.length(); i++) {
             switch (stmt.charAt(i)) {
-            case ' ':
-                continue;
-            case '/':
-            case '#':
-                i = ParseUtil.comment(stmt, i);
-                continue;
-            case '@':
-                return reload2Check(stmt, i);
-            default:
-                return OTHER;
+                case ' ':
+                    continue;
+                case '/':
+                case '#':
+                    i = ParseUtil.comment(stmt, i);
+                    continue;
+                case '@':
+                    return reload2Check(stmt, i);
+                default:
+                    return OTHER;
             }
         }
         return OTHER;
@@ -50,17 +50,17 @@ public final class ManagerParseReload {
         if (stmt.length() > ++offset && stmt.charAt(offset) == '@') {
             if (stmt.length() > ++offset) {
                 switch (stmt.charAt(offset)) {
-                case 'C':
-                case 'c':
-                    return reload2CCheck(stmt, offset);
-                case 'R':
-                case 'r':
-                    return reload2RCheck(stmt, offset);
-                case 'U':
-                case 'u':
-                    return reload2UCheck(stmt, offset);
-                default:
-                    return OTHER;
+                    case 'C':
+                    case 'c':
+                        return reload2CCheck(stmt, offset);
+                    case 'R':
+                    case 'r':
+                        return reload2RCheck(stmt, offset);
+                    case 'U':
+                    case 'u':
+                        return reload2UCheck(stmt, offset);
+                    default:
+                        return OTHER;
                 }
             }
         }
@@ -76,7 +76,7 @@ public final class ManagerParseReload {
             char c4 = stmt.charAt(++offset);
             char c5 = stmt.charAt(++offset);
             if ((c1 == 'O' || c1 == 'o') && (c2 == 'N' || c2 == 'n') && (c3 == 'F' || c3 == 'f')
-                    && (c4 == 'I' || c4 == 'i') && (c5 == 'G' || c5 == 'g')) {
+                && (c4 == 'I' || c4 == 'i') && (c5 == 'G' || c5 == 'g')) {
                 if (stmt.length() > ++offset && stmt.charAt(offset) != ' ') {
                     return OTHER;
                 }
@@ -94,7 +94,7 @@ public final class ManagerParseReload {
             char c3 = stmt.charAt(++offset);
             char c4 = stmt.charAt(++offset);
             if ((c1 == 'O' || c1 == 'o') && (c2 == 'U' || c2 == 'u') && (c3 == 'T' || c3 == 't')
-                    && (c4 == 'E' || c4 == 'e')) {
+                && (c4 == 'E' || c4 == 'e')) {
                 if (stmt.length() > ++offset && stmt.charAt(offset) != ' ') {
                     return OTHER;
                 }

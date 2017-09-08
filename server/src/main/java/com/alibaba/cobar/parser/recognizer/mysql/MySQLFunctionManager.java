@@ -207,9 +207,13 @@ import com.alibaba.cobar.parser.ast.expression.primary.function.xml.Updatexml;
  */
 public class MySQLFunctionManager {
     public static enum FunctionParsingStrategy {
-        /** not a function */
+        /**
+         * not a function
+         */
         _DEFAULT,
-        /** ordinary function */
+        /**
+         * ordinary function
+         */
         _ORDINARY,
         CAST,
         POSITION,
@@ -233,9 +237,13 @@ public class MySQLFunctionManager {
     public static final MySQLFunctionManager INSTANCE_MYSQL_DEFAULT = new MySQLFunctionManager(false);
     private final boolean allowFuncDefChange;
 
-    /** non-reserved word named special syntax function */
+    /**
+     * non-reserved word named special syntax function
+     */
     private final HashMap<String, FunctionParsingStrategy> parsingStrateg = new HashMap<String, FunctionParsingStrategy>();
-    /** non-reserved word named ordinary syntax function */
+    /**
+     * non-reserved word named ordinary syntax function
+     */
     private Map<String, FunctionExpression> functionPrototype = new HashMap<String, FunctionExpression>();
 
     public MySQLFunctionManager(boolean allowFuncDefChange) {
@@ -460,7 +468,7 @@ public class MySQLFunctionManager {
 
     /**
      * @param extFuncPrototypeMap funcName -&gt; extFunctionPrototype. funcName
-     *            MUST NOT be the same as predefined function of MySQL 5.5
+     *                            MUST NOT be the same as predefined function of MySQL 5.5
      * @throws IllegalArgumentException
      */
     public synchronized void addExtendFunction(Map<String, FunctionExpression> extFuncPrototypeMap) {

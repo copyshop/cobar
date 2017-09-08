@@ -32,7 +32,7 @@ public final class ListUtil {
         return createList(new ArrayList(), objs);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static List<?> createList(List list, Object... objs) {
         if (objs != null) {
             for (Object obj : objs) {

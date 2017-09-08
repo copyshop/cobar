@@ -89,12 +89,12 @@ public final class NIOProcessor {
     public NameableExecutor getExecutor() {
         return executor;
     }
-    
-	public NameableExecutor getCommitter() {
-		return committer;
-	}
 
-	public void startup() {
+    public NameableExecutor getCommitter() {
+        return committer;
+    }
+
+    public void startup() {
         reactor.startup();
     }
 

@@ -30,7 +30,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class ShowProfile extends DALShowStatement {
-    /** enum name must equals to real sql while ' ' is replaced with '_' */
+    /**
+     * enum name must equals to real sql while ' ' is replaced with '_'
+     */
     public static enum Type {
         ALL,
         BLOCK_IO,

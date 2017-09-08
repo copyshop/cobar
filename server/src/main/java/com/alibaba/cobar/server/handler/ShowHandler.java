@@ -30,20 +30,20 @@ public final class ShowHandler {
 
     public static void handle(String stmt, ServerConnection c, int offset) {
         switch (ServerParseShow.parse(stmt, offset)) {
-        case ServerParseShow.DATABASES:
-            ShowDatabases.response(c);
-            break;
-        case ServerParseShow.DATASOURCES:
-            ShowDataSources.response(c);
-            break;
-        case ServerParseShow.COBAR_STATUS:
-            ShowCobarStatus.response(c);
-            break;
-        case ServerParseShow.COBAR_CLUSTER:
-            ShowCobarCluster.response(c);
-            break;
-        default:
-            c.execute(stmt, ServerParse.SHOW);
+            case ServerParseShow.DATABASES:
+                ShowDatabases.response(c);
+                break;
+            case ServerParseShow.DATASOURCES:
+                ShowDataSources.response(c);
+                break;
+            case ServerParseShow.COBAR_STATUS:
+                ShowCobarStatus.response(c);
+                break;
+            case ServerParseShow.COBAR_CLUSTER:
+                ShowCobarCluster.response(c);
+                break;
+            default:
+                c.execute(stmt, ServerParse.SHOW);
         }
     }
 

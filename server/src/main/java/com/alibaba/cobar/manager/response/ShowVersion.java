@@ -28,7 +28,7 @@ import com.alibaba.cobar.net.mysql.RowDataPacket;
 
 /**
  * 查看CobarServer版本
- * 
+ *
  * @author wenfeng.cenwf 2011-4-19
  */
 public final class ShowVersion {
@@ -37,6 +37,7 @@ public final class ShowVersion {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;

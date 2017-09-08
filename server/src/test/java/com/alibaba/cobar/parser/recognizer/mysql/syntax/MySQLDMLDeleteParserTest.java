@@ -54,7 +54,7 @@ public class MySQLDMLDeleteParserTest extends AbstractSyntaxTest {
         parser.match(MySQLToken.EOF);
         output = output2MySQL(delete, sql);
         Assert.assertEquals("DELETE offer.*, wp_image.* FROM offer AS A, wp_image AS B WHERE "
-                + "a.member_id = b.member_id AND a.member_id = 'abc'", output);
+            + "a.member_id = b.member_id AND a.member_id = 'abc'", output);
 
         sql = "deLetE from id1.id where col1='adf' limit 1,?";
         lexer = new MySQLLexer(sql);

@@ -32,7 +32,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * NOT FULL AST: foreign key, ... not supported
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class DDLCreateTableStatement implements DDLStatement {

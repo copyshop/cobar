@@ -28,7 +28,7 @@ import com.alibaba.cobar.config.ErrorCode;
 
 /**
  * 网络事件反应器
- * 
+ *
  * @author xianmao.hexm
  */
 public final class NIOReactor {
@@ -83,7 +83,7 @@ public final class NIOReactor {
         @Override
         public void run() {
             final Selector selector = this.selector;
-            for (;;) {
+            for (; ; ) {
                 ++reactCount;
                 try {
                     selector.select(1000L);
@@ -152,7 +152,7 @@ public final class NIOReactor {
         @Override
         public void run() {
             NIOConnection c = null;
-            for (;;) {
+            for (; ; ) {
                 try {
                     if ((c = writeQueue.take()) != null) {
                         write(c);

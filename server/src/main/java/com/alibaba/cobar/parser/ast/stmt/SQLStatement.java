@@ -34,7 +34,9 @@ public interface SQLStatement extends ASTNode {
         DAL_SET,
         DAL_SHOW,
         MTL_START,
-        /** COMMIT or ROLLBACK */
+        /**
+         * COMMIT or ROLLBACK
+         */
         MTL_TERMINATE,
         MTL_ISOLATION
     }

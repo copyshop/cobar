@@ -22,7 +22,7 @@ import com.alibaba.cobar.parser.ast.expression.UnaryOperatorExpression;
 
 /**
  * <code>'ALL' '(' subquery  ')'</code>
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class SubqueryAllExpression extends UnaryOperatorExpression {

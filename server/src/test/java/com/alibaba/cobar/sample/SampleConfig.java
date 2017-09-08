@@ -22,7 +22,7 @@ import java.util.Set;
 
 /**
  * 服务器配置信息示例
- * 
+ *
  * @author xianmao.hexm
  */
 public class SampleConfig {

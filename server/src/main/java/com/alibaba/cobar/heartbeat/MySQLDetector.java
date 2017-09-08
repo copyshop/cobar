@@ -179,11 +179,11 @@ public class MySQLDetector extends BackendConnection {
     public void error(int errCode, Throwable t) {
         LOGGER.warn(toString(), t);
         switch (errCode) {
-        case ErrorCode.ERR_HANDLE_DATA:
-            heartbeat.setResult(MySQLHeartbeat.ERROR_STATUS, this, false);
-            break;
-        default:
-            heartbeat.setResult(MySQLHeartbeat.ERROR_STATUS, this, true);
+            case ErrorCode.ERR_HANDLE_DATA:
+                heartbeat.setResult(MySQLHeartbeat.ERROR_STATUS, this, false);
+                break;
+            default:
+                heartbeat.setResult(MySQLHeartbeat.ERROR_STATUS, this, true);
         }
     }
 
@@ -197,19 +197,19 @@ public class MySQLDetector extends BackendConnection {
 
     public String toString() {
         return new StringBuilder().append("[thread=")
-                                  .append(Thread.currentThread().getName())
-                                  .append(",class=")
-                                  .append(getClass().getSimpleName())
-                                  .append(",host=")
-                                  .append(host)
-                                  .append(",port=")
-                                  .append(port)
-                                  .append(",localPort=")
-                                  .append(localPort)
-                                  .append(",schema=")
-                                  .append(schema)
-                                  .append(']')
-                                  .toString();
+            .append(Thread.currentThread().getName())
+            .append(",class=")
+            .append(getClass().getSimpleName())
+            .append(",host=")
+            .append(host)
+            .append(",port=")
+            .append(port)
+            .append(",localPort=")
+            .append(localPort)
+            .append(",schema=")
+            .append(schema)
+            .append(']')
+            .toString();
     }
 
     private static long initClientFlags() {

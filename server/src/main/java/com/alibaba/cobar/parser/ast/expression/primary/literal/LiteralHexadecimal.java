@@ -37,9 +37,9 @@ public class LiteralHexadecimal extends Literal {
 
     /**
      * @param introducer e.g. "_latin1"
-     * @param string e.g. "select x'89df'"
-     * @param offset e.g. 9
-     * @param size e.g. 4
+     * @param string     e.g. "select x'89df'"
+     * @param offset     e.g. 9
+     * @param size       e.g. 4
      */
     public LiteralHexadecimal(String introducer, char[] string, int offset, int size, String charset) {
         super();

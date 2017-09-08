@@ -37,6 +37,7 @@ public final class ShowVariables {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;
@@ -90,6 +91,7 @@ public final class ShowVariables {
     }
 
     private static final Map<String, String> variables = new HashMap<String, String>();
+
     static {
         variables.put("character_set_client", "utf8");
         variables.put("character_set_connection", "utf8");

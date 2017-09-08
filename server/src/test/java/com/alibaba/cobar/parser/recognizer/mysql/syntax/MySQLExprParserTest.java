@@ -107,8 +107,8 @@ public class MySQLExprParserTest extends AbstractSyntaxTest {
         expr = parser.expression();
         output = output2MySQL(expr, sql);
         Assert.assertEquals(
-                "(N'\"abc\"abc\\'s' + 11.23 / id3) * (1E+2 - a OR b) % x'abc' AND (SELECT b'1001' ^ b'0000')",
-                output);
+            "(N'\"abc\"abc\\'s' + 11.23 / id3) * (1E+2 - a OR b) % x'abc' AND (SELECT b'1001' ^ b'0000')",
+            output);
         Assert.assertEquals(LogicalAndExpression.class, expr.getClass());
         bex = (BinaryOperatorExpression) ((LogicalAndExpression) expr).getOperand(0);
         Assert.assertEquals(ArithmeticModExpression.class, bex.getClass());
@@ -127,8 +127,8 @@ public class MySQLExprParserTest extends AbstractSyntaxTest {
         expr = parser.expression();
         output = output2MySQL(expr, sql);
         Assert.assertEquals(
-                "NOT ! ~ `select` IN (1, CURDATE(), `current_date`) LIKE `all` DIV a BETWEEN (c AND d) AND d | e",
-                output);
+            "NOT ! ~ `select` IN (1, CURDATE(), `current_date`) LIKE `all` DIV a BETWEEN (c AND d) AND d | e",
+            output);
         Assert.assertEquals(LogicalNotExpression.class, expr.getClass());
         TernaryOperatorExpression tex = (TernaryOperatorExpression) ((LogicalNotExpression) expr).getOperand();
         Assert.assertEquals(BetweenAndExpression.class, tex.getClass());
@@ -150,8 +150,8 @@ public class MySQLExprParserTest extends AbstractSyntaxTest {
         expr = parser.expression();
         output = output2MySQL(expr, sql);
         Assert.assertEquals(
-                "BINARY CASE ~ a OR b AND c ^ d XOR e WHEN 2 > ANY (SELECT a) THEN 3 ELSE 4 END IS NOT NULL = a",
-                output);
+            "BINARY CASE ~ a OR b AND c ^ d XOR e WHEN 2 > ANY (SELECT a) THEN 3 ELSE 4 END IS NOT NULL = a",
+            output);
         Assert.assertEquals(ComparisionEqualsExpression.class, expr.getClass());
         bex = (BinaryOperatorExpression) ((ComparisionEqualsExpression) expr);
         Assert.assertEquals(ComparisionIsExpression.class, bex.getLeftOprand().getClass());
@@ -178,8 +178,8 @@ public class MySQLExprParserTest extends AbstractSyntaxTest {
         expr = parser.expression();
         output = output2MySQL(expr, sql);
         Assert.assertEquals(
-                "! INTERVAL(a, b) <=> a >> b COLLATE x / ? + a != @@1 OR @var SOUNDS LIKE - (a - b) % - (d OR e)",
-                output);
+            "! INTERVAL(a, b) <=> a >> b COLLATE x / ? + a != @@1 OR @var SOUNDS LIKE - (a - b) % - (d OR e)",
+            output);
         Assert.assertEquals(LogicalOrExpression.class, expr.getClass());
         pex = (LogicalOrExpression) expr;
         Assert.assertEquals(ComparisionNotEqualsExpression.class, pex.getOperand(0).getClass());
@@ -452,8 +452,8 @@ public class MySQLExprParserTest extends AbstractSyntaxTest {
         expr = parser.expression();
         output = output2MySQL(expr, sql);
         Assert.assertEquals(
-                "a IS NOT NULL IS NOT FALSE IS NOT TRUE IS NOT UNKNOWN IS NULL IS FALSE IS TRUE IS UNKNOWN",
-                output);
+            "a IS NOT NULL IS NOT FALSE IS NOT TRUE IS NOT UNKNOWN IS NULL IS FALSE IS TRUE IS UNKNOWN",
+            output);
         ComparisionIsExpression is = (ComparisionIsExpression) expr;
         ComparisionIsExpression is2 = (ComparisionIsExpression) is.getOperand();
         ComparisionIsExpression is3 = (ComparisionIsExpression) is2.getOperand();
@@ -689,8 +689,8 @@ public class MySQLExprParserTest extends AbstractSyntaxTest {
         expr = parser.expression();
         output = output2MySQL(expr, sql);
         Assert.assertEquals(
-                "1 >= ANY (SELECT id FROM t1 LIMIT 0, 1) > ALL (SELECT tb1.id FROM tb1 AS T1, tb2 AS T2 WHERE t1.id = t2.id LIMIT 0, 1)",
-                output);
+            "1 >= ANY (SELECT id FROM t1 LIMIT 0, 1) > ALL (SELECT tb1.id FROM tb1 AS T1, tb2 AS T2 WHERE t1.id = t2.id LIMIT 0, 1)",
+            output);
         ComparisionGreaterThanExpression gt = (ComparisionGreaterThanExpression) expr;
         ComparisionGreaterThanOrEqualsExpression ge = (ComparisionGreaterThanOrEqualsExpression) gt.getLeftOprand();
         Assert.assertEquals(LiteralNumber.class, ge.getLeftOprand().getClass());
@@ -1196,8 +1196,8 @@ public class MySQLExprParserTest extends AbstractSyntaxTest {
         expr = parser.expression();
         output = output2MySQL(expr, sql);
         Assert.assertEquals(
-                "GROUP_CONCAT(DISTINCT expr1, expr2, expr3 ORDER BY col_name1 DESC, col_name2 SEPARATOR  )",
-                output);
+            "GROUP_CONCAT(DISTINCT expr1, expr2, expr3 ORDER BY col_name1 DESC, col_name2 SEPARATOR  )",
+            output);
 
         sql = "GROUP_CONCAT(a||b,expr2,expr3 ORDER BY col_name1 asc,col_name2 SEPARATOR '@ ')";
         parser = new MySQLExprParser(new MySQLLexer(sql));
@@ -1511,7 +1511,7 @@ public class MySQLExprParserTest extends AbstractSyntaxTest {
         expr = parser.expression();
         output = output2MySQL(expr, sql);
         Assert.assertEquals(
-                "MATCH (title, body) AGAINST ('database' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)",
-                output);
+            "MATCH (title, body) AGAINST ('database' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)",
+            output);
     }
 }

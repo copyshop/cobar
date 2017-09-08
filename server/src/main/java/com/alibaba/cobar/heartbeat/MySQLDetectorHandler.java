@@ -53,43 +53,43 @@ public class MySQLDetectorHandler extends BackendAsyncHandler {
     @Override
     protected void handleData(byte[] data) {
         switch (resultStatus) {
-        case RESULT_STATUS_INIT:
-            switch (data[4]) {
-            case OkPacket.FIELD_COUNT:
-                handleOkPacket();
+            case RESULT_STATUS_INIT:
+                switch (data[4]) {
+                    case OkPacket.FIELD_COUNT:
+                        handleOkPacket();
+                        break;
+                    case ErrorPacket.FIELD_COUNT:
+                        handleErrorPacket(data);
+                        break;
+                    default:
+                        resultStatus = RESULT_STATUS_HEADER;
+                }
                 break;
-            case ErrorPacket.FIELD_COUNT:
-                handleErrorPacket(data);
+            case RESULT_STATUS_HEADER:
+                switch (data[4]) {
+                    case ErrorPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_INIT;
+                        handleErrorPacket(data);
+                        break;
+                    case EOFPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_FIELD_EOF;
+                        break;
+                }
+                break;
+            case RESULT_STATUS_FIELD_EOF:
+                switch (data[4]) {
+                    case ErrorPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_INIT;
+                        handleErrorPacket(data);
+                        break;
+                    case EOFPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_INIT;
+                        handleRowEofPacket();
+                        break;
+                }
                 break;
             default:
-                resultStatus = RESULT_STATUS_HEADER;
-            }
-            break;
-        case RESULT_STATUS_HEADER:
-            switch (data[4]) {
-            case ErrorPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_INIT;
-                handleErrorPacket(data);
-                break;
-            case EOFPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_FIELD_EOF;
-                break;
-            }
-            break;
-        case RESULT_STATUS_FIELD_EOF:
-            switch (data[4]) {
-            case ErrorPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_INIT;
-                handleErrorPacket(data);
-                break;
-            case EOFPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_INIT;
-                handleRowEofPacket();
-                break;
-            }
-            break;
-        default:
-            throw new HeartbeatException("unknown status!");
+                throw new HeartbeatException("unknown status!");
         }
     }
 

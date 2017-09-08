@@ -143,10 +143,10 @@ public class MultiNodeQueryHandler extends MultiNodeHandler {
         Object attachment = conn.getAttachment();
         if (!(attachment instanceof RouteResultsetNode)) {
             backendConnError(conn, new StringBuilder().append("wrong attachement from connection build: ")
-                                                      .append(conn)
-                                                      .append(" bound by ")
-                                                      .append(session.getSource())
-                                                      .toString());
+                .append(conn)
+                .append(" bound by ")
+                .append(session.getSource())
+                .toString());
             conn.release();
             return;
         }
@@ -190,11 +190,11 @@ public class MultiNodeQueryHandler extends MultiNodeHandler {
                 conn.recordSql(source.getHost(), source.getSchema(), node.getStatement());
             } else {
                 LOGGER.warn(new StringBuilder().append("back-end conn: ")
-                                               .append(conn)
-                                               .append(" has wrong attachment: ")
-                                               .append(attachment)
-                                               .append(", for front-end conn: ")
-                                               .append(source));
+                    .append(conn)
+                    .append(" has wrong attachment: ")
+                    .append(attachment)
+                    .append(", for front-end conn: ")
+                    .append(source));
             }
             OkPacket ok = new OkPacket();
             ok.read(data);
@@ -249,11 +249,11 @@ public class MultiNodeQueryHandler extends MultiNodeHandler {
             conn.recordSql(source.getHost(), source.getSchema(), node.getStatement());
         } else {
             LOGGER.warn(new StringBuilder().append("back-end conn: ")
-                                           .append(conn)
-                                           .append(" has wrong attachment: ")
-                                           .append(attachment)
-                                           .append(", for front-end conn: ")
-                                           .append(source));
+                .append(conn)
+                .append(" has wrong attachment: ")
+                .append(attachment)
+                .append(", for front-end conn: ")
+                .append(source));
         }
         if (source.isAutocommit()) {
             if (node != null) {

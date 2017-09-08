@@ -80,6 +80,7 @@ public class MySQLConnection extends BackendConnection {
     private static final CommandPacket _AUTOCOMMIT_OFF = new CommandPacket();
     private static final CommandPacket _COMMIT = new CommandPacket();
     private static final CommandPacket _ROLLBACK = new CommandPacket();
+
     static {
         _READ_UNCOMMITTED.packetId = 0;
         _READ_UNCOMMITTED.command = MySQLPacket.COM_QUERY;
@@ -351,16 +352,16 @@ public class MySQLConnection extends BackendConnection {
 
         private static CommandPacket getTxIsolationCommand(int txIsolation) {
             switch (txIsolation) {
-            case Isolations.READ_UNCOMMITTED:
-                return _READ_UNCOMMITTED;
-            case Isolations.READ_COMMITTED:
-                return _READ_COMMITTED;
-            case Isolations.REPEATED_READ:
-                return _REPEATED_READ;
-            case Isolations.SERIALIZABLE:
-                return _SERIALIZABLE;
-            default:
-                throw new UnknownTxIsolationException("txIsolation:" + txIsolation);
+                case Isolations.READ_UNCOMMITTED:
+                    return _READ_UNCOMMITTED;
+                case Isolations.READ_COMMITTED:
+                    return _READ_COMMITTED;
+                case Isolations.REPEATED_READ:
+                    return _REPEATED_READ;
+                case Isolations.SERIALIZABLE:
+                    return _SERIALIZABLE;
+                default:
+                    throw new UnknownTxIsolationException("txIsolation:" + txIsolation);
             }
         }
 
@@ -378,7 +379,7 @@ public class MySQLConnection extends BackendConnection {
 
     /**
      * @return if synchronization finished and execute-sql has already been sent
-     *         before
+     * before
      */
     public boolean syncAndExcute() throws UnsupportedEncodingException {
         StatusSync sync = statusSync;
@@ -396,7 +397,7 @@ public class MySQLConnection extends BackendConnection {
     }
 
     public void execute(RouteResultsetNode rrn, ServerConnection sc, boolean autocommit)
-            throws UnsupportedEncodingException {
+        throws UnsupportedEncodingException {
         StatusSync sync = new StatusSync(this, rrn, sc, autocommit);
         statusSync = sync;
         if (sync.isSync() || !sync.sync()) {
@@ -445,17 +446,17 @@ public class MySQLConnection extends BackendConnection {
     public void error(int errCode, Throwable t) {
         LOGGER.warn(toString(), t);
         switch (errCode) {
-        case ErrorCode.ERR_HANDLE_DATA:
-            // handle error ..
-            break;
-        case ErrorCode.ERR_PUT_WRITE_QUEUE:
-            // QS_TODO
-            break;
-        default:
-            close();
-            if (handler instanceof MySQLConnectionHandler) {
-                ((MySQLConnectionHandler) handler).connectionError(t);
-            }
+            case ErrorCode.ERR_HANDLE_DATA:
+                // handle error ..
+                break;
+            case ErrorCode.ERR_PUT_WRITE_QUEUE:
+                // QS_TODO
+                break;
+            default:
+                close();
+                if (handler instanceof MySQLConnectionHandler) {
+                    ((MySQLConnectionHandler) handler).connectionError(t);
+                }
         }
     }
 

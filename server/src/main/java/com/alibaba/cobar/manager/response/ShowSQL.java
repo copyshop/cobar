@@ -29,7 +29,7 @@ import com.alibaba.cobar.util.StringUtil;
 
 /**
  * 查询指定SQL ID所对应的SQL语句
- * 
+ *
  * @author wenfeng.cenwf 2011-4-20
  */
 public final class ShowSQL {
@@ -38,6 +38,7 @@ public final class ShowSQL {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;

@@ -32,7 +32,7 @@ import com.alibaba.cobar.util.StringUtil;
 
 /**
  * 查看schema信息
- * 
+ *
  * @author wenfeng.cenwf 2011-4-21
  * @author xianmao.hexm
  */
@@ -42,6 +42,7 @@ public final class ShowDatabase {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;

@@ -56,9 +56,13 @@ public class Identifier extends PrimaryExpression {
         return sb.toString();
     }
 
-    /** null if no parent */
+    /**
+     * null if no parent
+     */
     protected Identifier parent;
-    /** e.g. "id1", "`id1`" */
+    /**
+     * e.g. "id1", "`id1`"
+     */
     protected final String idText;
     protected final String idTextUpUnescape;
 
@@ -83,20 +87,26 @@ public class Identifier extends PrimaryExpression {
         return null;
     }
 
-    /** trim not happen because parent in given level is not exist */
+    /**
+     * trim not happen because parent in given level is not exist
+     */
     public static final int PARENT_ABSENT = 0;
-    /** trim happen */
+    /**
+     * trim happen
+     */
     public static final int PARENT_TRIMED = 1;
-    /** trim not happen because parent in given not equals to given name */
+    /**
+     * trim not happen because parent in given not equals to given name
+     */
     public static final int PARENT_IGNORED = 2;
 
     /**
-     * @param level At most how many levels left after trim, must be a positive
-     *            integer. e.g. level = 2 for "schema1.tb1.c1", "tb1.c1" is left
+     * @param level      At most how many levels left after trim, must be a positive
+     *                   integer. e.g. level = 2 for "schema1.tb1.c1", "tb1.c1" is left
      * @param trimSchema upper-case. Assumed that top trimmed parent is schema,
-     *            if that equals given schema, do not trim
+     *                   if that equals given schema, do not trim
      * @return {@link #PARENT_ABSENT} or {@link #PARENT_TRIMED}or
-     *         {@link #PARENT_IGNORED}
+     * {@link #PARENT_IGNORED}
      */
     public int trimParent(int level, String trimSchema) {
         Identifier id = this;

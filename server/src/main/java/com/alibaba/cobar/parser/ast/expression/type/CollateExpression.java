@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 /**
-
  * (created at 2011-1-20)
  */
 package com.alibaba.cobar.parser.ast.expression.type;
@@ -27,7 +26,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * <code>higherExpr 'COLLATE' collateName</code>
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class CollateExpression extends AbstractExpression {

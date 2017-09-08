@@ -52,23 +52,23 @@ public class MySQLDMLCallParser extends MySQLDMLParser {
         List<Expression> arguments;
         Expression expr = exprParser.expression();
         switch (lexer.token()) {
-        case PUNC_COMMA:
-            arguments = new LinkedList<Expression>();
-            arguments.add(expr);
-            for (; lexer.token() == PUNC_COMMA;) {
-                lexer.nextToken();
-                expr = exprParser.expression();
+            case PUNC_COMMA:
+                arguments = new LinkedList<Expression>();
                 arguments.add(expr);
-            }
-            match(PUNC_RIGHT_PAREN);
-            return new DMLCallStatement(procedure, arguments);
-        case PUNC_RIGHT_PAREN:
-            lexer.nextToken();
-            arguments = new ArrayList<Expression>(1);
-            arguments.add(expr);
-            return new DMLCallStatement(procedure, arguments);
-        default:
-            throw err("expect ',' or ')' after first argument of procedure");
+                for (; lexer.token() == PUNC_COMMA; ) {
+                    lexer.nextToken();
+                    expr = exprParser.expression();
+                    arguments.add(expr);
+                }
+                match(PUNC_RIGHT_PAREN);
+                return new DMLCallStatement(procedure, arguments);
+            case PUNC_RIGHT_PAREN:
+                lexer.nextToken();
+                arguments = new ArrayList<Expression>(1);
+                arguments.add(expr);
+                return new DMLCallStatement(procedure, arguments);
+            default:
+                throw err("expect ',' or ')' after first argument of procedure");
         }
     }
 

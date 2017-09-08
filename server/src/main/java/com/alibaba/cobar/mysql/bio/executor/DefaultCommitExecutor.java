@@ -127,8 +127,8 @@ public class DefaultCommitExecutor extends NodeExecutor {
             if (rrn == null) {
                 try {
                     getLogger().error(
-                            "null is contained in RoutResultsetNodes, source = " + session.getSource()
-                                    + ", bindChannel = " + target);
+                        "null is contained in RoutResultsetNodes, source = " + session.getSource()
+                            + ", bindChannel = " + target);
                 } catch (Exception e) {
                 }
                 continue;
@@ -170,43 +170,43 @@ public class DefaultCommitExecutor extends NodeExecutor {
         try {
             BinaryPacket bin = mc.commit();
             switch (bin.data[0]) {
-            case OkPacket.FIELD_COUNT:
-                mc.setRunning(false);
-                if (decrementCountBy(1)) {
-                    try {
-                        if (isFail.get()) { // some other tasks failed
-                            session.clear();
-                            source.writeErrMessage(ErrorCode.ER_YES, getErrorMessage() + " error!");
-                        } else { // all tasks are successful
-                            session.release();
-                            if (indicatedOK != null) {
-                                indicatedOK.write(source);
-                            } else {
-                                ByteBuffer buffer = source.allocate();
-                                source.write(bin.write(buffer, source));
+                case OkPacket.FIELD_COUNT:
+                    mc.setRunning(false);
+                    if (decrementCountBy(1)) {
+                        try {
+                            if (isFail.get()) { // some other tasks failed
+                                session.clear();
+                                source.writeErrMessage(ErrorCode.ER_YES, getErrorMessage() + " error!");
+                            } else { // all tasks are successful
+                                session.release();
+                                if (indicatedOK != null) {
+                                    indicatedOK.write(source);
+                                } else {
+                                    ByteBuffer buffer = source.allocate();
+                                    source.write(bin.write(buffer, source));
+                                }
                             }
+                        } catch (Exception e) {
+                            getLogger().warn("exception happens in success notification: " + source, e);
                         }
-                    } catch (Exception e) {
-                        getLogger().warn("exception happens in success notification: " + source, e);
                     }
-                }
-                break;
-            case ErrorPacket.FIELD_COUNT:
-                mc.setRunning(false);
-                isFail.set(true);
-                if (decrementCountBy(1)) {
-                    try {
-                        session.clear();
-                        getLogger().warn(mc.getErrLog(getErrorMessage(), mc.getErrMessage(bin), source));
-                        ByteBuffer buffer = source.allocate();
-                        source.write(bin.write(buffer, source));
-                    } catch (Exception e) {
-                        getLogger().warn("exception happens in failure notification: " + source, e);
+                    break;
+                case ErrorPacket.FIELD_COUNT:
+                    mc.setRunning(false);
+                    isFail.set(true);
+                    if (decrementCountBy(1)) {
+                        try {
+                            session.clear();
+                            getLogger().warn(mc.getErrLog(getErrorMessage(), mc.getErrMessage(bin), source));
+                            ByteBuffer buffer = source.allocate();
+                            source.write(bin.write(buffer, source));
+                        } catch (Exception e) {
+                            getLogger().warn("exception happens in failure notification: " + source, e);
+                        }
                     }
-                }
-                break;
-            default:
-                throw new UnknownPacketException(bin.toString());
+                    break;
+                default:
+                    throw new UnknownPacketException(bin.toString());
             }
         } catch (IOException e) {
             mc.close();

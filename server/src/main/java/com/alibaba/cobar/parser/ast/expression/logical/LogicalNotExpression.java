@@ -27,7 +27,7 @@ import com.alibaba.cobar.parser.util.ExprEvalUtils;
 
 /**
  * <code>'NOT' higherExpr</code>
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class LogicalNotExpression extends UnaryOperatorExpression {

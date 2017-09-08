@@ -32,7 +32,7 @@ import com.alibaba.cobar.util.StringUtil;
 
 /**
  * 查询执行时间超过设定阈值的SQL
- * 
+ *
  * @author wenfeng.cenwf 2011-4-20
  */
 public final class ShowSQLSlow {
@@ -41,6 +41,7 @@ public final class ShowSQLSlow {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;

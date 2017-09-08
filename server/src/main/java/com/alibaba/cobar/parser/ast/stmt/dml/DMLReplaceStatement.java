@@ -30,7 +30,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  */
 public class DMLReplaceStatement extends DMLInsertReplaceStatement {
     public static enum ReplaceMode {
-        /** default */
+        /**
+         * default
+         */
         UNDEF,
         LOW,
         DELAY

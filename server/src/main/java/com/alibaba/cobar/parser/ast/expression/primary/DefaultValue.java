@@ -22,7 +22,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * used as right oprand for assignment of INSERT and REPLACE
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class DefaultValue extends PrimaryExpression {

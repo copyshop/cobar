@@ -29,26 +29,26 @@ public class ClearHandler {
     public static void handle(String stmt, ManagerConnection c, int offset) {
         int rs = ManagerParseClear.parse(stmt, offset);
         switch (rs & 0xff) {
-        case ManagerParseClear.SLOW_DATANODE: {
-            String name = stmt.substring(rs >>> 8).trim();
-            if (StringUtil.isEmpty(name)) {
-                c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
-            } else {
-                ClearSlow.dataNode(c, name);
+            case ManagerParseClear.SLOW_DATANODE: {
+                String name = stmt.substring(rs >>> 8).trim();
+                if (StringUtil.isEmpty(name)) {
+                    c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
+                } else {
+                    ClearSlow.dataNode(c, name);
+                }
+                break;
             }
-            break;
-        }
-        case ManagerParseClear.SLOW_SCHEMA: {
-            String name = stmt.substring(rs >>> 8).trim();
-            if (StringUtil.isEmpty(name)) {
-                c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
-            } else {
-                ClearSlow.schema(c, name);
+            case ManagerParseClear.SLOW_SCHEMA: {
+                String name = stmt.substring(rs >>> 8).trim();
+                if (StringUtil.isEmpty(name)) {
+                    c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
+                } else {
+                    ClearSlow.schema(c, name);
+                }
+                break;
             }
-            break;
-        }
-        default:
-            c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
+            default:
+                c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
         }
     }
 }

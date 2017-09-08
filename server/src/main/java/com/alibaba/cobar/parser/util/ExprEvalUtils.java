@@ -29,7 +29,7 @@ import com.alibaba.cobar.parser.recognizer.mysql.lexer.MySQLLexer;
 
 /**
  * adapt Java's expression rule into MySQL's
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class ExprEvalUtils {
@@ -39,7 +39,8 @@ public class ExprEvalUtils {
     private static final int CLASS_MAP_BIG_DECIMAL = 4;
     private static final int CLASS_MAP_LONG = 5;
     private static final Map<Class<? extends Number>, Integer> classMap = new HashMap<Class<? extends Number>, Integer>(
-            5);
+        5);
+
     static {
         classMap.put(Double.class, CLASS_MAP_DOUBLE);
         classMap.put(Float.class, CLASS_MAP_FLOAT);
@@ -68,18 +69,18 @@ public class ExprEvalUtils {
             return num.intValue() != 0;
         }
         switch (classType) {
-        case CLASS_MAP_BIG_DECIMAL:
-            return BigDecimal.ZERO.compareTo((BigDecimal) num) != 0;
-        case CLASS_MAP_BIG_ING:
-            return BigInteger.ZERO.compareTo((BigInteger) num) != 0;
-        case CLASS_MAP_DOUBLE:
-            return ((Double) num).doubleValue() != 0d;
-        case CLASS_MAP_FLOAT:
-            return ((Float) num).floatValue() != 0f;
-        case CLASS_MAP_LONG:
-            return ((Long) num).longValue() != 0L;
-        default:
-            throw new IllegalArgumentException("unsupported number type: " + num.getClass());
+            case CLASS_MAP_BIG_DECIMAL:
+                return BigDecimal.ZERO.compareTo((BigDecimal) num) != 0;
+            case CLASS_MAP_BIG_ING:
+                return BigInteger.ZERO.compareTo((BigInteger) num) != 0;
+            case CLASS_MAP_DOUBLE:
+                return ((Double) num).doubleValue() != 0d;
+            case CLASS_MAP_FLOAT:
+                return ((Float) num).floatValue() != 0f;
+            case CLASS_MAP_LONG:
+                return ((Long) num).longValue() != 0L;
+            default:
+                throw new IllegalArgumentException("unsupported number type: " + num.getClass());
         }
     }
 
@@ -146,24 +147,24 @@ public class ExprEvalUtils {
 
     private static Number upTolevel(Number num, int level) {
         switch (level) {
-        case NUM_INT:
-            if (num instanceof Integer)
-                return num;
-            return num.intValue();
-        case NUM_LONG:
-            if (num instanceof Long)
-                return num;
-            return num.longValue();
-        case NUM_BIG_INTEGER:
-            if (num instanceof BigInteger)
-                return num;
-            return new BigInteger(num.toString());
-        case NUM_BIG_DECIMAL:
-            if (num instanceof BigDecimal)
-                return num;
-            return new BigDecimal(num.toString());
-        default:
-            throw new IllegalArgumentException("unsupported number level: " + level);
+            case NUM_INT:
+                if (num instanceof Integer)
+                    return num;
+                return num.intValue();
+            case NUM_LONG:
+                if (num instanceof Long)
+                    return num;
+                return num.longValue();
+            case NUM_BIG_INTEGER:
+                if (num instanceof BigInteger)
+                    return num;
+                return new BigInteger(num.toString());
+            case NUM_BIG_DECIMAL:
+                if (num instanceof BigDecimal)
+                    return num;
+                return new BigDecimal(num.toString());
+            default:
+                throw new IllegalArgumentException("unsupported number level: " + level);
         }
     }
 
@@ -197,12 +198,12 @@ public class ExprEvalUtils {
         try {
             MySQLLexer lexer = new MySQLLexer(str);
             switch (lexer.token()) {
-            case LITERAL_NUM_PURE_DIGIT:
-                return lexer.integerValue();
-            case LITERAL_NUM_MIX_DIGIT:
-                return lexer.decimalValue();
-            default:
-                throw new IllegalArgumentException("unrecognized number: " + str);
+                case LITERAL_NUM_PURE_DIGIT:
+                    return lexer.integerValue();
+                case LITERAL_NUM_MIX_DIGIT:
+                    return lexer.decimalValue();
+                default:
+                    throw new IllegalArgumentException("unrecognized number: " + str);
             }
         } catch (SQLSyntaxErrorException e) {
             throw new IllegalArgumentException(e);

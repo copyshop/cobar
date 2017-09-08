@@ -116,9 +116,9 @@ public final class MySQLDataNode {
             for (PlaceHolder ph : plist) {
                 final String content = ph.getName();
                 final int low = Integer.parseInt(content.substring(content.indexOf('(') + 1, content.indexOf(','))
-                                                        .trim());
+                    .trim());
                 final int high = Integer.parseInt(content.substring(content.indexOf(',') + 1, content.indexOf(')'))
-                                                         .trim());
+                    .trim());
                 phm.put(ph, new Object() {
                     private Random rnd = new Random();
 

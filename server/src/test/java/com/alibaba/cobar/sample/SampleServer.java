@@ -27,7 +27,7 @@ import com.alibaba.cobar.util.TimeUtil;
 
 /**
  * 服务器组装示例
- * 
+ *
  * @author xianmao.hexm
  */
 public class SampleServer {

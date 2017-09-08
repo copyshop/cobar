@@ -17,7 +17,7 @@ package com.alibaba.cobar.util;
 
 /**
  * 弱精度的计时器，考虑性能不使用同步策略。
- * 
+ *
  * @author xianmao.hexm 2011-1-18 下午06:10:55
  */
 public class TimeUtil {

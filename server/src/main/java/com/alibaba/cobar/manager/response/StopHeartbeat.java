@@ -30,7 +30,7 @@ import com.alibaba.cobar.util.TimeUtil;
 
 /**
  * 暂停数据节点心跳检测
- * 
+ *
  * @author xianmao.hexm
  */
 public final class StopHeartbeat {

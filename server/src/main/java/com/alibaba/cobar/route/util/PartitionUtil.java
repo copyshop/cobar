@@ -19,7 +19,7 @@ import com.alibaba.cobar.util.StringUtil;
 
 /**
  * 数据分区工具
- * 
+ *
  * @author xianmao.hexm 2009-3-16 上午11:56:45
  */
 public final class PartitionUtil {

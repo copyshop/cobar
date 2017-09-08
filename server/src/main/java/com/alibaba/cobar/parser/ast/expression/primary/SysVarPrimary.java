@@ -26,7 +26,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  */
 public class SysVarPrimary extends VariableExpression {
     private final VariableScope scope;
-    /** excluding starting "@@", '`' might be included */
+    /**
+     * excluding starting "@@", '`' might be included
+     */
     private final String varText;
     private final String varTextUp;
 

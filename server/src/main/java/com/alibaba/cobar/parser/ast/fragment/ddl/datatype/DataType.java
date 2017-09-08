@@ -27,7 +27,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * <code>spatial data type</code> for MyISAM is not supported
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class DataType implements ASTNode {
@@ -102,7 +102,9 @@ public class DataType implements ASTNode {
     private final DataTypeName typeName;
     private final boolean unsigned;
     private final boolean zerofill;
-    /** for text only */
+    /**
+     * for text only
+     */
     private final boolean binary;
     private final Expression length;
     private final Expression decimals;

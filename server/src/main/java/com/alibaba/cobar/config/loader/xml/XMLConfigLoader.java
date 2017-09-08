@@ -38,18 +38,30 @@ import com.alibaba.cobar.config.model.rule.RuleConfig;
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class XMLConfigLoader implements ConfigLoader {
-    /** unmodifiable */
+    /**
+     * unmodifiable
+     */
     private final Set<RuleConfig> rules;
-    /** unmodifiable */
+    /**
+     * unmodifiable
+     */
     private final Map<String, RuleAlgorithm> functions;
-    /** unmodifiable */
+    /**
+     * unmodifiable
+     */
     private final Map<String, DataSourceConfig> dataSources;
-    /** unmodifiable */
+    /**
+     * unmodifiable
+     */
     private final Map<String, DataNodeConfig> dataNodes;
-    /** unmodifiable */
+    /**
+     * unmodifiable
+     */
     private final Map<String, SchemaConfig> schemas;
     private final SystemConfig system;
-    /** unmodifiable */
+    /**
+     * unmodifiable
+     */
     private final Map<String, UserConfig> users;
     private final QuarantineConfig quarantine;
     private final ClusterConfig cluster;

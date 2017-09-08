@@ -58,20 +58,20 @@ public class MySQLDetectorAuthenticator implements NIOHandler {
             source.authenticate();
         } else {
             switch (data[4]) {
-            case OkPacket.FIELD_COUNT:
-                source.setHandler(new MySQLDetectorHandler(source));
-                source.setAuthenticated(true);
-                source.heartbeat();// 成功后发起心跳。
-                break;
-            case ErrorPacket.FIELD_COUNT:
-                ErrorPacket err = new ErrorPacket();
-                err.read(data);
-                throw new RuntimeException(new String(err.message));
-            case EOFPacket.FIELD_COUNT:
-                auth323(data[3], hsp.seed);
-                break;
-            default:
-                throw new RuntimeException("Unknown packet");
+                case OkPacket.FIELD_COUNT:
+                    source.setHandler(new MySQLDetectorHandler(source));
+                    source.setAuthenticated(true);
+                    source.heartbeat();// 成功后发起心跳。
+                    break;
+                case ErrorPacket.FIELD_COUNT:
+                    ErrorPacket err = new ErrorPacket();
+                    err.read(data);
+                    throw new RuntimeException(new String(err.message));
+                case EOFPacket.FIELD_COUNT:
+                    auth323(data[3], hsp.seed);
+                    break;
+                default:
+                    throw new RuntimeException("Unknown packet");
             }
         }
     }

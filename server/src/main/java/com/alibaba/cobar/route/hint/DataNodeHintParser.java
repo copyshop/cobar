@@ -31,18 +31,18 @@ public final class DataNodeHintParser extends HintParser {
     @Override
     public void process(CobarHint hint, String hintName, String sql) throws SQLSyntaxErrorException {
         if (currentChar(hint, sql) == '[') {
-            for (;;) {
+            for (; ; ) {
                 nextChar(hint, sql);
                 Pair<Integer, Integer> pair = parseDataNode(hint, sql);
                 hint.addDataNode(pair.getKey(), pair.getValue());
                 switch (currentChar(hint, sql)) {
-                case ',':
-                    continue;
-                case ']':
-                    nextChar(hint, sql);
-                    return;
-                default:
-                    throw new SQLSyntaxErrorException("err for dataNodeId: " + sql);
+                    case ',':
+                        continue;
+                    case ']':
+                        nextChar(hint, sql);
+                        return;
+                    default:
+                        throw new SQLSyntaxErrorException("err for dataNodeId: " + sql);
                 }
             }
         } else {

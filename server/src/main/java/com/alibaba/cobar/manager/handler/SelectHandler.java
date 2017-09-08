@@ -31,14 +31,14 @@ public final class SelectHandler {
 
     public static void handle(String stmt, ManagerConnection c, int offset) {
         switch (ManagerParseSelect.parse(stmt, offset)) {
-        case VERSION_COMMENT:
-            SelectVersionComment.execute(c);
-            break;
-        case SESSION_AUTO_INCREMENT:
-            SelectSessionAutoIncrement.execute(c);
-            break;
-        default:
-            c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
+            case VERSION_COMMENT:
+                SelectVersionComment.execute(c);
+                break;
+            case SESSION_AUTO_INCREMENT:
+                SelectSessionAutoIncrement.execute(c);
+                break;
+            default:
+                c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
         }
     }
 

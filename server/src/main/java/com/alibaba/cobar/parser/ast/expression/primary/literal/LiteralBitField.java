@@ -28,7 +28,7 @@ public class LiteralBitField extends Literal {
     private final String introducer;
 
     /**
-     * @param introducer e.g. "_latin1"
+     * @param introducer   e.g. "_latin1"
      * @param bitFieldText e.g. "01010"
      */
     public LiteralBitField(String introducer, String bitFieldText) {

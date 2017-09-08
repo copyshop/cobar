@@ -23,7 +23,7 @@ import com.alibaba.cobar.parser.ast.expression.UnaryOperatorExpression;
 
 /**
  * <code>'BINARY' higherExpr</code>
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class CastBinaryExpression extends UnaryOperatorExpression {

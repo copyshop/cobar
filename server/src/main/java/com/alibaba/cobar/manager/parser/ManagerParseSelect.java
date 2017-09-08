@@ -33,16 +33,16 @@ public final class ManagerParseSelect {
         int i = offset;
         for (; i < stmt.length(); i++) {
             switch (stmt.charAt(i)) {
-            case ' ':
-                continue;
-            case '/':
-            case '#':
-                i = ParseUtil.comment(stmt, i);
-                continue;
-            case '@':
-                return select2Check(stmt, i);
-            default:
-                return OTHER;
+                case ' ':
+                    continue;
+                case '/':
+                case '#':
+                    i = ParseUtil.comment(stmt, i);
+                    continue;
+                case '@':
+                    return select2Check(stmt, i);
+                default:
+                    return OTHER;
             }
         }
         return OTHER;
@@ -52,14 +52,14 @@ public final class ManagerParseSelect {
         if (stmt.length() > ++offset && stmt.charAt(offset) == '@') {
             if (stmt.length() > ++offset) {
                 switch (stmt.charAt(offset)) {
-                case 'S':
-                case 's':
-                    return select2SCheck(stmt, offset);
-                case 'V':
-                case 'v':
-                    return select2VCheck(stmt, offset);
-                default:
-                    return OTHER;
+                    case 'S':
+                    case 's':
+                        return select2SCheck(stmt, offset);
+                    case 'V':
+                    case 'v':
+                        return select2VCheck(stmt, offset);
+                    default:
+                        return OTHER;
                 }
             }
         }

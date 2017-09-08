@@ -28,7 +28,7 @@ import com.alibaba.cobar.net.mysql.Reply323Packet;
 
 /**
  * MySQL 验证处理器
- * 
+ *
  * @author xianmao.hexm
  */
 public class MySQLConnectionAuthenticator implements NIOHandler {
@@ -69,22 +69,22 @@ public class MySQLConnectionAuthenticator implements NIOHandler {
                 source.authenticate();
             } else { // 处理认证结果
                 switch (data[4]) {
-                case OkPacket.FIELD_COUNT:
-                    source.setHandler(new MySQLConnectionHandler(source));
-                    source.setAuthenticated(true);
-                    if (listener != null) {
-                        listener.connectionAcquired(source);
-                    }
-                    break;
-                case ErrorPacket.FIELD_COUNT:
-                    ErrorPacket err = new ErrorPacket();
-                    err.read(data);
-                    throw new RuntimeException(new String(err.message));
-                case EOFPacket.FIELD_COUNT:
-                    auth323(data[3]);
-                    break;
-                default:
-                    throw new RuntimeException("Unknown Packet!");
+                    case OkPacket.FIELD_COUNT:
+                        source.setHandler(new MySQLConnectionHandler(source));
+                        source.setAuthenticated(true);
+                        if (listener != null) {
+                            listener.connectionAcquired(source);
+                        }
+                        break;
+                    case ErrorPacket.FIELD_COUNT:
+                        ErrorPacket err = new ErrorPacket();
+                        err.read(data);
+                        throw new RuntimeException(new String(err.message));
+                    case EOFPacket.FIELD_COUNT:
+                        auth323(data[3]);
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown Packet!");
                 }
             }
         } catch (RuntimeException e) {

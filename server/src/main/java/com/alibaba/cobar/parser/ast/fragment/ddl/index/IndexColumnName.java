@@ -28,7 +28,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  */
 public class IndexColumnName implements ASTNode {
     private final Identifier columnName;
-    /** null is possible */
+    /**
+     * null is possible
+     */
     private final Expression length;
     private final boolean asc;
 

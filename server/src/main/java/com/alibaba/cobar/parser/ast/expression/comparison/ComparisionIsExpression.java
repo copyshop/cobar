@@ -43,9 +43,9 @@ public class ComparisionIsExpression extends AbstractExpression implements Repla
 
     /**
      * @param mode {@link #IS_NULL} or {@link #IS_TRUE} or {@link #IS_FALSE} or
-     *            {@link #IS_UNKNOWN} or {@link #IS_NOT_NULL} or
-     *            {@link #IS_NOT_TRUE} or {@link #IS_NOT_FALSE} or
-     *            {@link #IS_NOT_UNKNOWN}
+     *             {@link #IS_UNKNOWN} or {@link #IS_NOT_NULL} or
+     *             {@link #IS_NOT_TRUE} or {@link #IS_NOT_FALSE} or
+     *             {@link #IS_NOT_UNKNOWN}
      */
     public ComparisionIsExpression(Expression operand, int mode) {
         this.operand = operand;

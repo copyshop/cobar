@@ -17,7 +17,7 @@ package com.alibaba.cobar.exception;
 
 /**
  * 未知事物隔离级别异常
- * 
+ *
  * @author xianmao.hexm
  */
 public class UnknownTxIsolationException extends RuntimeException {

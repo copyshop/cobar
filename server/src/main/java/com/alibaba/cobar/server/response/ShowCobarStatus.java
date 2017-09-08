@@ -32,7 +32,7 @@ import com.alibaba.cobar.server.ServerConnection;
 
 /**
  * 加入了offline状态推送，用于心跳语句。
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  * @author xianmao.hexm
  */
@@ -45,6 +45,7 @@ public class ShowCobarStatus {
     private static final RowDataPacket status = new RowDataPacket(FIELD_COUNT);
     private static final EOFPacket lastEof = new EOFPacket();
     private static final ErrorPacket error = PacketUtil.getShutdown();
+
     static {
         int i = 0;
         byte packetId = 0;

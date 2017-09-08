@@ -27,7 +27,7 @@ import com.alibaba.cobar.parser.util.CharTypes;
 
 /**
  * support MySQL 5.5 token
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class MySQLLexer {
@@ -49,29 +49,43 @@ public class MySQLLexer {
     private final static byte EOI = 0x1A;
 
     protected final char[] sql;
-    /** always be {@link #sql}.length - 1 */
+    /**
+     * always be {@link #sql}.length - 1
+     */
     protected final int eofIndex;
 
-    /** current index of {@link #sql} */
+    /**
+     * current index of {@link #sql}
+     */
     protected int curIndex = -1;
-    /** always be {@link #sql}[{@link #curIndex}] */
+    /**
+     * always be {@link #sql}[{@link #curIndex}]
+     */
     protected char ch;
 
     // /** current token, set by {@link #nextToken()} */
     // private int tokenPos = 0;
     private MySQLToken token;
-    /** keyword only */
+    /**
+     * keyword only
+     */
     private MySQLToken tokenCache;
     private MySQLToken tokenCache2;
-    /** 1 represents first parameter */
+    /**
+     * 1 represents first parameter
+     */
     private int paramIndex = 0;
 
-    /** A character buffer for literals. */
+    /**
+     * A character buffer for literals.
+     */
     protected final static ThreadLocal<char[]> sbufRef = new ThreadLocal<char[]>();
     protected char[] sbuf;
 
     private String stringValue;
-    /** make sense only for {@link MySQLToken#IDENTIFIER} */
+    /**
+     * make sense only for {@link MySQLToken#IDENTIFIER}
+     */
     private String stringValueUppercase;
 
     /**
@@ -213,240 +227,240 @@ public class MySQLLexer {
 
     private MySQLToken nextTokenInternal() throws SQLSyntaxErrorException {
         switch (ch) {
-        case '0':
-            switch (sql[curIndex + 1]) {
-            case 'x':
-                scanChar(2);
-                scanHexaDecimal(false);
-                return token;
-            case 'b':
-                scanChar(2);
-                scanBitField(false);
-                return token;
-            }
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            scanNumber();
-            return token;
-        case '.':
-            if (CharTypes.isDigit(sql[curIndex + 1])) {
+            case '0':
+                switch (sql[curIndex + 1]) {
+                    case 'x':
+                        scanChar(2);
+                        scanHexaDecimal(false);
+                        return token;
+                    case 'b':
+                        scanChar(2);
+                        scanBitField(false);
+                        return token;
+                }
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
                 scanNumber();
-            } else {
-                scanChar();
-                token = MySQLToken.PUNC_DOT;
-            }
-            return token;
-        case '\'':
-        case '"':
-            scanString();
-            return token;
-        case 'n':
-        case 'N':
-            if (sql[curIndex + 1] == '\'') {
-                scanChar();
+                return token;
+            case '.':
+                if (CharTypes.isDigit(sql[curIndex + 1])) {
+                    scanNumber();
+                } else {
+                    scanChar();
+                    token = MySQLToken.PUNC_DOT;
+                }
+                return token;
+            case '\'':
+            case '"':
                 scanString();
-                token = MySQLToken.LITERAL_NCHARS;
                 return token;
-            }
-            scanIdentifier();
-            return token;
-        case 'x':
-        case 'X':
-            if (sql[curIndex + 1] == '\'') {
-                scanChar(2);
-                scanHexaDecimal(true);
-                return token;
-            }
-            scanIdentifier();
-            return token;
-        case 'b':
-        case 'B':
-            if (sql[curIndex + 1] == '\'') {
-                scanChar(2);
-                scanBitField(true);
-                return token;
-            }
-            scanIdentifier();
-            return token;
-        case '@':
-            if (sql[curIndex + 1] == '@') {
-                scanSystemVariable();
-                return token;
-            }
-            scanUserVariable();
-            return token;
-        case '?':
-            scanChar();
-            token = MySQLToken.QUESTION_MARK;
-            ++paramIndex;
-            return token;
-        case '(':
-            scanChar();
-            token = MySQLToken.PUNC_LEFT_PAREN;
-            return token;
-        case ')':
-            scanChar();
-            token = MySQLToken.PUNC_RIGHT_PAREN;
-            return token;
-        case '[':
-            scanChar();
-            token = MySQLToken.PUNC_LEFT_BRACKET;
-            return token;
-        case ']':
-            scanChar();
-            token = MySQLToken.PUNC_RIGHT_BRACKET;
-            return token;
-        case '{':
-            scanChar();
-            token = MySQLToken.PUNC_LEFT_BRACE;
-            return token;
-        case '}':
-            scanChar();
-            token = MySQLToken.PUNC_RIGHT_BRACE;
-            return token;
-        case ',':
-            scanChar();
-            token = MySQLToken.PUNC_COMMA;
-            return token;
-        case ';':
-            scanChar();
-            token = MySQLToken.PUNC_SEMICOLON;
-            return token;
-        case ':':
-            if (sql[curIndex + 1] == '=') {
-                scanChar(2);
-                token = MySQLToken.OP_ASSIGN;
-                return token;
-            }
-            scanChar();
-            token = MySQLToken.PUNC_COLON;
-            return token;
-        case '=':
-            scanChar();
-            token = MySQLToken.OP_EQUALS;
-            return token;
-        case '~':
-            scanChar();
-            token = MySQLToken.OP_TILDE;
-            return token;
-        case '*':
-            if (inCStyleComment && sql[curIndex + 1] == '/') {
-                inCStyleComment = false;
-                inCStyleCommentIgnore = false;
-                scanChar(2);
-                token = MySQLToken.PUNC_C_STYLE_COMMENT_END;
-                return token;
-            }
-            scanChar();
-            token = MySQLToken.OP_ASTERISK;
-            return token;
-        case '-':
-            scanChar();
-            token = MySQLToken.OP_MINUS;
-            return token;
-        case '+':
-            scanChar();
-            token = MySQLToken.OP_PLUS;
-            return token;
-        case '^':
-            scanChar();
-            token = MySQLToken.OP_CARET;
-            return token;
-        case '/':
-            scanChar();
-            token = MySQLToken.OP_SLASH;
-            return token;
-        case '%':
-            scanChar();
-            token = MySQLToken.OP_PERCENT;
-            return token;
-        case '&':
-            if (sql[curIndex + 1] == '&') {
-                scanChar(2);
-                token = MySQLToken.OP_LOGICAL_AND;
-                return token;
-            }
-            scanChar();
-            token = MySQLToken.OP_AMPERSAND;
-            return token;
-        case '|':
-            if (sql[curIndex + 1] == '|') {
-                scanChar(2);
-                token = MySQLToken.OP_LOGICAL_OR;
-                return token;
-            }
-            scanChar();
-            token = MySQLToken.OP_VERTICAL_BAR;
-            return token;
-        case '!':
-            if (sql[curIndex + 1] == '=') {
-                scanChar(2);
-                token = MySQLToken.OP_NOT_EQUALS;
-                return token;
-            }
-            scanChar();
-            token = MySQLToken.OP_EXCLAMATION;
-            return token;
-        case '>':
-            switch (sql[curIndex + 1]) {
-            case '=':
-                scanChar(2);
-                token = MySQLToken.OP_GREATER_OR_EQUALS;
-                return token;
-            case '>':
-                scanChar(2);
-                token = MySQLToken.OP_RIGHT_SHIFT;
-                return token;
-            default:
-                scanChar();
-                token = MySQLToken.OP_GREATER_THAN;
-                return token;
-            }
-        case '<':
-            switch (sql[curIndex + 1]) {
-            case '=':
-                if (sql[curIndex + 2] == '>') {
-                    scanChar(3);
-                    token = MySQLToken.OP_NULL_SAFE_EQUALS;
+            case 'n':
+            case 'N':
+                if (sql[curIndex + 1] == '\'') {
+                    scanChar();
+                    scanString();
+                    token = MySQLToken.LITERAL_NCHARS;
                     return token;
                 }
-                scanChar(2);
-                token = MySQLToken.OP_LESS_OR_EQUALS;
+                scanIdentifier();
+                return token;
+            case 'x':
+            case 'X':
+                if (sql[curIndex + 1] == '\'') {
+                    scanChar(2);
+                    scanHexaDecimal(true);
+                    return token;
+                }
+                scanIdentifier();
+                return token;
+            case 'b':
+            case 'B':
+                if (sql[curIndex + 1] == '\'') {
+                    scanChar(2);
+                    scanBitField(true);
+                    return token;
+                }
+                scanIdentifier();
+                return token;
+            case '@':
+                if (sql[curIndex + 1] == '@') {
+                    scanSystemVariable();
+                    return token;
+                }
+                scanUserVariable();
+                return token;
+            case '?':
+                scanChar();
+                token = MySQLToken.QUESTION_MARK;
+                ++paramIndex;
+                return token;
+            case '(':
+                scanChar();
+                token = MySQLToken.PUNC_LEFT_PAREN;
+                return token;
+            case ')':
+                scanChar();
+                token = MySQLToken.PUNC_RIGHT_PAREN;
+                return token;
+            case '[':
+                scanChar();
+                token = MySQLToken.PUNC_LEFT_BRACKET;
+                return token;
+            case ']':
+                scanChar();
+                token = MySQLToken.PUNC_RIGHT_BRACKET;
+                return token;
+            case '{':
+                scanChar();
+                token = MySQLToken.PUNC_LEFT_BRACE;
+                return token;
+            case '}':
+                scanChar();
+                token = MySQLToken.PUNC_RIGHT_BRACE;
+                return token;
+            case ',':
+                scanChar();
+                token = MySQLToken.PUNC_COMMA;
+                return token;
+            case ';':
+                scanChar();
+                token = MySQLToken.PUNC_SEMICOLON;
+                return token;
+            case ':':
+                if (sql[curIndex + 1] == '=') {
+                    scanChar(2);
+                    token = MySQLToken.OP_ASSIGN;
+                    return token;
+                }
+                scanChar();
+                token = MySQLToken.PUNC_COLON;
+                return token;
+            case '=':
+                scanChar();
+                token = MySQLToken.OP_EQUALS;
+                return token;
+            case '~':
+                scanChar();
+                token = MySQLToken.OP_TILDE;
+                return token;
+            case '*':
+                if (inCStyleComment && sql[curIndex + 1] == '/') {
+                    inCStyleComment = false;
+                    inCStyleCommentIgnore = false;
+                    scanChar(2);
+                    token = MySQLToken.PUNC_C_STYLE_COMMENT_END;
+                    return token;
+                }
+                scanChar();
+                token = MySQLToken.OP_ASTERISK;
+                return token;
+            case '-':
+                scanChar();
+                token = MySQLToken.OP_MINUS;
+                return token;
+            case '+':
+                scanChar();
+                token = MySQLToken.OP_PLUS;
+                return token;
+            case '^':
+                scanChar();
+                token = MySQLToken.OP_CARET;
+                return token;
+            case '/':
+                scanChar();
+                token = MySQLToken.OP_SLASH;
+                return token;
+            case '%':
+                scanChar();
+                token = MySQLToken.OP_PERCENT;
+                return token;
+            case '&':
+                if (sql[curIndex + 1] == '&') {
+                    scanChar(2);
+                    token = MySQLToken.OP_LOGICAL_AND;
+                    return token;
+                }
+                scanChar();
+                token = MySQLToken.OP_AMPERSAND;
+                return token;
+            case '|':
+                if (sql[curIndex + 1] == '|') {
+                    scanChar(2);
+                    token = MySQLToken.OP_LOGICAL_OR;
+                    return token;
+                }
+                scanChar();
+                token = MySQLToken.OP_VERTICAL_BAR;
+                return token;
+            case '!':
+                if (sql[curIndex + 1] == '=') {
+                    scanChar(2);
+                    token = MySQLToken.OP_NOT_EQUALS;
+                    return token;
+                }
+                scanChar();
+                token = MySQLToken.OP_EXCLAMATION;
                 return token;
             case '>':
-                scanChar(2);
-                token = MySQLToken.OP_LESS_OR_GREATER;
-                return token;
+                switch (sql[curIndex + 1]) {
+                    case '=':
+                        scanChar(2);
+                        token = MySQLToken.OP_GREATER_OR_EQUALS;
+                        return token;
+                    case '>':
+                        scanChar(2);
+                        token = MySQLToken.OP_RIGHT_SHIFT;
+                        return token;
+                    default:
+                        scanChar();
+                        token = MySQLToken.OP_GREATER_THAN;
+                        return token;
+                }
             case '<':
-                scanChar(2);
-                token = MySQLToken.OP_LEFT_SHIFT;
+                switch (sql[curIndex + 1]) {
+                    case '=':
+                        if (sql[curIndex + 2] == '>') {
+                            scanChar(3);
+                            token = MySQLToken.OP_NULL_SAFE_EQUALS;
+                            return token;
+                        }
+                        scanChar(2);
+                        token = MySQLToken.OP_LESS_OR_EQUALS;
+                        return token;
+                    case '>':
+                        scanChar(2);
+                        token = MySQLToken.OP_LESS_OR_GREATER;
+                        return token;
+                    case '<':
+                        scanChar(2);
+                        token = MySQLToken.OP_LEFT_SHIFT;
+                        return token;
+                    default:
+                        scanChar();
+                        token = MySQLToken.OP_LESS_THAN;
+                        return token;
+                }
+            case '`':
+                scanIdentifierWithAccent();
                 return token;
             default:
-                scanChar();
-                token = MySQLToken.OP_LESS_THAN;
+                if (CharTypes.isIdentifierChar(ch)) {
+                    scanIdentifier();
+                } else if (eof()) {
+                    token = MySQLToken.EOF;
+                    curIndex = eofIndex;
+                    // tokenPos = curIndex;
+                } else {
+                    throw err("unsupported character: " + ch);
+                }
                 return token;
-            }
-        case '`':
-            scanIdentifierWithAccent();
-            return token;
-        default:
-            if (CharTypes.isIdentifierChar(ch)) {
-                scanIdentifier();
-            } else if (eof()) {
-                token = MySQLToken.EOF;
-                curIndex = eofIndex;
-                // tokenPos = curIndex;
-            } else {
-                throw err("unsupported character: " + ch);
-            }
-            return token;
         }
     }
 
@@ -487,52 +501,54 @@ public class MySQLLexer {
 
         boolean dq = false;
         switch (scanChar()) {
-        case '"':
-            dq = true;
-        case '\'':
-            loop1: for (++sizeCache;; ++sizeCache) {
-                switch (scanChar()) {
-                case '\\':
-                    ++sizeCache;
+            case '"':
+                dq = true;
+            case '\'':
+                loop1:
+                for (++sizeCache; ; ++sizeCache) {
+                    switch (scanChar()) {
+                        case '\\':
+                            ++sizeCache;
+                            scanChar();
+                            break;
+                        case '"':
+                            if (dq) {
+                                ++sizeCache;
+                                if (scanChar() == '"') {
+                                    break;
+                                }
+                                break loop1;
+                            }
+                            break;
+                        case '\'':
+                            if (!dq) {
+                                ++sizeCache;
+                                if (scanChar() == '\'') {
+                                    break;
+                                }
+                                break loop1;
+                            }
+                            break;
+                    }
+                }
+                break;
+            case '`':
+                loop1:
+                for (++sizeCache; ; ++sizeCache) {
+                    switch (scanChar()) {
+                        case '`':
+                            ++sizeCache;
+                            if (scanChar() == '`') {
+                                break;
+                            }
+                            break loop1;
+                    }
+                }
+                break;
+            default:
+                for (; CharTypes.isIdentifierChar(ch) || ch == '.'; ++sizeCache) {
                     scanChar();
-                    break;
-                case '"':
-                    if (dq) {
-                        ++sizeCache;
-                        if (scanChar() == '"') {
-                            break;
-                        }
-                        break loop1;
-                    }
-                    break;
-                case '\'':
-                    if (!dq) {
-                        ++sizeCache;
-                        if (scanChar() == '\'') {
-                            break;
-                        }
-                        break loop1;
-                    }
-                    break;
                 }
-            }
-            break;
-        case '`':
-            loop1: for (++sizeCache;; ++sizeCache) {
-                switch (scanChar()) {
-                case '`':
-                    ++sizeCache;
-                    if (scanChar() == '`') {
-                        break;
-                    }
-                    break loop1;
-                }
-            }
-            break;
-        default:
-            for (; CharTypes.isIdentifierChar(ch) || ch == '.'; ++sizeCache) {
-                scanChar();
-            }
         }
 
         stringValue = new String(sql, offsetCache, sizeCache);
@@ -549,7 +565,7 @@ public class MySQLLexer {
         sizeCache = 0;
         scanChar(2);
         if (ch == '`') {
-            for (++sizeCache;; ++sizeCache) {
+            for (++sizeCache; ; ++sizeCache) {
                 if (scanChar() == '`') {
                     ++sizeCache;
                     if (scanChar() != '`') {
@@ -579,55 +595,57 @@ public class MySQLLexer {
         int size = 1;
         sbuf[0] = '\'';
         if (dq) {
-            loop: while (true) {
+            loop:
+            while (true) {
                 switch (scanChar()) {
-                case '\'':
-                    putChar('\\', size++);
-                    putChar('\'', size++);
-                    break;
-                case '\\':
-                    putChar('\\', size++);
-                    putChar(scanChar(), size++);
-                    continue;
-                case '"':
-                    if (sql[curIndex + 1] == '"') {
-                        putChar('"', size++);
-                        scanChar();
-                        continue;
-                    }
-                    putChar('\'', size++);
-                    scanChar();
-                    break loop;
-                default:
-                    if (eof()) {
-                        throw err("unclosed string");
-                    }
-                    putChar(ch, size++);
-                    continue;
-                }
-            }
-        } else {
-            loop: while (true) {
-                switch (scanChar()) {
-                case '\\':
-                    putChar('\\', size++);
-                    putChar(scanChar(), size++);
-                    continue;
-                case '\'':
-                    if (sql[curIndex + 1] == '\'') {
+                    case '\'':
+                        putChar('\\', size++);
+                        putChar('\'', size++);
+                        break;
+                    case '\\':
                         putChar('\\', size++);
                         putChar(scanChar(), size++);
                         continue;
-                    }
-                    putChar('\'', size++);
-                    scanChar();
-                    break loop;
-                default:
-                    if (eof()) {
-                        throw err("unclosed string");
-                    }
-                    putChar(ch, size++);
-                    continue;
+                    case '"':
+                        if (sql[curIndex + 1] == '"') {
+                            putChar('"', size++);
+                            scanChar();
+                            continue;
+                        }
+                        putChar('\'', size++);
+                        scanChar();
+                        break loop;
+                    default:
+                        if (eof()) {
+                            throw err("unclosed string");
+                        }
+                        putChar(ch, size++);
+                        continue;
+                }
+            }
+        } else {
+            loop:
+            while (true) {
+                switch (scanChar()) {
+                    case '\\':
+                        putChar('\\', size++);
+                        putChar(scanChar(), size++);
+                        continue;
+                    case '\'':
+                        if (sql[curIndex + 1] == '\'') {
+                            putChar('\\', size++);
+                            putChar(scanChar(), size++);
+                            continue;
+                        }
+                        putChar('\'', size++);
+                        scanChar();
+                        break loop;
+                    default:
+                        if (eof()) {
+                            throw err("unclosed string");
+                        }
+                        putChar(ch, size++);
+                        continue;
                 }
             }
         }
@@ -651,11 +669,11 @@ public class MySQLLexer {
 
     /**
      * @param quoteMode if false: first <code>0x</code> has been skipped; if
-     *            true: first <code>x'</code> has been skipped
+     *                  true: first <code>x'</code> has been skipped
      */
     protected void scanHexaDecimal(boolean quoteMode) throws SQLSyntaxErrorException {
         offsetCache = curIndex;
-        for (; CharTypes.isHex(ch); scanChar());
+        for (; CharTypes.isHex(ch); scanChar()) ;
 
         sizeCache = curIndex - offsetCache;
         // if (sizeCache <= 0) {
@@ -676,11 +694,11 @@ public class MySQLLexer {
 
     /**
      * @param quoteMode if false: first <code>0b</code> has been skipped; if
-     *            true: first <code>b'</code> has been skipped
+     *                  true: first <code>b'</code> has been skipped
      */
     protected void scanBitField(boolean quoteMode) throws SQLSyntaxErrorException {
         offsetCache = curIndex;
-        for (; ch == '0' || ch == '1'; scanChar());
+        for (; ch == '0' || ch == '1'; scanChar()) ;
         sizeCache = curIndex - offsetCache;
         // if (sizeCache <= 0) {
         // throw err("expect at least one bit");
@@ -713,79 +731,144 @@ public class MySQLLexer {
 
         for (; scanChar() != MySQLLexer.EOI; ++sizeCache) {
             switch (state) {
-            case 0:
-                if (CharTypes.isDigit(ch)) {
-                } else if (ch == '.') {
-                    dot = true;
-                    state = 1;
-                } else if (ch == 'e' || ch == 'E') {
-                    state = 3;
-                } else if (CharTypes.isIdentifierChar(ch)) {
-                    scanIdentifierFromNumber(offsetCache, sizeCache);
-                    return;
-                } else {
-                    token = MySQLToken.LITERAL_NUM_PURE_DIGIT;
-                    return;
-                }
-                break;
-            case 1:
-                if (CharTypes.isDigit(ch)) {
-                    state = 2;
-                } else if (ch == 'e' || ch == 'E') {
-                    state = 3;
-                } else if (CharTypes.isIdentifierChar(ch) && fstDot) {
-                    sizeCache = 1;
-                    ch = sql[curIndex = offsetCache + 1];
-                    token = MySQLToken.PUNC_DOT;
-                    return;
-                } else {
-                    token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
-                    return;
-                }
-                break;
-            case 2:
-                if (CharTypes.isDigit(ch)) {
-                } else if (ch == 'e' || ch == 'E') {
-                    state = 3;
-                } else if (CharTypes.isIdentifierChar(ch) && fstDot) {
-                    sizeCache = 1;
-                    ch = sql[curIndex = offsetCache + 1];
-                    token = MySQLToken.PUNC_DOT;
-                    return;
-                } else {
-                    token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
-                    return;
-                }
-                break;
-            case 3:
-                if (CharTypes.isDigit(ch)) {
-                    state = 5;
-                } else if (ch == '+' || ch == '-') {
-                    sign = true;
-                    state = 4;
-                } else if (fstDot) {
-                    sizeCache = 1;
-                    ch = sql[curIndex = offsetCache + 1];
-                    token = MySQLToken.PUNC_DOT;
-                    return;
-                } else if (!dot) {
-                    if (CharTypes.isIdentifierChar(ch)) {
+                case 0:
+                    if (CharTypes.isDigit(ch)) {
+                    } else if (ch == '.') {
+                        dot = true;
+                        state = 1;
+                    } else if (ch == 'e' || ch == 'E') {
+                        state = 3;
+                    } else if (CharTypes.isIdentifierChar(ch)) {
                         scanIdentifierFromNumber(offsetCache, sizeCache);
+                        return;
                     } else {
+                        token = MySQLToken.LITERAL_NUM_PURE_DIGIT;
+                        return;
+                    }
+                    break;
+                case 1:
+                    if (CharTypes.isDigit(ch)) {
+                        state = 2;
+                    } else if (ch == 'e' || ch == 'E') {
+                        state = 3;
+                    } else if (CharTypes.isIdentifierChar(ch) && fstDot) {
+                        sizeCache = 1;
+                        ch = sql[curIndex = offsetCache + 1];
+                        token = MySQLToken.PUNC_DOT;
+                        return;
+                    } else {
+                        token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
+                        return;
+                    }
+                    break;
+                case 2:
+                    if (CharTypes.isDigit(ch)) {
+                    } else if (ch == 'e' || ch == 'E') {
+                        state = 3;
+                    } else if (CharTypes.isIdentifierChar(ch) && fstDot) {
+                        sizeCache = 1;
+                        ch = sql[curIndex = offsetCache + 1];
+                        token = MySQLToken.PUNC_DOT;
+                        return;
+                    } else {
+                        token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
+                        return;
+                    }
+                    break;
+                case 3:
+                    if (CharTypes.isDigit(ch)) {
+                        state = 5;
+                    } else if (ch == '+' || ch == '-') {
+                        sign = true;
+                        state = 4;
+                    } else if (fstDot) {
+                        sizeCache = 1;
+                        ch = sql[curIndex = offsetCache + 1];
+                        token = MySQLToken.PUNC_DOT;
+                        return;
+                    } else if (!dot) {
+                        if (CharTypes.isIdentifierChar(ch)) {
+                            scanIdentifierFromNumber(offsetCache, sizeCache);
+                        } else {
+                            updateStringValue(sql, offsetCache, sizeCache);
+                            MySQLToken tok = keywods.getKeyword(stringValueUppercase);
+                            token = tok == null ? MySQLToken.IDENTIFIER : tok;
+                        }
+                        return;
+                    } else {
+                        throw err("invalid char after '.' and 'e' for as part of number: " + ch);
+                    }
+                    break;
+                case 4:
+                    if (CharTypes.isDigit(ch)) {
+                        state = 5;
+                        break;
+                    } else if (fstDot) {
+                        sizeCache = 1;
+                        ch = sql[curIndex = offsetCache + 1];
+                        token = MySQLToken.PUNC_DOT;
+                    } else if (!dot) {
+                        ch = sql[--curIndex];
+                        --sizeCache;
                         updateStringValue(sql, offsetCache, sizeCache);
                         MySQLToken tok = keywods.getKeyword(stringValueUppercase);
                         token = tok == null ? MySQLToken.IDENTIFIER : tok;
+                    } else {
+                        throw err("expect digit char after SIGN for 'e': " + ch);
                     }
                     return;
-                } else {
-                    throw err("invalid char after '.' and 'e' for as part of number: " + ch);
+                case 5:
+                    if (CharTypes.isDigit(ch)) {
+                        break;
+                    } else if (CharTypes.isIdentifierChar(ch)) {
+                        if (fstDot) {
+                            sizeCache = 1;
+                            ch = sql[curIndex = offsetCache + 1];
+                            token = MySQLToken.PUNC_DOT;
+                        } else if (!dot) {
+                            if (sign) {
+                                ch = sql[curIndex = offsetCache];
+                                scanIdentifierFromNumber(curIndex, 0);
+                            } else {
+                                scanIdentifierFromNumber(offsetCache, sizeCache);
+                            }
+                        } else {
+                            token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
+                        }
+                    } else {
+                        token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
+                    }
+                    return;
+            }
+        }
+        switch (state) {
+            case 0:
+                token = MySQLToken.LITERAL_NUM_PURE_DIGIT;
+                return;
+            case 1:
+                if (fstDot) {
+                    token = MySQLToken.PUNC_DOT;
+                    return;
                 }
-                break;
+            case 2:
+            case 5:
+                token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
+                return;
+            case 3:
+                if (fstDot) {
+                    sizeCache = 1;
+                    ch = sql[curIndex = offsetCache + 1];
+                    token = MySQLToken.PUNC_DOT;
+                } else if (!dot) {
+                    updateStringValue(sql, offsetCache, sizeCache);
+                    MySQLToken tok = keywods.getKeyword(stringValueUppercase);
+                    token = tok == null ? MySQLToken.IDENTIFIER : tok;
+                } else {
+                    throw err("expect digit char after SIGN for 'e': " + ch);
+                }
+                return;
             case 4:
-                if (CharTypes.isDigit(ch)) {
-                    state = 5;
-                    break;
-                } else if (fstDot) {
+                if (fstDot) {
                     sizeCache = 1;
                     ch = sql[curIndex = offsetCache + 1];
                     token = MySQLToken.PUNC_DOT;
@@ -799,71 +882,6 @@ public class MySQLLexer {
                     throw err("expect digit char after SIGN for 'e': " + ch);
                 }
                 return;
-            case 5:
-                if (CharTypes.isDigit(ch)) {
-                    break;
-                } else if (CharTypes.isIdentifierChar(ch)) {
-                    if (fstDot) {
-                        sizeCache = 1;
-                        ch = sql[curIndex = offsetCache + 1];
-                        token = MySQLToken.PUNC_DOT;
-                    } else if (!dot) {
-                        if (sign) {
-                            ch = sql[curIndex = offsetCache];
-                            scanIdentifierFromNumber(curIndex, 0);
-                        } else {
-                            scanIdentifierFromNumber(offsetCache, sizeCache);
-                        }
-                    } else {
-                        token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
-                    }
-                } else {
-                    token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
-                }
-                return;
-            }
-        }
-        switch (state) {
-        case 0:
-            token = MySQLToken.LITERAL_NUM_PURE_DIGIT;
-            return;
-        case 1:
-            if (fstDot) {
-                token = MySQLToken.PUNC_DOT;
-                return;
-            }
-        case 2:
-        case 5:
-            token = MySQLToken.LITERAL_NUM_MIX_DIGIT;
-            return;
-        case 3:
-            if (fstDot) {
-                sizeCache = 1;
-                ch = sql[curIndex = offsetCache + 1];
-                token = MySQLToken.PUNC_DOT;
-            } else if (!dot) {
-                updateStringValue(sql, offsetCache, sizeCache);
-                MySQLToken tok = keywods.getKeyword(stringValueUppercase);
-                token = tok == null ? MySQLToken.IDENTIFIER : tok;
-            } else {
-                throw err("expect digit char after SIGN for 'e': " + ch);
-            }
-            return;
-        case 4:
-            if (fstDot) {
-                sizeCache = 1;
-                ch = sql[curIndex = offsetCache + 1];
-                token = MySQLToken.PUNC_DOT;
-            } else if (!dot) {
-                ch = sql[--curIndex];
-                --sizeCache;
-                updateStringValue(sql, offsetCache, sizeCache);
-                MySQLToken tok = keywods.getKeyword(stringValueUppercase);
-                token = tok == null ? MySQLToken.IDENTIFIER : tok;
-            } else {
-                throw err("expect digit char after SIGN for 'e': " + ch);
-            }
-            return;
         }
     }
 
@@ -876,7 +894,7 @@ public class MySQLLexer {
      * <code>"."</code> and <code>"123f"</code> because <code>".123f"</code> may
      * be part of <code>"db1.123f"</code> and <code>"123f"</code> is the table
      * name.
-     * 
+     *
      * @param initSize how many char has already been consumed
      */
     private void scanIdentifierFromNumber(int initOffset, int initSize) throws SQLSyntaxErrorException {
@@ -925,7 +943,7 @@ public class MySQLLexer {
      */
     protected void scanIdentifierWithAccent() throws SQLSyntaxErrorException {
         offsetCache = curIndex;
-        for (; scanChar() != MySQLLexer.EOI;) {
+        for (; scanChar() != MySQLLexer.EOI; ) {
             if (ch == '`' && scanChar() != '`') {
                 break;
             }
@@ -938,83 +956,83 @@ public class MySQLLexer {
      * skip whitespace and comment
      */
     protected void skipSeparator() {
-        for (; !eof();) {
-            for (; CharTypes.isWhitespace(ch); scanChar());
+        for (; !eof(); ) {
+            for (; CharTypes.isWhitespace(ch); scanChar()) ;
 
             switch (ch) {
-            case '#': // MySQL specified
-                for (; scanChar() != '\n';) {
-                    if (eof()) {
-                        return;
+                case '#': // MySQL specified
+                    for (; scanChar() != '\n'; ) {
+                        if (eof()) {
+                            return;
+                        }
                     }
-                }
-                scanChar();
-                continue;
-            case '/':
-                if (hasChars(2) && '*' == sql[curIndex + 1]) {
-                    boolean commentSkip;
-                    if ('!' == sql[curIndex + 2]) {
-                        scanChar(3);
-                        inCStyleComment = true;
-                        inCStyleCommentIgnore = false;
-                        commentSkip = false;
-                        // MySQL use 5 digits to indicate version. 50508 means
-                        // MySQL 5.5.8
-                        if (hasChars(5) && CharTypes.isDigit(ch) && CharTypes.isDigit(sql[curIndex + 1])
+                    scanChar();
+                    continue;
+                case '/':
+                    if (hasChars(2) && '*' == sql[curIndex + 1]) {
+                        boolean commentSkip;
+                        if ('!' == sql[curIndex + 2]) {
+                            scanChar(3);
+                            inCStyleComment = true;
+                            inCStyleCommentIgnore = false;
+                            commentSkip = false;
+                            // MySQL use 5 digits to indicate version. 50508 means
+                            // MySQL 5.5.8
+                            if (hasChars(5) && CharTypes.isDigit(ch) && CharTypes.isDigit(sql[curIndex + 1])
                                 && CharTypes.isDigit(sql[curIndex + 2]) && CharTypes.isDigit(sql[curIndex + 3])
                                 && CharTypes.isDigit(sql[curIndex + 4])) {
-                            int version = ch - '0';
-                            version *= 10;
-                            version += sql[curIndex + 1] - '0';
-                            version *= 10;
-                            version += sql[curIndex + 2] - '0';
-                            version *= 10;
-                            version += sql[curIndex + 3] - '0';
-                            version *= 10;
-                            version += sql[curIndex + 4] - '0';
-                            scanChar(5);
-                            if (version > C_STYLE_COMMENT_VERSION) {
-                                inCStyleCommentIgnore = true;
+                                int version = ch - '0';
+                                version *= 10;
+                                version += sql[curIndex + 1] - '0';
+                                version *= 10;
+                                version += sql[curIndex + 2] - '0';
+                                version *= 10;
+                                version += sql[curIndex + 3] - '0';
+                                version *= 10;
+                                version += sql[curIndex + 4] - '0';
+                                scanChar(5);
+                                if (version > C_STYLE_COMMENT_VERSION) {
+                                    inCStyleCommentIgnore = true;
+                                }
                             }
+                            skipSeparator();
+                        } else {
+                            scanChar(2);
+                            commentSkip = true;
                         }
-                        skipSeparator();
-                    } else {
-                        scanChar(2);
-                        commentSkip = true;
-                    }
 
-                    if (commentSkip) {
-                        for (int state = 0; !eof(); scanChar()) {
-                            if (state == 0) {
-                                if ('*' == ch) {
-                                    state = 1;
+                        if (commentSkip) {
+                            for (int state = 0; !eof(); scanChar()) {
+                                if (state == 0) {
+                                    if ('*' == ch) {
+                                        state = 1;
+                                    }
+                                } else {
+                                    if ('/' == ch) {
+                                        scanChar();
+                                        break;
+                                    } else if ('*' != ch) {
+                                        state = 0;
+                                    }
                                 }
-                            } else {
-                                if ('/' == ch) {
-                                    scanChar();
-                                    break;
-                                } else if ('*' != ch) {
-                                    state = 0;
-                                }
+                            }
+                            continue;
+                        }
+                    }
+                    return;
+                case '-':
+                    if (hasChars(3) && '-' == sql[curIndex + 1] && CharTypes.isWhitespace(sql[curIndex + 2])) {
+                        scanChar(3);
+                        for (; !eof(); scanChar()) {
+                            if ('\n' == ch) {
+                                scanChar();
+                                break;
                             }
                         }
                         continue;
                     }
-                }
-                return;
-            case '-':
-                if (hasChars(3) && '-' == sql[curIndex + 1] && CharTypes.isWhitespace(sql[curIndex + 2])) {
-                    scanChar(3);
-                    for (; !eof(); scanChar()) {
-                        if ('\n' == ch) {
-                            scanChar();
-                            break;
-                        }
-                    }
-                    continue;
-                }
-            default:
-                return;
+                default:
+                    return;
             }
         }
     }
@@ -1033,15 +1051,15 @@ public class MySQLLexer {
         sb.append(getClass().getSimpleName()).append('@').append(hashCode()).append('{');
         String sqlLeft = new String(sql, curIndex, sql.length - curIndex);
         sb.append("curIndex=")
-          .append(curIndex)
-          .append(", ch=")
-          .append(ch)
-          .append(", token=")
-          .append(token)
-          .append(", sqlLeft=")
-          .append(sqlLeft)
-          .append(", sql=")
-          .append(sql);
+            .append(curIndex)
+            .append(", ch=")
+            .append(ch)
+            .append(", token=")
+            .append(token)
+            .append(", sqlLeft=")
+            .append(sqlLeft)
+            .append(", sql=")
+            .append(sql);
         sb.append('}');
         return sb.toString();
     }
@@ -1053,7 +1071,7 @@ public class MySQLLexer {
         // 2147483647
         // 9223372036854775807
         if (sizeCache < 10 || sizeCache == 10
-                && (sql[offsetCache] < '2' || sql[offsetCache] == '2' && sql[offsetCache + 1] == '0')) {
+            && (sql[offsetCache] < '2' || sql[offsetCache] == '2' && sql[offsetCache + 1] == '0')) {
             int rst = 0;
             int end = offsetCache + sizeCache;
             for (int i = offsetCache; i < end; ++i) {

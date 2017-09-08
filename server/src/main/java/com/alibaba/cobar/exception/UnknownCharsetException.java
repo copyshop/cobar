@@ -17,7 +17,7 @@ package com.alibaba.cobar.exception;
 
 /**
  * 未知字符集异常
- * 
+ *
  * @author xianmao.hexm
  */
 public class UnknownCharsetException extends RuntimeException {

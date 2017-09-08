@@ -23,7 +23,7 @@ import com.alibaba.cobar.net.mysql.OkPacket;
 
 /**
  * 加入了offline状态推送，用于心跳语句。
- * 
+ *
  * @author xianmao.hexm 2012-4-28
  */
 public class Ping {

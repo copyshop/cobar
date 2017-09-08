@@ -29,11 +29,11 @@ public final class SwitchHandler {
 
     public static void handler(String stmt, ManagerConnection c, int offset) {
         switch (ManagerParseSwitch.parse(stmt, offset)) {
-        case DATASOURCE:
-            SwitchDataSource.response(stmt, c);
-            break;
-        default:
-            c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
+            case DATASOURCE:
+                SwitchDataSource.response(stmt, c);
+                break;
+            default:
+                c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
         }
     }
 

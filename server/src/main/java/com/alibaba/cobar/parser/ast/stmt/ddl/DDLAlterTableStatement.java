@@ -32,7 +32,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * NOT FULL AST: partition options, foreign key, ORDER BY not supported
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class DDLAlterTableStatement implements DDLStatement {
@@ -49,7 +49,7 @@ public class DDLAlterTableStatement implements DDLStatement {
         /**
          * @param columnName
          * @param columnDefine
-         * @param afterColumn null means fisrt
+         * @param afterColumn  null means fisrt
          */
         public AddColumn(Identifier columnName, ColumnDefinition columnDefine, Identifier afterColumn) {
             this.columnName = columnName;
@@ -61,7 +61,7 @@ public class DDLAlterTableStatement implements DDLStatement {
         /**
          * @param columnName
          * @param columnDefine
-         * @param afterColumn null means fisrt
+         * @param afterColumn  null means fisrt
          */
         public AddColumn(Identifier columnName, ColumnDefinition columnDefine) {
             this.columnName = columnName;
@@ -257,7 +257,7 @@ public class DDLAlterTableStatement implements DDLStatement {
 
         /**
          * DROP DEFAULT
-         * 
+         *
          * @param columnName
          */
         public AlterColumnDefaultVal(Identifier columnName) {
@@ -461,7 +461,9 @@ public class DDLAlterTableStatement implements DDLStatement {
     private boolean discardTableSpace;
     private boolean importTableSpace;
     private Identifier renameTo;
-    /** charsetName -> collate */
+    /**
+     * charsetName -> collate
+     */
     private Pair<Identifier, Identifier> convertCharset;
 
     public DDLAlterTableStatement(boolean ignore, Identifier table) {

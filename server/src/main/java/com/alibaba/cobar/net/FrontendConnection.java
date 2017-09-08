@@ -416,17 +416,17 @@ public abstract class FrontendConnection extends AbstractConnection {
     @Override
     public String toString() {
         return new StringBuilder().append("[thread=")
-                                  .append(Thread.currentThread().getName())
-                                  .append(",class=")
-                                  .append(getClass().getSimpleName())
-                                  .append(",host=")
-                                  .append(host)
-                                  .append(",port=")
-                                  .append(port)
-                                  .append(",schema=")
-                                  .append(schema)
-                                  .append(']')
-                                  .toString();
+            .append(Thread.currentThread().getName())
+            .append(",class=")
+            .append(getClass().getSimpleName())
+            .append(",host=")
+            .append(host)
+            .append(",port=")
+            .append(port)
+            .append(",schema=")
+            .append(schema)
+            .append(']')
+            .toString();
     }
 
     private final static byte[] encodeString(String src, String charset) {

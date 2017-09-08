@@ -69,7 +69,7 @@ public final class NIOAcceptor extends Thread {
     @Override
     public void run() {
         final Selector selector = this.selector;
-        for (;;) {
+        for (; ; ) {
             ++acceptCount;
             try {
                 selector.select(1000L);
@@ -134,7 +134,7 @@ public final class NIOAcceptor extends Thread {
 
     /**
      * 前端连接ID生成器
-     * 
+     *
      * @author xianmao.hexm
      */
     private static class AcceptIdGenerator {

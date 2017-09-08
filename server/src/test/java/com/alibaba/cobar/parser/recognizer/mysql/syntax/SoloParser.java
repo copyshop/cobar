@@ -42,7 +42,7 @@ public class SoloParser extends MySQLParser {
 
     public Refs refs() throws SQLSyntaxErrorException {
         Refs refs = new Refs();
-        for (;;) {
+        for (; ; ) {
             Ref ref = ref();
             refs.addRef(ref);
             if (lexer.token() == PUNC_COMMA) {
@@ -54,7 +54,7 @@ public class SoloParser extends MySQLParser {
     }
 
     public Ref buildRef(Ref first) throws SQLSyntaxErrorException {
-        for (; lexer.token() == KW_JOIN;) {
+        for (; lexer.token() == KW_JOIN; ) {
             lexer.nextToken();
             Ref temp = factor();
             first = new Join(first, temp);
@@ -99,60 +99,60 @@ public class SoloParser extends MySQLParser {
         Refs rst;
         Union u;
         switch (lexer.token()) {
-        case KW_SELECT:
-            u = new Union();
-            for (;;) {
-                Select s = selectPrimary();
-                u.addSelect(s);
-                if (lexer.token() == KW_UNION) {
-                    lexer.nextToken();
-                } else {
-                    break;
-                }
-            }
-            if (u.selects.size() == 1) {
-                return u.selects.get(0);
-            }
-            return u;
-        case PUNC_LEFT_PAREN:
-            lexer.nextToken();
-            temp = refsOrQuery();
-            match(PUNC_RIGHT_PAREN);
-            if (temp instanceof Query) {
-                if (temp instanceof Select) {
+            case KW_SELECT:
+                u = new Union();
+                for (; ; ) {
+                    Select s = selectPrimary();
+                    u.addSelect(s);
                     if (lexer.token() == KW_UNION) {
-                        u = new Union();
-                        u.addSelect((Select) temp);
-                        while (lexer.token() == KW_UNION) {
-                            lexer.nextToken();
-                            temp = selectPrimary();
-                            u.addSelect((Select) temp);
-                        }
-                        return u;
+                        lexer.nextToken();
+                    } else {
+                        break;
                     }
                 }
-                if (lexer.token() == KW_AS) {
-                    lexer.nextToken();
-                    String alias = lexer.stringValue();
-                    temp = new SubQuery((Query) temp, alias);
-                    lexer.nextToken();
-                } else {
-                    return temp;
+                if (u.selects.size() == 1) {
+                    return u.selects.get(0);
                 }
-            }
-            // ---- build factor complete---------------
+                return u;
+            case PUNC_LEFT_PAREN:
+                lexer.nextToken();
+                temp = refsOrQuery();
+                match(PUNC_RIGHT_PAREN);
+                if (temp instanceof Query) {
+                    if (temp instanceof Select) {
+                        if (lexer.token() == KW_UNION) {
+                            u = new Union();
+                            u.addSelect((Select) temp);
+                            while (lexer.token() == KW_UNION) {
+                                lexer.nextToken();
+                                temp = selectPrimary();
+                                u.addSelect((Select) temp);
+                            }
+                            return u;
+                        }
+                    }
+                    if (lexer.token() == KW_AS) {
+                        lexer.nextToken();
+                        String alias = lexer.stringValue();
+                        temp = new SubQuery((Query) temp, alias);
+                        lexer.nextToken();
+                    } else {
+                        return temp;
+                    }
+                }
+                // ---- build factor complete---------------
 
-            temp = buildRef(temp);
-            // ---- build ref complete---------------
-            break;
-        default:
-            temp = ref();
+                temp = buildRef(temp);
+                // ---- build ref complete---------------
+                break;
+            default:
+                temp = ref();
         }
 
         if (lexer.token() == PUNC_COMMA) {
             rst = new Refs();
             rst.addRef(temp);
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 temp = ref();
                 rst.addRef(temp);

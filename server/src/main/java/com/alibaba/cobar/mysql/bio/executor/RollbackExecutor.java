@@ -38,7 +38,7 @@ import com.alibaba.cobar.server.session.BlockingSession;
 
 /**
  * 事务回滚执行器
- * 
+ *
  * @author xianmao.hexm
  */
 public final class RollbackExecutor extends NodeExecutor {
@@ -154,38 +154,38 @@ public final class RollbackExecutor extends NodeExecutor {
         try {
             BinaryPacket bin = mc.rollback();
             switch (bin.data[0]) {
-            case OkPacket.FIELD_COUNT:
-                mc.setRunning(false);
-                if (decrementCountBy(1)) {
-                    try {
-                        if (isFail.get()) { // some other tasks failed
+                case OkPacket.FIELD_COUNT:
+                    mc.setRunning(false);
+                    if (decrementCountBy(1)) {
+                        try {
+                            if (isFail.get()) { // some other tasks failed
+                                session.clear();
+                                source.writeErrMessage(ErrorCode.ER_YES, "rollback error!");
+                            } else { // all tasks are successful
+                                session.release();
+                                ByteBuffer buffer = source.allocate();
+                                source.write(bin.write(buffer, source));
+                            }
+                        } catch (Exception e) {
+                            LOGGER.warn("exception happens in success notification: " + source, e);
+                        }
+                    }
+                    break;
+                case ErrorPacket.FIELD_COUNT:
+                    isFail.set(true);
+                    if (decrementCountBy(1)) {
+                        try {
                             session.clear();
-                            source.writeErrMessage(ErrorCode.ER_YES, "rollback error!");
-                        } else { // all tasks are successful
-                            session.release();
+                            LOGGER.warn(mc.getErrLog("rollback", mc.getErrMessage(bin), source));
                             ByteBuffer buffer = source.allocate();
                             source.write(bin.write(buffer, source));
+                        } catch (Exception e) {
+                            LOGGER.warn("exception happens in failure notification: " + source, e);
                         }
-                    } catch (Exception e) {
-                        LOGGER.warn("exception happens in success notification: " + source, e);
                     }
-                }
-                break;
-            case ErrorPacket.FIELD_COUNT:
-                isFail.set(true);
-                if (decrementCountBy(1)) {
-                    try {
-                        session.clear();
-                        LOGGER.warn(mc.getErrLog("rollback", mc.getErrMessage(bin), source));
-                        ByteBuffer buffer = source.allocate();
-                        source.write(bin.write(buffer, source));
-                    } catch (Exception e) {
-                        LOGGER.warn("exception happens in failure notification: " + source, e);
-                    }
-                }
-                break;
-            default:
-                throw new UnknownPacketException(bin.toString());
+                    break;
+                default:
+                    throw new UnknownPacketException(bin.toString());
             }
         } catch (IOException e) {
             mc.close();

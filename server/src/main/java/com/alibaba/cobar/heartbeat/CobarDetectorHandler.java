@@ -53,43 +53,43 @@ public class CobarDetectorHandler extends BackendAsyncHandler {
     @Override
     protected void handleData(byte[] data) {
         switch (resultStatus) {
-        case RESULT_STATUS_INIT:
-            switch (data[4]) {
-            case OkPacket.FIELD_COUNT:
-                handleOkPacket(data);
+            case RESULT_STATUS_INIT:
+                switch (data[4]) {
+                    case OkPacket.FIELD_COUNT:
+                        handleOkPacket(data);
+                        break;
+                    case ErrorPacket.FIELD_COUNT:
+                        handleErrorPacket(data);
+                        break;
+                    default:
+                        resultStatus = RESULT_STATUS_HEADER;
+                }
                 break;
-            case ErrorPacket.FIELD_COUNT:
-                handleErrorPacket(data);
+            case RESULT_STATUS_HEADER:
+                switch (data[4]) {
+                    case ErrorPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_INIT;
+                        handleErrorPacket(data);
+                        break;
+                    case EOFPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_FIELD_EOF;
+                        break;
+                }
+                break;
+            case RESULT_STATUS_FIELD_EOF:
+                switch (data[4]) {
+                    case ErrorPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_INIT;
+                        handleErrorPacket(data);
+                        break;
+                    case EOFPacket.FIELD_COUNT:
+                        resultStatus = RESULT_STATUS_INIT;
+                        handleRowEofPacket();
+                        break;
+                }
                 break;
             default:
-                resultStatus = RESULT_STATUS_HEADER;
-            }
-            break;
-        case RESULT_STATUS_HEADER:
-            switch (data[4]) {
-            case ErrorPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_INIT;
-                handleErrorPacket(data);
-                break;
-            case EOFPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_FIELD_EOF;
-                break;
-            }
-            break;
-        case RESULT_STATUS_FIELD_EOF:
-            switch (data[4]) {
-            case ErrorPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_INIT;
-                handleErrorPacket(data);
-                break;
-            case EOFPacket.FIELD_COUNT:
-                resultStatus = RESULT_STATUS_INIT;
-                handleRowEofPacket();
-                break;
-            }
-            break;
-        default:
-            throw new HeartbeatException("unknown status!");
+                throw new HeartbeatException("unknown status!");
         }
     }
 
@@ -114,11 +114,11 @@ public class CobarDetectorHandler extends BackendAsyncHandler {
         ErrorPacket err = new ErrorPacket();
         err.read(data);
         switch (err.errno) {
-        case ErrorCode.ER_SERVER_SHUTDOWN:
-            source.getHeartbeat().setResult(CobarHeartbeat.OFF_STATUS, source, false, err.message);
-            break;
-        default:
-            throw new HeartbeatException(new String(err.message));
+            case ErrorCode.ER_SERVER_SHUTDOWN:
+                source.getHeartbeat().setResult(CobarHeartbeat.OFF_STATUS, source, false, err.message);
+                break;
+            default:
+                throw new HeartbeatException(new String(err.message));
         }
     }
 

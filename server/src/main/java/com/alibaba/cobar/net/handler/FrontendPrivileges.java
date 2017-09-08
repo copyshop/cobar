@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * 权限提供者
- * 
+ *
  * @author xianmao.hexm
  */
 public interface FrontendPrivileges {

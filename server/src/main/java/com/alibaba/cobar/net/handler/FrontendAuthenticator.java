@@ -31,12 +31,12 @@ import com.alibaba.cobar.net.mysql.QuitPacket;
 
 /**
  * 前端认证处理器
- * 
+ *
  * @author xianmao.hexm
  */
 public class FrontendAuthenticator implements NIOHandler {
     private static final Logger LOGGER = Logger.getLogger(FrontendAuthenticator.class);
-    private static final byte[] AUTH_OK = new byte[] { 7, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0 };
+    private static final byte[] AUTH_OK = new byte[]{7, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0};
 
     protected final FrontendConnection source;
 
@@ -69,15 +69,15 @@ public class FrontendAuthenticator implements NIOHandler {
 
         // check schema
         switch (checkSchema(auth.database, auth.user)) {
-        case ErrorCode.ER_BAD_DB_ERROR:
-            failure(ErrorCode.ER_BAD_DB_ERROR, "Unknown database '" + auth.database + "'");
-            break;
-        case ErrorCode.ER_DBACCESS_DENIED_ERROR:
-            String s = "Access denied for user '" + auth.user + "' to database '" + auth.database + "'";
-            failure(ErrorCode.ER_DBACCESS_DENIED_ERROR, s);
-            break;
-        default:
-            success(auth);
+            case ErrorCode.ER_BAD_DB_ERROR:
+                failure(ErrorCode.ER_BAD_DB_ERROR, "Unknown database '" + auth.database + "'");
+                break;
+            case ErrorCode.ER_DBACCESS_DENIED_ERROR:
+                String s = "Access denied for user '" + auth.user + "' to database '" + auth.database + "'";
+                failure(ErrorCode.ER_DBACCESS_DENIED_ERROR, s);
+                break;
+            default:
+                success(auth);
         }
     }
 

@@ -170,11 +170,12 @@ import com.alibaba.cobar.util.SmallSet;
 public final class PartitionKeyVisitor implements SQLASTVisitor {
 
     private static final Set<Class<? extends Expression>> VERDICT_PASS_THROUGH_WHERE = new HashSet<Class<? extends Expression>>(
-            6);
+        6);
     private static final Set<Class<? extends Expression>> GROUP_FUNC_PASS_THROUGH_SELECT = new HashSet<Class<? extends Expression>>(
-            5);
+        5);
     private static final Set<Class<? extends Expression>> PARTITION_OPERAND_SINGLE = new HashSet<Class<? extends Expression>>(
-            3);
+        3);
+
     static {
         VERDICT_PASS_THROUGH_WHERE.add(LogicalAndExpression.class);
         VERDICT_PASS_THROUGH_WHERE.add(LogicalOrExpression.class);
@@ -206,7 +207,7 @@ public final class PartitionKeyVisitor implements SQLASTVisitor {
 
     public static boolean isPartitionKeyOperandSingle(Expression expr, ASTNode parent) {
         return parent == null && expr instanceof ReplacableExpression
-                && PARTITION_OPERAND_SINGLE.contains(expr.getClass());
+            && PARTITION_OPERAND_SINGLE.contains(expr.getClass());
     }
 
     public static boolean isPartitionKeyOperandIn(Expression expr, ASTNode parent) {
@@ -227,9 +228,13 @@ public final class PartitionKeyVisitor implements SQLASTVisitor {
     private boolean rewriteField = false;
     private boolean schemaTrimmed = false;
     private boolean customedSchema = false;
-    /** {tableNameUp -&gt; {columnNameUp -&gt; columnValues}}, obj[] never null */
+    /**
+     * {tableNameUp -&gt; {columnNameUp -&gt; columnValues}}, obj[] never null
+     */
     private Map<String, Map<String, List<Object>>> columnValue = new HashMap<String, Map<String, List<Object>>>(2, 1);
-    /** {table -&gt; {column -&gt; {value -&gt; [(expr,parentExpr)]}}} */
+    /**
+     * {table -&gt; {column -&gt; {value -&gt; [(expr,parentExpr)]}}}
+     */
     private Map<String, Map<String, Map<Object, Set<Pair<Expression, ASTNode>>>>> columnValueIndex;
     private Map<String, String> tableAlias = new HashMap<String, String>(4, 1);
 
@@ -290,7 +295,7 @@ public final class PartitionKeyVisitor implements SQLASTVisitor {
 
     /**
      * @return {@link #GROUP_NON} or {@link #GROUP_SUM}or {@link #GROUP_MIN}or
-     *         {@link #GROUP_MAX}
+     * {@link #GROUP_MAX}
      */
     public int getGroupFuncType() {
         return groupFuncType;
@@ -300,7 +305,9 @@ public final class PartitionKeyVisitor implements SQLASTVisitor {
         return schemaTrimmed;
     }
 
-    /** @return never null */
+    /**
+     * @return never null
+     */
     public Map<String, Map<Object, Set<Pair<Expression, ASTNode>>>> getColumnIndex(String tableNameUp) {
         if (columnValueIndex == null)
             return Collections.emptyMap();
@@ -625,8 +632,8 @@ public final class PartitionKeyVisitor implements SQLASTVisitor {
                 if (isRuledColumn(tableName, colName)) {
                     List<Object> valueList = ensureColumnValueList(colVals, colName);
                     Map<Object, Set<Pair<Expression, ASTNode>>> valMap = ensureColumnValueIndexObjMap(
-                            colValsIndex,
-                            colName);
+                        colValsIndex,
+                        colName);
                     for (RowExpression row : rows) {
                         Expression expr = row.getRowExprList().get(i);
                         Object value = expr == null ? null : expr.evaluation(evaluationParameter);
@@ -774,15 +781,15 @@ public final class PartitionKeyVisitor implements SQLASTVisitor {
             String table = tableAlias.get(col.getLevelUnescapeUpName(2));
             if (isRuledColumn(table, col.getIdTextUpUnescape())) {
                 switch (node.getMode()) {
-                case ComparisionIsExpression.IS_FALSE:
-                    addColumnValue(table, col.getIdTextUpUnescape(), LiteralBoolean.FALSE, node, null);
-                    break;
-                case ComparisionIsExpression.IS_TRUE:
-                    addColumnValue(table, col.getIdTextUpUnescape(), LiteralBoolean.TRUE, node, null);
-                    break;
-                case ComparisionIsExpression.IS_NULL:
-                    addColumnValue(table, col.getIdTextUpUnescape(), null, node, null);
-                    break;
+                    case ComparisionIsExpression.IS_FALSE:
+                        addColumnValue(table, col.getIdTextUpUnescape(), LiteralBoolean.FALSE, node, null);
+                        break;
+                    case ComparisionIsExpression.IS_TRUE:
+                        addColumnValue(table, col.getIdTextUpUnescape(), LiteralBoolean.TRUE, node, null);
+                        break;
+                    case ComparisionIsExpression.IS_NULL:
+                        addColumnValue(table, col.getIdTextUpUnescape(), null, node, null);
+                        break;
                 }
             }
         }
@@ -858,8 +865,8 @@ public final class PartitionKeyVisitor implements SQLASTVisitor {
             if (isRuledColumn(table, colName)) {
                 List<Object> valList = ensureColumnValueList(ensureColumnValueByTable(table), colName);
                 Map<Object, Set<Pair<Expression, ASTNode>>> valMap = ensureColumnValueIndexObjMap(
-                        ensureColumnValueIndexByTable(table),
-                        colName);
+                    ensureColumnValueIndexByTable(table),
+                    colName);
                 InExpressionList inlist = (InExpressionList) right;
                 for (Expression expr : inlist.getList()) {
                     Object value = expr.evaluation(evaluationParameter);

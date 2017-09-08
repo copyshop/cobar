@@ -32,7 +32,7 @@ public class ExecutorTestMain {
         new Thread() {
             @Override
             public void run() {
-                for (;;) {
+                for (; ; ) {
                     long c = count.get();
                     try {
                         Thread.sleep(5000L);
@@ -50,7 +50,7 @@ public class ExecutorTestMain {
         new Thread() {
             @Override
             public void run() {
-                for (;;) {
+                for (; ; ) {
                     executor.execute(new Runnable() {
 
                         @Override
@@ -65,7 +65,7 @@ public class ExecutorTestMain {
         new Thread() {
             @Override
             public void run() {
-                for (;;) {
+                for (; ; ) {
                     executor.execute(new Runnable() {
 
                         @Override

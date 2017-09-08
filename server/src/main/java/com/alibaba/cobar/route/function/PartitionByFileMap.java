@@ -89,7 +89,7 @@ public class PartitionByFileMap extends FunctionExpression implements RuleAlgori
     public FunctionExpression constructFunction(List<Expression> arguments) {
         if (arguments == null || arguments.size() != 1)
             throw new IllegalArgumentException("function " + getFunctionName() + " must have 1 arguments but is "
-                    + arguments);
+                + arguments);
         Object[] args = new Object[arguments.size()];
         int i = -1;
         for (Expression arg : arguments) {
@@ -117,7 +117,7 @@ public class PartitionByFileMap extends FunctionExpression implements RuleAlgori
             fin = new FileInputStream(new File(fileMapPath));
             BufferedReader in = new BufferedReader(new InputStreamReader(fin));
             app2Partition = new HashMap<String, Integer>();
-            for (String line = null; (line = in.readLine()) != null;) {
+            for (String line = null; (line = in.readLine()) != null; ) {
                 line = line.trim();
                 if (line.startsWith("#") || line.startsWith("//"))
                     continue;

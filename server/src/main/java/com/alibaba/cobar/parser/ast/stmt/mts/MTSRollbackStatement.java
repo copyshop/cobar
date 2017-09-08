@@ -27,10 +27,14 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  */
 public class MTSRollbackStatement implements SQLStatement {
     public static enum CompleteType {
-        /** not specified, then use default */
+        /**
+         * not specified, then use default
+         */
         UN_DEF,
         CHAIN,
-        /** MySQL's default */
+        /**
+         * MySQL's default
+         */
         NO_CHAIN,
         RELEASE,
         NO_RELEASE

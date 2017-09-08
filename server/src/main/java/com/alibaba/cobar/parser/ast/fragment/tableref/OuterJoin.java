@@ -27,7 +27,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * left or right join
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class OuterJoin implements TableReference {

@@ -204,12 +204,12 @@ public abstract class MySQLPacket {
     @Override
     public String toString() {
         return new StringBuilder().append(getPacketInfo())
-                                  .append("{length=")
-                                  .append(packetLength)
-                                  .append(",id=")
-                                  .append(packetId)
-                                  .append('}')
-                                  .toString();
+            .append("{length=")
+            .append(packetLength)
+            .append(",id=")
+            .append(packetId)
+            .append('}')
+            .toString();
     }
 
 }

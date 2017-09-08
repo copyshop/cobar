@@ -23,13 +23,13 @@ import com.alibaba.cobar.net.BackendConnection;
 
 /**
  * From client to server when the client do heartbeat between cobar cluster.
- * 
+ * <p>
  * <pre>
  * Bytes         Name
  * -----         ----
  * 1             command
  * n             id
- * 
+ *
  * @author haiqing.zhuhq 2012-07-06
  */
 public class HeartbeatPacket extends MySQLPacket {

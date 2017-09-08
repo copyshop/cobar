@@ -84,11 +84,11 @@ public class KillConnectionHandler implements ResponseHandler {
     @Override
     public void rowEofResponse(byte[] eof, MySQLConnection conn) {
         LOGGER.error(new StringBuilder().append("unexpected packet for ")
-                                        .append(conn)
-                                        .append(" bound by ")
-                                        .append(session.getSource())
-                                        .append(": field's eof")
-                                        .toString());
+            .append(conn)
+            .append(" bound by ")
+            .append(session.getSource())
+            .append(": field's eof")
+            .toString());
         conn.quit();
         killee.close();
         finished();

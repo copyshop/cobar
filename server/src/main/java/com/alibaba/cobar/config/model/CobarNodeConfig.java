@@ -68,15 +68,15 @@ public final class CobarNodeConfig {
     @Override
     public String toString() {
         return new StringBuilder().append("[name=")
-                                  .append(name)
-                                  .append(",host=")
-                                  .append(host)
-                                  .append(",port=")
-                                  .append(port)
-                                  .append(",weight=")
-                                  .append(weight)
-                                  .append(']')
-                                  .toString();
+            .append(name)
+            .append(",host=")
+            .append(host)
+            .append(",port=")
+            .append(port)
+            .append(",weight=")
+            .append(weight)
+            .append(']')
+            .toString();
     }
 
 }

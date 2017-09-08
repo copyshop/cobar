@@ -29,7 +29,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class TableRefFactor extends AliasableTableReference {
-    /** e.g. <code>"`db2`.`tb1`"</code> is possible */
+    /**
+     * e.g. <code>"`db2`.`tb1`"</code> is possible
+     */
     private final Identifier table;
     private final List<IndexHint> hintList;
 

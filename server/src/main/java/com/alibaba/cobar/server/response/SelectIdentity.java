@@ -37,6 +37,7 @@ public class SelectIdentity {
 
     private static final int FIELD_COUNT = 1;
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
+
     static {
         byte packetId = 0;
         header.packetId = ++packetId;

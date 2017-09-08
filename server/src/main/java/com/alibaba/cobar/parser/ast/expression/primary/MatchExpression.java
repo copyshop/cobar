@@ -30,7 +30,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  */
 public class MatchExpression extends PrimaryExpression {
     public static enum Modifier {
-        /** no modifier */
+        /**
+         * no modifier
+         */
         _DEFAULT,
         IN_BOOLEAN_MODE,
         IN_NATURAL_LANGUAGE_MODE,

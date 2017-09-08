@@ -25,7 +25,7 @@ import com.alibaba.cobar.parser.ast.expression.primary.function.FunctionExpressi
 
 /**
  * MySQL extending function
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class Analyse extends FunctionExpression {

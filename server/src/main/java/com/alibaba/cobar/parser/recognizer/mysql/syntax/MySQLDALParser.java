@@ -168,6 +168,7 @@ public class MySQLDALParser extends MySQLParser {
     }
 
     private static final Map<String, SpecialIdentifier> specialIdentifiers = new HashMap<String, SpecialIdentifier>();
+
     static {
         specialIdentifiers.put("AUTHORS", SpecialIdentifier.AUTHORS);
         specialIdentifiers.put("BINLOG", SpecialIdentifier.BINLOG);
@@ -238,481 +239,482 @@ public class MySQLDALParser extends MySQLParser {
         SpecialIdentifier tempSi;
         Limit tempLimit;
         switch (lexer.token()) {
-        case KW_BINARY:
-            lexer.nextToken();
-            matchIdentifier("LOGS");
-            return new ShowBinaryLog();
-        case KW_CHARACTER:
-            lexer.nextToken();
-            match(KW_SET);
-            switch (lexer.token()) {
-            case KW_LIKE:
-                tempStr = like();
-                return new ShowCharaterSet(tempStr);
-            case KW_WHERE:
-                tempExpr = where();
-                return new ShowCharaterSet(tempExpr);
-            default:
-                return new ShowCharaterSet();
-            }
-        case KW_CREATE:
-            ShowCreate.Type showCreateType;
-            switch1: switch (lexer.nextToken()) {
-            case KW_DATABASE:
-                showCreateType = ShowCreate.Type.DATABASE;
-                break;
-            case KW_PROCEDURE:
-                showCreateType = ShowCreate.Type.PROCEDURE;
-                break;
-            case KW_TABLE:
-                showCreateType = ShowCreate.Type.TABLE;
-                break;
-            case KW_TRIGGER:
-                showCreateType = ShowCreate.Type.TRIGGER;
-                break;
-            case IDENTIFIER:
-                tempSi = specialIdentifiers.get(lexer.stringValueUppercase());
-                if (tempSi != null) {
-                    switch (tempSi) {
-                    case EVENT:
-                        showCreateType = ShowCreate.Type.EVENT;
-                        break switch1;
-                    case FUNCTION:
-                        showCreateType = ShowCreate.Type.FUNCTION;
-                        break switch1;
-                    case VIEW:
-                        showCreateType = ShowCreate.Type.VIEW;
-                        break switch1;
-                    }
-                }
-            default:
-                throw err("unexpect token for SHOW CREATE");
-            }
-            lexer.nextToken();
-            tempId = identifier();
-            return new ShowCreate(showCreateType, tempId);
-        case KW_SCHEMAS:
-        case KW_DATABASES:
-            lexer.nextToken();
-            switch (lexer.token()) {
-            case KW_LIKE:
-                tempStr = like();
-                return new ShowDatabases(tempStr);
-            case KW_WHERE:
-                tempExpr = where();
-                return new ShowDatabases(tempExpr);
-            }
-            return new ShowDatabases();
-        case KW_KEYS:
-            return showIndex(ShowIndex.Type.KEYS);
-        case KW_INDEX:
-            return showIndex(ShowIndex.Type.INDEX);
-        case KW_PROCEDURE:
-            lexer.nextToken();
-            tempStrUp = lexer.stringValueUppercase();
-            tempSi = specialIdentifiers.get(tempStrUp);
-            if (tempSi != null) {
-                switch (tempSi) {
-                case CODE:
-                    lexer.nextToken();
-                    tempId = identifier();
-                    return new ShowProcedureCode(tempId);
-                case STATUS:
-                    switch (lexer.nextToken()) {
+            case KW_BINARY:
+                lexer.nextToken();
+                matchIdentifier("LOGS");
+                return new ShowBinaryLog();
+            case KW_CHARACTER:
+                lexer.nextToken();
+                match(KW_SET);
+                switch (lexer.token()) {
                     case KW_LIKE:
                         tempStr = like();
-                        return new ShowProcedureStatus(tempStr);
+                        return new ShowCharaterSet(tempStr);
                     case KW_WHERE:
                         tempExpr = where();
-                        return new ShowProcedureStatus(tempExpr);
+                        return new ShowCharaterSet(tempExpr);
                     default:
-                        return new ShowProcedureStatus();
-                    }
+                        return new ShowCharaterSet();
                 }
-            }
-            throw err("unexpect token for SHOW PROCEDURE");
-        case KW_TABLE:
-            lexer.nextToken();
-            matchIdentifier("STATUS");
-            tempId = null;
-            if (lexer.token() == KW_FROM || lexer.token() == KW_IN) {
+            case KW_CREATE:
+                ShowCreate.Type showCreateType;
+                switch1:
+                switch (lexer.nextToken()) {
+                    case KW_DATABASE:
+                        showCreateType = ShowCreate.Type.DATABASE;
+                        break;
+                    case KW_PROCEDURE:
+                        showCreateType = ShowCreate.Type.PROCEDURE;
+                        break;
+                    case KW_TABLE:
+                        showCreateType = ShowCreate.Type.TABLE;
+                        break;
+                    case KW_TRIGGER:
+                        showCreateType = ShowCreate.Type.TRIGGER;
+                        break;
+                    case IDENTIFIER:
+                        tempSi = specialIdentifiers.get(lexer.stringValueUppercase());
+                        if (tempSi != null) {
+                            switch (tempSi) {
+                                case EVENT:
+                                    showCreateType = ShowCreate.Type.EVENT;
+                                    break switch1;
+                                case FUNCTION:
+                                    showCreateType = ShowCreate.Type.FUNCTION;
+                                    break switch1;
+                                case VIEW:
+                                    showCreateType = ShowCreate.Type.VIEW;
+                                    break switch1;
+                            }
+                        }
+                    default:
+                        throw err("unexpect token for SHOW CREATE");
+                }
                 lexer.nextToken();
                 tempId = identifier();
-            }
-            switch (lexer.token()) {
-            case KW_LIKE:
-                tempStr = like();
-                return new ShowTableStatus(tempId, tempStr);
-            case KW_WHERE:
-                tempExpr = where();
-                return new ShowTableStatus(tempId, tempExpr);
-            }
-            return new ShowTableStatus(tempId);
-        case IDENTIFIER:
-            tempStrUp = lexer.stringValueUppercase();
-            tempSi = specialIdentifiers.get(tempStrUp);
-            if (tempSi == null) {
-                break;
-            }
-            switch (tempSi) {
-            case INDEXES:
-                return showIndex(ShowIndex.Type.INDEXES);
-            case GRANTS:
-                if (lexer.nextToken() == KW_FOR) {
-                    lexer.nextToken();
-                    tempExpr = exprParser.expression();
-                    return new ShowGrants(tempExpr);
-                }
-                return new ShowGrants();
-            case AUTHORS:
+                return new ShowCreate(showCreateType, tempId);
+            case KW_SCHEMAS:
+            case KW_DATABASES:
                 lexer.nextToken();
-                return new ShowAuthors();
-            case BINLOG:
-                lexer.nextToken();
-                matchIdentifier("EVENTS");
-                tempStr = null;
-                tempExpr = null;
-                tempLimit = null;
-                if (lexer.token() == KW_IN) {
-                    lexer.nextToken();
-                    tempStr = lexer.stringValue();
-                    lexer.nextToken();
-                }
-                if (lexer.token() == KW_FROM) {
-                    lexer.nextToken();
-                    tempExpr = exprParser.expression();
-                }
-                if (lexer.token() == KW_LIMIT) {
-                    tempLimit = limit();
-                }
-                return new ShowBinLogEvent(tempStr, tempExpr, tempLimit);
-            case COLLATION:
-                switch (lexer.nextToken()) {
-                case KW_LIKE:
-                    tempStr = like();
-                    return new ShowCollation(tempStr);
-                case KW_WHERE:
-                    tempExpr = where();
-                    return new ShowCollation(tempExpr);
-                }
-                return new ShowCollation();
-            case COLUMNS:
-                return showColumns(false);
-            case CONTRIBUTORS:
-                lexer.nextToken();
-                return new ShowContributors();
-            case ENGINE:
-                switch (lexer.nextToken()) {
-                case IDENTIFIER:
-                    tempStrUp = lexer.stringValueUppercase();
-                    tempSi = specialIdentifiers.get(tempStrUp);
-                    if (tempSi != null) {
-                        switch (tempSi) {
-                        case INNODB:
-                            lexer.nextToken();
-                            tempStrUp = lexer.stringValueUppercase();
-                            tempSi = specialIdentifiers.get(tempStrUp);
-                            if (tempSi != null) {
-                                switch (tempSi) {
-                                case STATUS:
-                                    lexer.nextToken();
-                                    return new ShowEngine(ShowEngine.Type.INNODB_STATUS);
-                                case MUTEX:
-                                    lexer.nextToken();
-                                    return new ShowEngine(ShowEngine.Type.INNODB_MUTEX);
-                                }
-                            }
-                        case PERFORMANCE_SCHEMA:
-                            lexer.nextToken();
-                            matchIdentifier("STATUS");
-                            return new ShowEngine(ShowEngine.Type.PERFORMANCE_SCHEMA_STATUS);
-                        }
-                    }
-                default:
-                    throw err("unexpect token for SHOW ENGINE");
-                }
-            case ENGINES:
-                lexer.nextToken();
-                return new ShowEngines();
-            case ERRORS:
-                lexer.nextToken();
-                tempLimit = limit();
-                return new ShowErrors(false, tempLimit);
-            case COUNT:
-                lexer.nextToken();
-                match(PUNC_LEFT_PAREN);
-                match(OP_ASTERISK);
-                match(PUNC_RIGHT_PAREN);
-                switch (matchIdentifier("ERRORS", "WARNINGS")) {
-                case 0:
-                    return new ShowErrors(true, null);
-                case 1:
-                    return new ShowWarnings(true, null);
-                }
-            case EVENTS:
-                tempId = null;
-                switch (lexer.nextToken()) {
-                case KW_IN:
-                case KW_FROM:
-                    lexer.nextToken();
-                    tempId = identifier();
-                }
                 switch (lexer.token()) {
-                case KW_LIKE:
-                    tempStr = like();
-                    return new ShowEvents(tempId, tempStr);
-                case KW_WHERE:
-                    tempExpr = where();
-                    return new ShowEvents(tempId, tempExpr);
-                default:
-                    return new ShowEvents(tempId);
+                    case KW_LIKE:
+                        tempStr = like();
+                        return new ShowDatabases(tempStr);
+                    case KW_WHERE:
+                        tempExpr = where();
+                        return new ShowDatabases(tempExpr);
                 }
-            case FULL:
+                return new ShowDatabases();
+            case KW_KEYS:
+                return showIndex(ShowIndex.Type.KEYS);
+            case KW_INDEX:
+                return showIndex(ShowIndex.Type.INDEX);
+            case KW_PROCEDURE:
                 lexer.nextToken();
                 tempStrUp = lexer.stringValueUppercase();
                 tempSi = specialIdentifiers.get(tempStrUp);
                 if (tempSi != null) {
                     switch (tempSi) {
+                        case CODE:
+                            lexer.nextToken();
+                            tempId = identifier();
+                            return new ShowProcedureCode(tempId);
+                        case STATUS:
+                            switch (lexer.nextToken()) {
+                                case KW_LIKE:
+                                    tempStr = like();
+                                    return new ShowProcedureStatus(tempStr);
+                                case KW_WHERE:
+                                    tempExpr = where();
+                                    return new ShowProcedureStatus(tempExpr);
+                                default:
+                                    return new ShowProcedureStatus();
+                            }
+                    }
+                }
+                throw err("unexpect token for SHOW PROCEDURE");
+            case KW_TABLE:
+                lexer.nextToken();
+                matchIdentifier("STATUS");
+                tempId = null;
+                if (lexer.token() == KW_FROM || lexer.token() == KW_IN) {
+                    lexer.nextToken();
+                    tempId = identifier();
+                }
+                switch (lexer.token()) {
+                    case KW_LIKE:
+                        tempStr = like();
+                        return new ShowTableStatus(tempId, tempStr);
+                    case KW_WHERE:
+                        tempExpr = where();
+                        return new ShowTableStatus(tempId, tempExpr);
+                }
+                return new ShowTableStatus(tempId);
+            case IDENTIFIER:
+                tempStrUp = lexer.stringValueUppercase();
+                tempSi = specialIdentifiers.get(tempStrUp);
+                if (tempSi == null) {
+                    break;
+                }
+                switch (tempSi) {
+                    case INDEXES:
+                        return showIndex(ShowIndex.Type.INDEXES);
+                    case GRANTS:
+                        if (lexer.nextToken() == KW_FOR) {
+                            lexer.nextToken();
+                            tempExpr = exprParser.expression();
+                            return new ShowGrants(tempExpr);
+                        }
+                        return new ShowGrants();
+                    case AUTHORS:
+                        lexer.nextToken();
+                        return new ShowAuthors();
+                    case BINLOG:
+                        lexer.nextToken();
+                        matchIdentifier("EVENTS");
+                        tempStr = null;
+                        tempExpr = null;
+                        tempLimit = null;
+                        if (lexer.token() == KW_IN) {
+                            lexer.nextToken();
+                            tempStr = lexer.stringValue();
+                            lexer.nextToken();
+                        }
+                        if (lexer.token() == KW_FROM) {
+                            lexer.nextToken();
+                            tempExpr = exprParser.expression();
+                        }
+                        if (lexer.token() == KW_LIMIT) {
+                            tempLimit = limit();
+                        }
+                        return new ShowBinLogEvent(tempStr, tempExpr, tempLimit);
+                    case COLLATION:
+                        switch (lexer.nextToken()) {
+                            case KW_LIKE:
+                                tempStr = like();
+                                return new ShowCollation(tempStr);
+                            case KW_WHERE:
+                                tempExpr = where();
+                                return new ShowCollation(tempExpr);
+                        }
+                        return new ShowCollation();
                     case COLUMNS:
-                        return showColumns(true);
+                        return showColumns(false);
+                    case CONTRIBUTORS:
+                        lexer.nextToken();
+                        return new ShowContributors();
+                    case ENGINE:
+                        switch (lexer.nextToken()) {
+                            case IDENTIFIER:
+                                tempStrUp = lexer.stringValueUppercase();
+                                tempSi = specialIdentifiers.get(tempStrUp);
+                                if (tempSi != null) {
+                                    switch (tempSi) {
+                                        case INNODB:
+                                            lexer.nextToken();
+                                            tempStrUp = lexer.stringValueUppercase();
+                                            tempSi = specialIdentifiers.get(tempStrUp);
+                                            if (tempSi != null) {
+                                                switch (tempSi) {
+                                                    case STATUS:
+                                                        lexer.nextToken();
+                                                        return new ShowEngine(ShowEngine.Type.INNODB_STATUS);
+                                                    case MUTEX:
+                                                        lexer.nextToken();
+                                                        return new ShowEngine(ShowEngine.Type.INNODB_MUTEX);
+                                                }
+                                            }
+                                        case PERFORMANCE_SCHEMA:
+                                            lexer.nextToken();
+                                            matchIdentifier("STATUS");
+                                            return new ShowEngine(ShowEngine.Type.PERFORMANCE_SCHEMA_STATUS);
+                                    }
+                                }
+                            default:
+                                throw err("unexpect token for SHOW ENGINE");
+                        }
+                    case ENGINES:
+                        lexer.nextToken();
+                        return new ShowEngines();
+                    case ERRORS:
+                        lexer.nextToken();
+                        tempLimit = limit();
+                        return new ShowErrors(false, tempLimit);
+                    case COUNT:
+                        lexer.nextToken();
+                        match(PUNC_LEFT_PAREN);
+                        match(OP_ASTERISK);
+                        match(PUNC_RIGHT_PAREN);
+                        switch (matchIdentifier("ERRORS", "WARNINGS")) {
+                            case 0:
+                                return new ShowErrors(true, null);
+                            case 1:
+                                return new ShowWarnings(true, null);
+                        }
+                    case EVENTS:
+                        tempId = null;
+                        switch (lexer.nextToken()) {
+                            case KW_IN:
+                            case KW_FROM:
+                                lexer.nextToken();
+                                tempId = identifier();
+                        }
+                        switch (lexer.token()) {
+                            case KW_LIKE:
+                                tempStr = like();
+                                return new ShowEvents(tempId, tempStr);
+                            case KW_WHERE:
+                                tempExpr = where();
+                                return new ShowEvents(tempId, tempExpr);
+                            default:
+                                return new ShowEvents(tempId);
+                        }
+                    case FULL:
+                        lexer.nextToken();
+                        tempStrUp = lexer.stringValueUppercase();
+                        tempSi = specialIdentifiers.get(tempStrUp);
+                        if (tempSi != null) {
+                            switch (tempSi) {
+                                case COLUMNS:
+                                    return showColumns(true);
+                                case PROCESSLIST:
+                                    lexer.nextToken();
+                                    return new ShowProcesslist(true);
+                                case TABLES:
+                                    tempId = null;
+                                    switch (lexer.nextToken()) {
+                                        case KW_IN:
+                                        case KW_FROM:
+                                            lexer.nextToken();
+                                            tempId = identifier();
+                                    }
+                                    switch (lexer.token()) {
+                                        case KW_LIKE:
+                                            tempStr = like();
+                                            return new ShowTables(true, tempId, tempStr);
+                                        case KW_WHERE:
+                                            tempExpr = where();
+                                            return new ShowTables(true, tempId, tempExpr);
+                                        default:
+                                            return new ShowTables(true, tempId);
+                                    }
+                            }
+                        }
+                        throw err("unexpected token for SHOW FULL");
+                    case FUNCTION:
+                        lexer.nextToken();
+                        tempStrUp = lexer.stringValueUppercase();
+                        tempSi = specialIdentifiers.get(tempStrUp);
+                        if (tempSi != null) {
+                            switch (tempSi) {
+                                case CODE:
+                                    lexer.nextToken();
+                                    tempId = identifier();
+                                    return new ShowFunctionCode(tempId);
+                                case STATUS:
+                                    switch (lexer.nextToken()) {
+                                        case KW_LIKE:
+                                            tempStr = like();
+                                            return new ShowFunctionStatus(tempStr);
+                                        case KW_WHERE:
+                                            tempExpr = where();
+                                            return new ShowFunctionStatus(tempExpr);
+                                        default:
+                                            return new ShowFunctionStatus();
+                                    }
+                            }
+                        }
+                        throw err("unexpected token for SHOW FUNCTION");
+                    case GLOBAL:
+                        lexer.nextToken();
+                        tempStrUp = lexer.stringValueUppercase();
+                        tempSi = specialIdentifiers.get(tempStrUp);
+                        if (tempSi != null) {
+                            switch (tempSi) {
+                                case STATUS:
+                                    switch (lexer.nextToken()) {
+                                        case KW_LIKE:
+                                            tempStr = like();
+                                            return new ShowStatus(VariableScope.GLOBAL, tempStr);
+                                        case KW_WHERE:
+                                            tempExpr = where();
+                                            return new ShowStatus(VariableScope.GLOBAL, tempExpr);
+                                        default:
+                                            return new ShowStatus(VariableScope.GLOBAL);
+                                    }
+                                case VARIABLES:
+                                    switch (lexer.nextToken()) {
+                                        case KW_LIKE:
+                                            tempStr = like();
+                                            return new ShowVariables(VariableScope.GLOBAL, tempStr);
+                                        case KW_WHERE:
+                                            tempExpr = where();
+                                            return new ShowVariables(VariableScope.GLOBAL, tempExpr);
+                                        default:
+                                            return new ShowVariables(VariableScope.GLOBAL);
+                                    }
+                            }
+                        }
+                        throw err("unexpected token for SHOW GLOBAL");
+                    case MASTER:
+                        lexer.nextToken();
+                        tempStrUp = lexer.stringValueUppercase();
+                        tempSi = specialIdentifiers.get(tempStrUp);
+                        if (tempSi != null && tempSi == SpecialIdentifier.STATUS) {
+                            lexer.nextToken();
+                            return new ShowMasterStatus();
+                        }
+                        matchIdentifier("LOGS");
+                        return new ShowBinaryLog();
+                    case OPEN:
+                        lexer.nextToken();
+                        matchIdentifier("TABLES");
+                        tempId = null;
+                        switch (lexer.token()) {
+                            case KW_IN:
+                            case KW_FROM:
+                                lexer.nextToken();
+                                tempId = identifier();
+                        }
+                        switch (lexer.token()) {
+                            case KW_LIKE:
+                                tempStr = like();
+                                return new ShowOpenTables(tempId, tempStr);
+                            case KW_WHERE:
+                                tempExpr = where();
+                                return new ShowOpenTables(tempId, tempExpr);
+                            default:
+                                return new ShowOpenTables(tempId);
+                        }
+                    case PLUGINS:
+                        lexer.nextToken();
+                        return new ShowPlugins();
+                    case PRIVILEGES:
+                        lexer.nextToken();
+                        return new ShowPrivileges();
                     case PROCESSLIST:
                         lexer.nextToken();
-                        return new ShowProcesslist(true);
+                        return new ShowProcesslist(false);
+                    case PROFILE:
+                        return showProfile();
+                    case PROFILES:
+                        lexer.nextToken();
+                        return new ShowProfiles();
+                    case LOCAL:
+                    case SESSION:
+                        lexer.nextToken();
+                        tempStrUp = lexer.stringValueUppercase();
+                        tempSi = specialIdentifiers.get(tempStrUp);
+                        if (tempSi != null) {
+                            switch (tempSi) {
+                                case STATUS:
+                                    switch (lexer.nextToken()) {
+                                        case KW_LIKE:
+                                            tempStr = like();
+                                            return new ShowStatus(VariableScope.SESSION, tempStr);
+                                        case KW_WHERE:
+                                            tempExpr = where();
+                                            return new ShowStatus(VariableScope.SESSION, tempExpr);
+                                        default:
+                                            return new ShowStatus(VariableScope.SESSION);
+                                    }
+                                case VARIABLES:
+                                    switch (lexer.nextToken()) {
+                                        case KW_LIKE:
+                                            tempStr = like();
+                                            return new ShowVariables(VariableScope.SESSION, tempStr);
+                                        case KW_WHERE:
+                                            tempExpr = where();
+                                            return new ShowVariables(VariableScope.SESSION, tempExpr);
+                                        default:
+                                            return new ShowVariables(VariableScope.SESSION);
+                                    }
+                            }
+                        }
+                        throw err("unexpected token for SHOW SESSION");
+                    case SLAVE:
+                        lexer.nextToken();
+                        tempStrUp = lexer.stringValueUppercase();
+                        tempSi = specialIdentifiers.get(tempStrUp);
+                        if (tempSi != null) {
+                            switch (tempSi) {
+                                case HOSTS:
+                                    lexer.nextToken();
+                                    return new ShowSlaveHosts();
+                                case STATUS:
+                                    lexer.nextToken();
+                                    return new ShowSlaveStatus();
+                            }
+                        }
+                        throw err("unexpected token for SHOW SLAVE");
+                    case STATUS:
+                        switch (lexer.nextToken()) {
+                            case KW_LIKE:
+                                tempStr = like();
+                                return new ShowStatus(VariableScope.SESSION, tempStr);
+                            case KW_WHERE:
+                                tempExpr = where();
+                                return new ShowStatus(VariableScope.SESSION, tempExpr);
+                            default:
+                                return new ShowStatus(VariableScope.SESSION);
+                        }
+                    case STORAGE:
+                        lexer.nextToken();
+                        matchIdentifier("ENGINES");
+                        return new ShowEngines();
                     case TABLES:
                         tempId = null;
                         switch (lexer.nextToken()) {
-                        case KW_IN:
-                        case KW_FROM:
-                            lexer.nextToken();
-                            tempId = identifier();
+                            case KW_IN:
+                            case KW_FROM:
+                                lexer.nextToken();
+                                tempId = identifier();
                         }
                         switch (lexer.token()) {
-                        case KW_LIKE:
-                            tempStr = like();
-                            return new ShowTables(true, tempId, tempStr);
-                        case KW_WHERE:
-                            tempExpr = where();
-                            return new ShowTables(true, tempId, tempExpr);
-                        default:
-                            return new ShowTables(true, tempId);
+                            case KW_LIKE:
+                                tempStr = like();
+                                return new ShowTables(false, tempId, tempStr);
+                            case KW_WHERE:
+                                tempExpr = where();
+                                return new ShowTables(false, tempId, tempExpr);
+                            default:
+                                return new ShowTables(false, tempId);
                         }
-                    }
-                }
-                throw err("unexpected token for SHOW FULL");
-            case FUNCTION:
-                lexer.nextToken();
-                tempStrUp = lexer.stringValueUppercase();
-                tempSi = specialIdentifiers.get(tempStrUp);
-                if (tempSi != null) {
-                    switch (tempSi) {
-                    case CODE:
-                        lexer.nextToken();
-                        tempId = identifier();
-                        return new ShowFunctionCode(tempId);
-                    case STATUS:
+                    case TRIGGERS:
+                        tempId = null;
                         switch (lexer.nextToken()) {
-                        case KW_LIKE:
-                            tempStr = like();
-                            return new ShowFunctionStatus(tempStr);
-                        case KW_WHERE:
-                            tempExpr = where();
-                            return new ShowFunctionStatus(tempExpr);
-                        default:
-                            return new ShowFunctionStatus();
+                            case KW_IN:
+                            case KW_FROM:
+                                lexer.nextToken();
+                                tempId = identifier();
                         }
-                    }
-                }
-                throw err("unexpected token for SHOW FUNCTION");
-            case GLOBAL:
-                lexer.nextToken();
-                tempStrUp = lexer.stringValueUppercase();
-                tempSi = specialIdentifiers.get(tempStrUp);
-                if (tempSi != null) {
-                    switch (tempSi) {
-                    case STATUS:
-                        switch (lexer.nextToken()) {
-                        case KW_LIKE:
-                            tempStr = like();
-                            return new ShowStatus(VariableScope.GLOBAL, tempStr);
-                        case KW_WHERE:
-                            tempExpr = where();
-                            return new ShowStatus(VariableScope.GLOBAL, tempExpr);
-                        default:
-                            return new ShowStatus(VariableScope.GLOBAL);
+                        switch (lexer.token()) {
+                            case KW_LIKE:
+                                tempStr = like();
+                                return new ShowTriggers(tempId, tempStr);
+                            case KW_WHERE:
+                                tempExpr = where();
+                                return new ShowTriggers(tempId, tempExpr);
+                            default:
+                                return new ShowTriggers(tempId);
                         }
                     case VARIABLES:
                         switch (lexer.nextToken()) {
-                        case KW_LIKE:
-                            tempStr = like();
-                            return new ShowVariables(VariableScope.GLOBAL, tempStr);
-                        case KW_WHERE:
-                            tempExpr = where();
-                            return new ShowVariables(VariableScope.GLOBAL, tempExpr);
-                        default:
-                            return new ShowVariables(VariableScope.GLOBAL);
+                            case KW_LIKE:
+                                tempStr = like();
+                                return new ShowVariables(VariableScope.SESSION, tempStr);
+                            case KW_WHERE:
+                                tempExpr = where();
+                                return new ShowVariables(VariableScope.SESSION, tempExpr);
+                            default:
+                                return new ShowVariables(VariableScope.SESSION);
                         }
-                    }
-                }
-                throw err("unexpected token for SHOW GLOBAL");
-            case MASTER:
-                lexer.nextToken();
-                tempStrUp = lexer.stringValueUppercase();
-                tempSi = specialIdentifiers.get(tempStrUp);
-                if (tempSi != null && tempSi == SpecialIdentifier.STATUS) {
-                    lexer.nextToken();
-                    return new ShowMasterStatus();
-                }
-                matchIdentifier("LOGS");
-                return new ShowBinaryLog();
-            case OPEN:
-                lexer.nextToken();
-                matchIdentifier("TABLES");
-                tempId = null;
-                switch (lexer.token()) {
-                case KW_IN:
-                case KW_FROM:
-                    lexer.nextToken();
-                    tempId = identifier();
-                }
-                switch (lexer.token()) {
-                case KW_LIKE:
-                    tempStr = like();
-                    return new ShowOpenTables(tempId, tempStr);
-                case KW_WHERE:
-                    tempExpr = where();
-                    return new ShowOpenTables(tempId, tempExpr);
-                default:
-                    return new ShowOpenTables(tempId);
-                }
-            case PLUGINS:
-                lexer.nextToken();
-                return new ShowPlugins();
-            case PRIVILEGES:
-                lexer.nextToken();
-                return new ShowPrivileges();
-            case PROCESSLIST:
-                lexer.nextToken();
-                return new ShowProcesslist(false);
-            case PROFILE:
-                return showProfile();
-            case PROFILES:
-                lexer.nextToken();
-                return new ShowProfiles();
-            case LOCAL:
-            case SESSION:
-                lexer.nextToken();
-                tempStrUp = lexer.stringValueUppercase();
-                tempSi = specialIdentifiers.get(tempStrUp);
-                if (tempSi != null) {
-                    switch (tempSi) {
-                    case STATUS:
-                        switch (lexer.nextToken()) {
-                        case KW_LIKE:
-                            tempStr = like();
-                            return new ShowStatus(VariableScope.SESSION, tempStr);
-                        case KW_WHERE:
-                            tempExpr = where();
-                            return new ShowStatus(VariableScope.SESSION, tempExpr);
-                        default:
-                            return new ShowStatus(VariableScope.SESSION);
-                        }
-                    case VARIABLES:
-                        switch (lexer.nextToken()) {
-                        case KW_LIKE:
-                            tempStr = like();
-                            return new ShowVariables(VariableScope.SESSION, tempStr);
-                        case KW_WHERE:
-                            tempExpr = where();
-                            return new ShowVariables(VariableScope.SESSION, tempExpr);
-                        default:
-                            return new ShowVariables(VariableScope.SESSION);
-                        }
-                    }
-                }
-                throw err("unexpected token for SHOW SESSION");
-            case SLAVE:
-                lexer.nextToken();
-                tempStrUp = lexer.stringValueUppercase();
-                tempSi = specialIdentifiers.get(tempStrUp);
-                if (tempSi != null) {
-                    switch (tempSi) {
-                    case HOSTS:
+                    case WARNINGS:
                         lexer.nextToken();
-                        return new ShowSlaveHosts();
-                    case STATUS:
-                        lexer.nextToken();
-                        return new ShowSlaveStatus();
-                    }
+                        tempLimit = limit();
+                        return new ShowWarnings(false, tempLimit);
                 }
-                throw err("unexpected token for SHOW SLAVE");
-            case STATUS:
-                switch (lexer.nextToken()) {
-                case KW_LIKE:
-                    tempStr = like();
-                    return new ShowStatus(VariableScope.SESSION, tempStr);
-                case KW_WHERE:
-                    tempExpr = where();
-                    return new ShowStatus(VariableScope.SESSION, tempExpr);
-                default:
-                    return new ShowStatus(VariableScope.SESSION);
-                }
-            case STORAGE:
-                lexer.nextToken();
-                matchIdentifier("ENGINES");
-                return new ShowEngines();
-            case TABLES:
-                tempId = null;
-                switch (lexer.nextToken()) {
-                case KW_IN:
-                case KW_FROM:
-                    lexer.nextToken();
-                    tempId = identifier();
-                }
-                switch (lexer.token()) {
-                case KW_LIKE:
-                    tempStr = like();
-                    return new ShowTables(false, tempId, tempStr);
-                case KW_WHERE:
-                    tempExpr = where();
-                    return new ShowTables(false, tempId, tempExpr);
-                default:
-                    return new ShowTables(false, tempId);
-                }
-            case TRIGGERS:
-                tempId = null;
-                switch (lexer.nextToken()) {
-                case KW_IN:
-                case KW_FROM:
-                    lexer.nextToken();
-                    tempId = identifier();
-                }
-                switch (lexer.token()) {
-                case KW_LIKE:
-                    tempStr = like();
-                    return new ShowTriggers(tempId, tempStr);
-                case KW_WHERE:
-                    tempExpr = where();
-                    return new ShowTriggers(tempId, tempExpr);
-                default:
-                    return new ShowTriggers(tempId);
-                }
-            case VARIABLES:
-                switch (lexer.nextToken()) {
-                case KW_LIKE:
-                    tempStr = like();
-                    return new ShowVariables(VariableScope.SESSION, tempStr);
-                case KW_WHERE:
-                    tempExpr = where();
-                    return new ShowVariables(VariableScope.SESSION, tempExpr);
-                default:
-                    return new ShowVariables(VariableScope.SESSION);
-                }
-            case WARNINGS:
-                lexer.nextToken();
-                tempLimit = limit();
-                return new ShowWarnings(false, tempLimit);
-            }
-            break;
+                break;
         }
         throw err("unexpect token for SHOW");
     }
@@ -738,7 +740,7 @@ public class MySQLDALParser extends MySQLParser {
         } else if (lexer.token() == PUNC_COMMA) {
             types = new LinkedList<ShowProfile.Type>();
             types.add(type);
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 type = showPrifileType();
                 types.add(type);
@@ -762,51 +764,51 @@ public class MySQLDALParser extends MySQLParser {
      */
     private ShowProfile.Type showPrifileType() throws SQLSyntaxErrorException {
         switch (lexer.token()) {
-        case KW_ALL:
-            lexer.nextToken();
-            return ShowProfile.Type.ALL;
-        case IDENTIFIER:
-            String strUp = lexer.stringValueUppercase();
-            SpecialIdentifier si = specialIdentifiers.get(strUp);
-            if (si != null) {
-                switch (si) {
-                case BLOCK:
-                    lexer.nextToken();
-                    matchIdentifier("IO");
-                    return ShowProfile.Type.BLOCK_IO;
-                case CONTEXT:
-                    lexer.nextToken();
-                    matchIdentifier("SWITCHES");
-                    return ShowProfile.Type.CONTEXT_SWITCHES;
-                case CPU:
-                    lexer.nextToken();
-                    return ShowProfile.Type.CPU;
-                case IPC:
-                    lexer.nextToken();
-                    return ShowProfile.Type.IPC;
-                case MEMORY:
-                    lexer.nextToken();
-                    return ShowProfile.Type.MEMORY;
-                case PAGE:
-                    lexer.nextToken();
-                    matchIdentifier("FAULTS");
-                    return ShowProfile.Type.PAGE_FAULTS;
-                case SOURCE:
-                    lexer.nextToken();
-                    return ShowProfile.Type.SOURCE;
-                case SWAPS:
-                    lexer.nextToken();
-                    return ShowProfile.Type.SWAPS;
+            case KW_ALL:
+                lexer.nextToken();
+                return ShowProfile.Type.ALL;
+            case IDENTIFIER:
+                String strUp = lexer.stringValueUppercase();
+                SpecialIdentifier si = specialIdentifiers.get(strUp);
+                if (si != null) {
+                    switch (si) {
+                        case BLOCK:
+                            lexer.nextToken();
+                            matchIdentifier("IO");
+                            return ShowProfile.Type.BLOCK_IO;
+                        case CONTEXT:
+                            lexer.nextToken();
+                            matchIdentifier("SWITCHES");
+                            return ShowProfile.Type.CONTEXT_SWITCHES;
+                        case CPU:
+                            lexer.nextToken();
+                            return ShowProfile.Type.CPU;
+                        case IPC:
+                            lexer.nextToken();
+                            return ShowProfile.Type.IPC;
+                        case MEMORY:
+                            lexer.nextToken();
+                            return ShowProfile.Type.MEMORY;
+                        case PAGE:
+                            lexer.nextToken();
+                            matchIdentifier("FAULTS");
+                            return ShowProfile.Type.PAGE_FAULTS;
+                        case SOURCE:
+                            lexer.nextToken();
+                            return ShowProfile.Type.SOURCE;
+                        case SWAPS:
+                            lexer.nextToken();
+                            return ShowProfile.Type.SWAPS;
+                    }
                 }
-            }
-        default:
-            return null;
+            default:
+                return null;
         }
     }
 
     /**
      * First token is {@link SpecialIdentifier#COLUMNS}
-     * 
+     * <p>
      * <pre>
      * SHOW [FULL] <code>COLUMNS {FROM | IN} tbl_name [{FROM | IN} db_name] [LIKE 'pattern' | WHERE expr] </code>
      * </pre>
@@ -817,18 +819,18 @@ public class MySQLDALParser extends MySQLParser {
         Identifier table = identifier();
         Identifier database = null;
         switch (lexer.token()) {
-        case KW_FROM:
-        case KW_IN:
-            lexer.nextToken();
-            database = identifier();
+            case KW_FROM:
+            case KW_IN:
+                lexer.nextToken();
+                database = identifier();
         }
         switch (lexer.token()) {
-        case KW_LIKE:
-            String like = like();
-            return new ShowColumns(full, table, database, like);
-        case KW_WHERE:
-            Expression where = where();
-            return new ShowColumns(full, table, database, where);
+            case KW_LIKE:
+                String like = like();
+                return new ShowColumns(full, table, database, like);
+            case KW_WHERE:
+                Expression where = where();
+                return new ShowColumns(full, table, database, where);
         }
         return new ShowColumns(full, table, database);
     }
@@ -849,17 +851,17 @@ public class MySQLDALParser extends MySQLParser {
     private String getStringValue() throws SQLSyntaxErrorException {
         String name;
         switch (lexer.token()) {
-        case IDENTIFIER:
-            name = Identifier.unescapeName(lexer.stringValue());
-            lexer.nextToken();
-            return name;
-        case LITERAL_CHARS:
-            name = lexer.stringValue();
-            name = LiteralString.getUnescapedString(name.substring(1, name.length() - 1));
-            lexer.nextToken();
-            return name;
-        default:
-            throw err("unexpected token: " + lexer.token());
+            case IDENTIFIER:
+                name = Identifier.unescapeName(lexer.stringValue());
+                lexer.nextToken();
+                return name;
+            case LITERAL_CHARS:
+                name = lexer.stringValue();
+                name = LiteralString.getUnescapedString(name.substring(1, name.length() - 1));
+                lexer.nextToken();
+                return name;
+            default:
+                throw err("unexpected token: " + lexer.token());
         }
     }
 
@@ -873,7 +875,7 @@ public class MySQLDALParser extends MySQLParser {
             lexer.nextToken();
         }
         if (lexer.token() == IDENTIFIER
-                && SpecialIdentifier.NAMES == specialIdentifiers.get(lexer.stringValueUppercase())) {
+            && SpecialIdentifier.NAMES == specialIdentifiers.get(lexer.stringValueUppercase())) {
             if (lexer.nextToken() == KW_DEFAULT) {
                 lexer.nextToken();
                 return new DALSetNamesStatement();
@@ -909,7 +911,7 @@ public class MySQLDALParser extends MySQLParser {
         }
         assignmentList = new LinkedList<Pair<VariableExpression, Expression>>();
         assignmentList.add(pair);
-        for (; lexer.token() == PUNC_COMMA;) {
+        for (; lexer.token() == PUNC_COMMA; ) {
             lexer.nextToken();
             pair = (Pair<VariableExpression, Expression>) varAssign();
             assignmentList.add(pair);
@@ -921,46 +923,46 @@ public class MySQLDALParser extends MySQLParser {
      * first token is <code>TRANSACTION</code>
      */
     private MTSSetTransactionStatement setMTSSetTransactionStatement(VariableScope scope)
-            throws SQLSyntaxErrorException {
+        throws SQLSyntaxErrorException {
         lexer.nextToken();
         matchIdentifier("ISOLATION");
         matchIdentifier("LEVEL");
 
         SpecialIdentifier si;
         switch (lexer.token()) {
-        case KW_READ:
-            lexer.nextToken();
-            si = specialIdentifiers.get(lexer.stringValueUppercase());
-            if (si != null) {
-                switch (si) {
-                case COMMITTED:
-                    lexer.nextToken();
-                    return new MTSSetTransactionStatement(
-                            scope,
-                            MTSSetTransactionStatement.IsolationLevel.READ_COMMITTED);
-                case UNCOMMITTED:
-                    lexer.nextToken();
-                    return new MTSSetTransactionStatement(
-                            scope,
-                            MTSSetTransactionStatement.IsolationLevel.READ_UNCOMMITTED);
+            case KW_READ:
+                lexer.nextToken();
+                si = specialIdentifiers.get(lexer.stringValueUppercase());
+                if (si != null) {
+                    switch (si) {
+                        case COMMITTED:
+                            lexer.nextToken();
+                            return new MTSSetTransactionStatement(
+                                scope,
+                                MTSSetTransactionStatement.IsolationLevel.READ_COMMITTED);
+                        case UNCOMMITTED:
+                            lexer.nextToken();
+                            return new MTSSetTransactionStatement(
+                                scope,
+                                MTSSetTransactionStatement.IsolationLevel.READ_UNCOMMITTED);
+                    }
                 }
-            }
-            throw err("unknown isolation read level: " + lexer.stringValue());
-        case IDENTIFIER:
-            si = specialIdentifiers.get(lexer.stringValueUppercase());
-            if (si != null) {
-                switch (si) {
-                case REPEATABLE:
-                    lexer.nextToken();
-                    match(KW_READ);
-                    return new MTSSetTransactionStatement(
-                            scope,
-                            MTSSetTransactionStatement.IsolationLevel.REPEATABLE_READ);
-                case SERIALIZABLE:
-                    lexer.nextToken();
-                    return new MTSSetTransactionStatement(scope, MTSSetTransactionStatement.IsolationLevel.SERIALIZABLE);
+                throw err("unknown isolation read level: " + lexer.stringValue());
+            case IDENTIFIER:
+                si = specialIdentifiers.get(lexer.stringValueUppercase());
+                if (si != null) {
+                    switch (si) {
+                        case REPEATABLE:
+                            lexer.nextToken();
+                            match(KW_READ);
+                            return new MTSSetTransactionStatement(
+                                scope,
+                                MTSSetTransactionStatement.IsolationLevel.REPEATABLE_READ);
+                        case SERIALIZABLE:
+                            lexer.nextToken();
+                            return new MTSSetTransactionStatement(scope, MTSSetTransactionStatement.IsolationLevel.SERIALIZABLE);
+                    }
                 }
-            }
         }
         throw err("unknown isolation level: " + lexer.stringValue());
     }
@@ -970,38 +972,38 @@ public class MySQLDALParser extends MySQLParser {
         Expression expr;
         VariableScope scope = VariableScope.SESSION;
         switch (lexer.token()) {
-        case IDENTIFIER:
-            boolean explictScope = false;
-            SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
-            if (si != null) {
-                switch (si) {
-                case TRANSACTION:
-                    return setMTSSetTransactionStatement(null);
-                case GLOBAL:
-                    scope = VariableScope.GLOBAL;
-                case SESSION:
-                case LOCAL:
-                    explictScope = true;
-                    lexer.nextToken();
-                default:
-                    break;
+            case IDENTIFIER:
+                boolean explictScope = false;
+                SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
+                if (si != null) {
+                    switch (si) {
+                        case TRANSACTION:
+                            return setMTSSetTransactionStatement(null);
+                        case GLOBAL:
+                            scope = VariableScope.GLOBAL;
+                        case SESSION:
+                        case LOCAL:
+                            explictScope = true;
+                            lexer.nextToken();
+                        default:
+                            break;
+                    }
                 }
-            }
-            if (explictScope && specialIdentifiers.get(lexer.stringValueUppercase()) == SpecialIdentifier.TRANSACTION) {
-                return setMTSSetTransactionStatement(scope);
-            }
-            var = new SysVarPrimary(scope, lexer.stringValue(), lexer.stringValueUppercase());
-            match(IDENTIFIER);
-            break;
-        case SYS_VAR:
-            var = systemVariale();
-            break;
-        case USR_VAR:
-            var = new UsrDefVarPrimary(lexer.stringValue());
-            lexer.nextToken();
-            break;
-        default:
-            throw err("unexpected token for SET statement");
+                if (explictScope && specialIdentifiers.get(lexer.stringValueUppercase()) == SpecialIdentifier.TRANSACTION) {
+                    return setMTSSetTransactionStatement(scope);
+                }
+                var = new SysVarPrimary(scope, lexer.stringValue(), lexer.stringValueUppercase());
+                match(IDENTIFIER);
+                break;
+            case SYS_VAR:
+                var = systemVariale();
+                break;
+            case USR_VAR:
+                var = new UsrDefVarPrimary(lexer.stringValue());
+                lexer.nextToken();
+                break;
+            default:
+                throw err("unexpected token for SET statement");
         }
         match(OP_EQUALS, OP_ASSIGN);
         expr = exprParser.expression();

@@ -39,8 +39,8 @@ public class PartitionByStringTest extends TestCase {
     @SuppressWarnings("unchecked")
     public void testPartition() {
         PartitionByString sut = new PartitionByString(
-                "test   ",
-                (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
+            "test   ",
+            (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-2:");
         sut.setPartitionCount("1024");
@@ -51,8 +51,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals((int) execute(sut, "2"), (int) execute(sut, "2"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-2:-1");
         sut.setPartitionCount("1024");
@@ -67,8 +67,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(56, (int) execute(sut, "780"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("1:-1");
         sut.setPartitionCount("1024");
@@ -89,8 +89,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，不越界
         PartitionByString sut = new PartitionByString(
-                "test   ",
-                (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
+            "test   ",
+            (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("1:1");
         sut.setPartitionCount("1024");
@@ -100,8 +100,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-5:-5");
         sut.setPartitionCount("1024");
@@ -112,8 +112,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，不越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("3:-7");
         sut.setPartitionCount("1024");
@@ -123,8 +123,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("5:-5");
         sut.setPartitionCount("1024");
@@ -135,8 +135,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，边界值
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("0:0");
         sut.setPartitionCount("1024");
@@ -146,8 +146,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(74, (int) execute(sut, "sdsdfsafaw"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("10:10");
         sut.setPartitionCount("1024");
@@ -158,8 +158,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，边界值
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("0:-10");
         sut.setPartitionCount("1024");
@@ -169,8 +169,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-1:9");
         sut.setPartitionCount("1024");
@@ -181,8 +181,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-15:-15");
         sut.setPartitionCount("1024");
@@ -192,8 +192,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("15:15");
         sut.setPartitionCount("1024");
@@ -213,8 +213,8 @@ public class PartitionByStringTest extends TestCase {
     public void testPartitionStartLtEnd() {
         // 同号，不越界
         PartitionByString sut = new PartitionByString(
-                "test   ",
-                (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
+            "test   ",
+            (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("6:1");
         sut.setPartitionCount("1024");
@@ -224,8 +224,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-5:-8");
         sut.setPartitionCount("1024");
@@ -236,8 +236,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，不越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("9:-9");
         sut.setPartitionCount("1024");
@@ -247,8 +247,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-1:2");
         sut.setPartitionCount("1024");
@@ -259,8 +259,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，边界值， 双边界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("9:0");
         sut.setPartitionCount("1024");
@@ -270,8 +270,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(104, (int) execute(sut, "tbctwicjyh"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-1:-10");
         sut.setPartitionCount("1024");
@@ -282,8 +282,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，边界值， 单边界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("5:0");
         sut.setPartitionCount("1024");
@@ -293,8 +293,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(182, (int) execute(sut, "1icuwixjsn"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("9:5");
         sut.setPartitionCount("1024");
@@ -304,8 +304,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-7:-10");
         sut.setPartitionCount("1024");
@@ -315,8 +315,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-1:-4");
         sut.setPartitionCount("1024");
@@ -327,8 +327,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，边界值，双边界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("9:-10");
         sut.setPartitionCount("1024");
@@ -338,8 +338,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-1:0");
         sut.setPartitionCount("1024");
@@ -350,8 +350,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，边界值，单边界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("4:-10");
         sut.setPartitionCount("1024");
@@ -361,8 +361,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-6:0");
         sut.setPartitionCount("1024");
@@ -372,8 +372,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(864, (int) execute(sut, "nhyjklouqj"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("9:-5");
         sut.setPartitionCount("1024");
@@ -383,8 +383,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-1:5");
         sut.setPartitionCount("1024");
@@ -395,8 +395,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，双越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("15:11");
         sut.setPartitionCount("1024");
@@ -406,8 +406,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-15:-20");
         sut.setPartitionCount("1024");
@@ -418,8 +418,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，单越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-8:-15");
         sut.setPartitionCount("1024");
@@ -429,8 +429,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("15:6");
         sut.setPartitionCount("1024");
@@ -441,8 +441,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，双越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("19:-20");
         sut.setPartitionCount("1024");
@@ -454,8 +454,8 @@ public class PartitionByStringTest extends TestCase {
         // 异号，单越界
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("15:-8");
         sut.setPartitionCount("1024");
@@ -465,8 +465,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("6:-15");
         sut.setPartitionCount("1024");
@@ -482,8 +482,8 @@ public class PartitionByStringTest extends TestCase {
         String testKey = "abcdefghij";
         // 同号，不越界
         PartitionByString sut = new PartitionByString(
-                "test   ",
-                (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
+            "test   ",
+            (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("1:6");
         sut.setPartitionCount("1024");
@@ -495,8 +495,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertTrue((36 != (int) execute(sut, "c" + testKey.substring(1, 5) + "sil2")));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-8:-5");
         sut.setPartitionCount("1024");
@@ -508,8 +508,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，不越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-9:9");
         sut.setPartitionCount("1024");
@@ -519,8 +519,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(260, (int) execute(sut, "f" + testKey.substring(1, 9) + "*"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("2:-1");
         sut.setPartitionCount("1024");
@@ -531,8 +531,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，边界值， 双边界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("0:9");
         sut.setPartitionCount("1024");
@@ -542,8 +542,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(101, (int) execute(sut, testKey.substring(0, 9) + "*"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-10:-1");
         sut.setPartitionCount("1024");
@@ -554,8 +554,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，边界值， 单边界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("0:5");
         sut.setPartitionCount("1024");
@@ -565,8 +565,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(99, (int) execute(sut, testKey.substring(0, 5) + "*rfsj"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("5:9");
         sut.setPartitionCount("1024");
@@ -576,8 +576,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(386, (int) execute(sut, "*rfsj" + testKey.substring(5, 9) + "%"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-10:-7");
         sut.setPartitionCount("1024");
@@ -587,8 +587,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(36, (int) execute(sut, testKey.substring(0, 5) + "*rfsjkm"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-4:-1");
         sut.setPartitionCount("1024");
@@ -599,8 +599,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，边界值，双边界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-10:9");
         sut.setPartitionCount("1024");
@@ -610,8 +610,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(101, (int) execute(sut, testKey.substring(0, 9) + "%"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("0:-1");
         sut.setPartitionCount("1024");
@@ -622,8 +622,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，边界值，单边界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-10:4");
         sut.setPartitionCount("1024");
@@ -633,8 +633,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(66, (int) execute(sut, testKey.substring(0, 4) + "%^&*()"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("0:-6");
         sut.setPartitionCount("1024");
@@ -644,8 +644,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(66, (int) execute(sut, testKey.substring(0, 4) + "%^&*()"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-5:9");
         sut.setPartitionCount("1024");
@@ -655,8 +655,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(386, (int) execute(sut, "*rfsj" + testKey.substring(5, 9) + "%"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("5:-1");
         sut.setPartitionCount("1024");
@@ -667,8 +667,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，双越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("11:15");
         sut.setPartitionCount("1024");
@@ -678,8 +678,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(0, (int) execute(sut, UUID.randomUUID().toString().substring(0, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-20:-15");
         sut.setPartitionCount("1024");
@@ -690,8 +690,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 同号，单越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-15:-8");
         sut.setPartitionCount("1024");
@@ -702,8 +702,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(129, (int) execute(sut, "$%cuiejdjj"));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("6:15");
         sut.setPartitionCount("1024");
@@ -715,8 +715,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 异号，双越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-20:19");
         sut.setPartitionCount("1024");
@@ -728,8 +728,8 @@ public class PartitionByStringTest extends TestCase {
         // 异号，单越界
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-8:15");
         sut.setPartitionCount("1024");
@@ -739,8 +739,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(388, (int) execute(sut, "sd" + testKey.substring(2, 10)));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-15:6");
         sut.setPartitionCount("1024");
@@ -756,8 +756,8 @@ public class PartitionByStringTest extends TestCase {
         String testKey = "abcdefghij";
         // 无start， 不越界
         PartitionByString sut = new PartitionByString(
-                "test   ",
-                (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
+            "test   ",
+            (List<Expression>) ListUtil.createList(new PlaceHolder("member_id", "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice(":6");
         sut.setPartitionCount("1024");
@@ -769,8 +769,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertTrue((99 != (int) execute(sut, "c" + testKey.substring(1, 5) + "sil2")));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice(":-4");
         sut.setPartitionCount("1024");
@@ -783,8 +783,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 无start， 越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice(":15");
         sut.setPartitionCount("1024");
@@ -794,8 +794,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(647, (int) execute(sut, "b" + testKey));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice(":-15");
         sut.setPartitionCount("1024");
@@ -806,8 +806,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 无end， 不越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("2:");
         sut.setPartitionCount("1024");
@@ -819,8 +819,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertTrue((388 != (int) execute(sut, "c" + testKey.substring(1, 5) + "sil2")));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-5:");
         sut.setPartitionCount("1024");
@@ -832,8 +832,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 无end， 越界
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("-15:");
         sut.setPartitionCount("1024");
@@ -843,8 +843,8 @@ public class PartitionByStringTest extends TestCase {
         Assert.assertEquals(647, (int) execute(sut, "b" + testKey));
 
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice("15:");
         sut.setPartitionCount("1024");
@@ -855,8 +855,8 @@ public class PartitionByStringTest extends TestCase {
 
         // 无start 无end
         sut = new PartitionByString("test   ", (List<Expression>) ListUtil.createList(new PlaceHolder(
-                "member_id",
-                "MEMBER_ID").setCacheEvalRst(false)));
+            "member_id",
+            "MEMBER_ID").setCacheEvalRst(false)));
         sut.setCacheEvalRst(false);
         sut.setHashSlice(":");
         sut.setPartitionCount("1024");

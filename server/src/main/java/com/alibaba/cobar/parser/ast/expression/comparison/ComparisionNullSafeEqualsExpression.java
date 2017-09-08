@@ -30,7 +30,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * <code>higherPreExpr '<=>' higherPreExpr</code>
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class ComparisionNullSafeEqualsExpression extends BinaryOperatorExpression implements ReplacableExpression {

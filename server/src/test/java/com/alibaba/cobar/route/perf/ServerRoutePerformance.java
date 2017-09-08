@@ -165,7 +165,7 @@ public class ServerRoutePerformance {
         public String getSql() throws Exception {
             StringBuilder sb = new StringBuilder();
             sb.append(" seLEcT id, member_id , image_path  \t , image_size , STATUS,   gmt_modified from").append(
-                    "    offer_detail wheRe \t\t\n offer_id in (");
+                "    offer_detail wheRe \t\t\n offer_id in (");
             for (int i = 0; i < 1024; ++i) {
                 if (i > 0)
                     sb.append(", ");

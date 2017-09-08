@@ -23,7 +23,7 @@ import com.alibaba.cobar.net.FrontendConnection;
 
 /**
  * From server to client during initial handshake.
- * 
+ * <p>
  * <pre>
  * Bytes                        Name
  * -----                        ----
@@ -37,14 +37,14 @@ import com.alibaba.cobar.net.FrontendConnection;
  * 2                            server_status
  * 13                           (filler) always 0x00 ...
  * 13                           rest of scramble_buff (4.1)
- * 
+ *
  * @see http://forge.mysql.com/wiki/MySQL_Internals_ClientServer_Protocol#Handshake_Initialization_Packet
  * </pre>
- * 
+ *
  * @author xianmao.hexm 2010-7-14 下午05:18:15
  */
 public class HandshakePacket extends MySQLPacket {
-    private static final byte[] FILLER_13 = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    private static final byte[] FILLER_13 = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     public byte protocolVersion;
     public byte[] serverVersion;

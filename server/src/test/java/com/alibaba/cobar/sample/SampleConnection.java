@@ -36,11 +36,11 @@ public class SampleConnection extends FrontendConnection {
     public void error(int errCode, Throwable t) {
         LOGGER.warn(toString(), t);
         switch (errCode) {
-        case ErrorCode.ERR_HANDLE_DATA:
-            writeErrMessage(ErrorCode.ER_YES, t.getMessage());
-            break;
-        default:
-            close();
+            case ErrorCode.ERR_HANDLE_DATA:
+                writeErrMessage(ErrorCode.ER_YES, t.getMessage());
+                break;
+            default:
+                close();
         }
     }
 

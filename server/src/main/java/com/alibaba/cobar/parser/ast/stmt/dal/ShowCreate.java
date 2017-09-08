@@ -25,7 +25,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class ShowCreate extends DALShowStatement {
-    /** enum name must equals to real sql string */
+    /**
+     * enum name must equals to real sql string
+     */
     public static enum Type {
         DATABASE,
         EVENT,

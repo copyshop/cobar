@@ -21,12 +21,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Queue 性能测试
- * 
+ *
  * @author xianmao.hexm 2010-7-21 下午01:33:02
  */
 public class QueuePerfMain {
 
-    private static byte[] testData = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 };
+    private static byte[] testData = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
 
     private static BlockingQueue<byte[]> arrayQueue = new ArrayBlockingQueue<byte[]>(5000000);
     private static FixedQueue<byte[]> fixedQueue = new FixedQueue<byte[]>(5000000);

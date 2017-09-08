@@ -38,35 +38,36 @@ public final class ParseUtil {
 
     /**
      * <code>'abc'</code>
-     * 
+     *
      * @param offset stmt.charAt(offset) == first <code>'</code>
      */
     private static String parseString(String stmt, int offset) {
         StringBuilder sb = new StringBuilder();
-        loop: for (++offset; offset < stmt.length(); ++offset) {
+        loop:
+        for (++offset; offset < stmt.length(); ++offset) {
             char c = stmt.charAt(offset);
             if (c == '\\') {
                 switch (c = stmt.charAt(++offset)) {
-                case '0':
-                    sb.append('\0');
-                    break;
-                case 'b':
-                    sb.append('\b');
-                    break;
-                case 'n':
-                    sb.append('\n');
-                    break;
-                case 'r':
-                    sb.append('\r');
-                    break;
-                case 't':
-                    sb.append('\t');
-                    break;
-                case 'Z':
-                    sb.append((char) 26);
-                    break;
-                default:
-                    sb.append(c);
+                    case '0':
+                        sb.append('\0');
+                        break;
+                    case 'b':
+                        sb.append('\b');
+                        break;
+                    case 'n':
+                        sb.append('\n');
+                        break;
+                    case 'r':
+                        sb.append('\r');
+                        break;
+                    case 't':
+                        sb.append('\t');
+                        break;
+                    case 'Z':
+                        sb.append((char) 26);
+                        break;
+                    default:
+                        sb.append(c);
                 }
             } else if (c == '\'') {
                 if (offset + 1 < stmt.length() && stmt.charAt(offset + 1) == '\'') {
@@ -84,35 +85,36 @@ public final class ParseUtil {
 
     /**
      * <code>"abc"</code>
-     * 
+     *
      * @param offset stmt.charAt(offset) == first <code>"</code>
      */
     private static String parseString2(String stmt, int offset) {
         StringBuilder sb = new StringBuilder();
-        loop: for (++offset; offset < stmt.length(); ++offset) {
+        loop:
+        for (++offset; offset < stmt.length(); ++offset) {
             char c = stmt.charAt(offset);
             if (c == '\\') {
                 switch (c = stmt.charAt(++offset)) {
-                case '0':
-                    sb.append('\0');
-                    break;
-                case 'b':
-                    sb.append('\b');
-                    break;
-                case 'n':
-                    sb.append('\n');
-                    break;
-                case 'r':
-                    sb.append('\r');
-                    break;
-                case 't':
-                    sb.append('\t');
-                    break;
-                case 'Z':
-                    sb.append((char) 26);
-                    break;
-                default:
-                    sb.append(c);
+                    case '0':
+                        sb.append('\0');
+                        break;
+                    case 'b':
+                        sb.append('\b');
+                        break;
+                    case 'n':
+                        sb.append('\n');
+                        break;
+                    case 'r':
+                        sb.append('\r');
+                        break;
+                    case 't':
+                        sb.append('\t');
+                        break;
+                    case 'Z':
+                        sb.append((char) 26);
+                        break;
+                    default:
+                        sb.append(c);
                 }
             } else if (c == '"') {
                 if (offset + 1 < stmt.length() && stmt.charAt(offset + 1) == '"') {
@@ -130,12 +132,13 @@ public final class ParseUtil {
 
     /**
      * <code>AS `abc`</code>
-     * 
+     *
      * @param offset stmt.charAt(offset) == first <code>`</code>
      */
     private static String parseIdentifierEscape(String stmt, int offset) {
         StringBuilder sb = new StringBuilder();
-        loop: for (++offset; offset < stmt.length(); ++offset) {
+        loop:
+        for (++offset; offset < stmt.length(); ++offset) {
             char c = stmt.charAt(offset);
             if (c == '`') {
                 if (offset + 1 < stmt.length() && stmt.charAt(offset + 1) == '`') {
@@ -159,16 +162,16 @@ public final class ParseUtil {
             return null;
         }
         switch (stmt.charAt(aliasIndex)) {
-        case '\'':
-            return parseString(stmt, aliasIndex);
-        case '"':
-            return parseString2(stmt, aliasIndex);
-        case '`':
-            return parseIdentifierEscape(stmt, aliasIndex);
-        default:
-            int offset = aliasIndex;
-            for (; offset < stmt.length() && CharTypes.isIdentifierChar(stmt.charAt(offset)); ++offset);
-            return stmt.substring(aliasIndex, offset);
+            case '\'':
+                return parseString(stmt, aliasIndex);
+            case '"':
+                return parseString2(stmt, aliasIndex);
+            case '`':
+                return parseIdentifierEscape(stmt, aliasIndex);
+            default:
+                int offset = aliasIndex;
+                for (; offset < stmt.length() && CharTypes.isIdentifierChar(stmt.charAt(offset)); ++offset) ;
+                return stmt.substring(aliasIndex, offset);
         }
     }
 
@@ -176,23 +179,23 @@ public final class ParseUtil {
         int len = stmt.length();
         int n = offset;
         switch (stmt.charAt(n)) {
-        case '/':
-            if (len > ++n && stmt.charAt(n++) == '*' && len > n + 1 && stmt.charAt(n) != '!') {
-                for (int i = n; i < len; ++i) {
-                    if (stmt.charAt(i) == '*') {
-                        int m = i + 1;
-                        if (len > m && stmt.charAt(m) == '/')
-                            return m;
+            case '/':
+                if (len > ++n && stmt.charAt(n++) == '*' && len > n + 1 && stmt.charAt(n) != '!') {
+                    for (int i = n; i < len; ++i) {
+                        if (stmt.charAt(i) == '*') {
+                            int m = i + 1;
+                            if (len > m && stmt.charAt(m) == '/')
+                                return m;
+                        }
                     }
                 }
-            }
-            break;
-        case '#':
-            for (int i = n + 1; i < len; ++i) {
-                if (stmt.charAt(i) == '\n')
-                    return i;
-            }
-            break;
+                break;
+            case '#':
+                for (int i = n + 1; i < len; ++i) {
+                    if (stmt.charAt(i) == '\n')
+                        return i;
+                }
+                break;
         }
         return offset;
     }
@@ -200,13 +203,13 @@ public final class ParseUtil {
     public static boolean currentCharIsSep(String stmt, int offset) {
         if (stmt.length() > offset) {
             switch (stmt.charAt(offset)) {
-            case ' ':
-            case '\t':
-            case '\r':
-            case '\n':
-                return true;
-            default:
-                return false;
+                case ' ':
+                case '\t':
+                case '\r':
+                case '\n':
+                    return true;
+                default:
+                    return false;
             }
         }
         return true;
@@ -221,7 +224,7 @@ public final class ParseUtil {
 
     /*****
      * 检查下一个字符串是否为期望的字符串，并把偏移量移到从offset开始计算，expectValue之后的位置
-     * 
+     *
      * @param stmt 被解析的sql
      * @param offset 被解析的sql的当前位置
      * @param nextExpectedString 在stmt中准备查找的字符串
@@ -269,7 +272,7 @@ public final class ParseUtil {
 
     /**********
      * 检查下一个字符串是否json= *
-     * 
+     *
      * @param stmt 被解析的sql
      * @param offset 被解析的sql的当前位置
      * @return 如果包含指定的字符串，则移动相应的偏移量，否则返回值=offset
@@ -301,17 +304,17 @@ public final class ParseUtil {
         int i = offset;
         for (; i < stmt.length(); ++i) {
             switch (stmt.charAt(i)) {
-            case ' ':
-            case '\t':
-            case '\r':
-            case '\n':
-                continue;
-            case '/':
-            case '#':
-                i = comment(stmt, i);
-                continue;
-            default:
-                return i + length;
+                case ' ':
+                case '\t':
+                case '\r':
+                case '\n':
+                    continue;
+                case '/':
+                case '#':
+                    i = comment(stmt, i);
+                    continue;
+                default:
+                    return i + length;
             }
         }
         return i;

@@ -52,41 +52,41 @@ public class ManagerQueryHandler implements FrontendQueryHandler {
         }
         int rs = ManagerParse.parse(sql);
         switch (rs & 0xff) {
-        case ManagerParse.SELECT:
-            SelectHandler.handle(sql, c, rs >>> 8);
-            break;
-        case ManagerParse.SET:
-            c.write(c.writeToBuffer(OkPacket.OK, c.allocate()));
-            break;
-        case ManagerParse.SHOW:
-            ShowHandler.handle(sql, c, rs >>> 8);
-            break;
-        case ManagerParse.SWITCH:
-            SwitchHandler.handler(sql, c, rs >>> 8);
-            break;
-        case ManagerParse.KILL_CONN:
-            KillConnection.response(sql, rs >>> 8, c);
-            break;
-        case ManagerParse.OFFLINE:
-            Offline.execute(sql, c);
-            break;
-        case ManagerParse.ONLINE:
-            Online.execute(sql, c);
-            break;
-        case ManagerParse.STOP:
-            StopHandler.handle(sql, c, rs >>> 8);
-            break;
-        case ManagerParse.RELOAD:
-            ReloadHandler.handle(sql, c, rs >>> 8);
-            break;
-        case ManagerParse.ROLLBACK:
-            RollbackHandler.handle(sql, c, rs >>> 8);
-            break;
-        case ManagerParse.CLEAR:
-            ClearHandler.handle(sql, c, rs >>> 8);
-            break;
-        default:
-            c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
+            case ManagerParse.SELECT:
+                SelectHandler.handle(sql, c, rs >>> 8);
+                break;
+            case ManagerParse.SET:
+                c.write(c.writeToBuffer(OkPacket.OK, c.allocate()));
+                break;
+            case ManagerParse.SHOW:
+                ShowHandler.handle(sql, c, rs >>> 8);
+                break;
+            case ManagerParse.SWITCH:
+                SwitchHandler.handler(sql, c, rs >>> 8);
+                break;
+            case ManagerParse.KILL_CONN:
+                KillConnection.response(sql, rs >>> 8, c);
+                break;
+            case ManagerParse.OFFLINE:
+                Offline.execute(sql, c);
+                break;
+            case ManagerParse.ONLINE:
+                Online.execute(sql, c);
+                break;
+            case ManagerParse.STOP:
+                StopHandler.handle(sql, c, rs >>> 8);
+                break;
+            case ManagerParse.RELOAD:
+                ReloadHandler.handle(sql, c, rs >>> 8);
+                break;
+            case ManagerParse.ROLLBACK:
+                RollbackHandler.handle(sql, c, rs >>> 8);
+                break;
+            case ManagerParse.CLEAR:
+                ClearHandler.handle(sql, c, rs >>> 8);
+                break;
+            default:
+                c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
         }
     }
 

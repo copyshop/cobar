@@ -49,25 +49,25 @@ public final class PartitionOperandHintParser extends HintParser {
         }
         Object[][] values;
         switch (nextChar(hint, sql)) {
-        case '[':
-            if (columns.length == 1) {
-                hint.increaseCurrentIndex();
-                Object[] vs = parseArray(hint, sql, -1);
-                values = new Object[vs.length][1];
-                for (int i = 0; i < vs.length; ++i) {
-                    values[i][0] = vs[i];
+            case '[':
+                if (columns.length == 1) {
+                    hint.increaseCurrentIndex();
+                    Object[] vs = parseArray(hint, sql, -1);
+                    values = new Object[vs.length][1];
+                    for (int i = 0; i < vs.length; ++i) {
+                        values[i][0] = vs[i];
+                    }
+                } else {
+                    values = parseArrayArray(hint, sql, columns.length);
                 }
-            } else {
-                values = parseArrayArray(hint, sql, columns.length);
-            }
-            break;
-        default:
-            if (columns.length == 1) {
-                values = new Object[1][1];
-                values[0][0] = parsePrimary(hint, sql);
-            } else {
-                throw new SQLSyntaxErrorException("err for partitionOperand: " + sql);
-            }
+                break;
+            default:
+                if (columns.length == 1) {
+                    values = new Object[1][1];
+                    values[0][0] = parsePrimary(hint, sql);
+                } else {
+                    throw new SQLSyntaxErrorException("err for partitionOperand: " + sql);
+                }
         }
         hint.setPartitionOperand(new Pair<String[], Object[][]>(columns, values));
         if (currentChar(hint, sql) == ')')
@@ -77,7 +77,7 @@ public final class PartitionOperandHintParser extends HintParser {
     /**
      * current char is char after '[', after call, current char is char after
      * ']'
-     * 
+     *
      * @param len less than 0 for array length unknown
      */
     private Object[] parseArray(CobarHint hint, String sql, int len) throws SQLSyntaxErrorException {
@@ -88,24 +88,24 @@ public final class PartitionOperandHintParser extends HintParser {
         } else {
             list = new LinkedList<Object>();
         }
-        for (int i = 0;; ++i) {
+        for (int i = 0; ; ++i) {
             Object obj = parsePrimary(hint, sql);
             if (len >= 0)
                 rst[i] = obj;
             else
                 list.add(obj);
             switch (currentChar(hint, sql)) {
-            case ']':
-                hint.increaseCurrentIndex();
-                if (len >= 0)
-                    return rst;
-                else
-                    return list.toArray(new Object[list.size()]);
-            case ',':
-                hint.increaseCurrentIndex();
-                break;
-            default:
-                throw new SQLSyntaxErrorException("err for partitionOperand array: " + sql);
+                case ']':
+                    hint.increaseCurrentIndex();
+                    if (len >= 0)
+                        return rst;
+                    else
+                        return list.toArray(new Object[list.size()]);
+                case ',':
+                    hint.increaseCurrentIndex();
+                    break;
+                default:
+                    throw new SQLSyntaxErrorException("err for partitionOperand array: " + sql);
             }
         }
     }
@@ -116,19 +116,19 @@ public final class PartitionOperandHintParser extends HintParser {
     private Object[][] parseArrayArray(CobarHint hint, String sql, int columnNum) throws SQLSyntaxErrorException {
         if (nextChar(hint, sql) == '[') {
             List<Object[]> list = new LinkedList<Object[]>();
-            for (;;) {
+            for (; ; ) {
                 nextChar(hint, sql);
                 list.add(parseArray(hint, sql, columnNum));
                 char c = currentChar(hint, sql);
                 switch (c) {
-                case ']':
-                    hint.increaseCurrentIndex();
-                    return list.toArray(new Object[list.size()][]);
-                case ',':
-                    nextChar(hint, sql);
-                    break;
-                default:
-                    throw new SQLSyntaxErrorException("err for partitionOperand array[]: " + sql);
+                    case ']':
+                        hint.increaseCurrentIndex();
+                        return list.toArray(new Object[list.size()][]);
+                    case ',':
+                        nextChar(hint, sql);
+                        break;
+                    default:
+                        throw new SQLSyntaxErrorException("err for partitionOperand array[]: " + sql);
                 }
             }
         } else {

@@ -36,7 +36,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  */
 public class DMLSelectStatement extends DMLQueryStatement {
     public static enum SelectDuplicationStrategy {
-        /** default */
+        /**
+         * default
+         */
         ALL,
         DISTINCT,
         DISTINCTROW
@@ -88,7 +90,9 @@ public class DMLSelectStatement extends DMLQueryStatement {
     }
 
     private final SelectOption option;
-    /** string: id | `id` | 'id' */
+    /**
+     * string: id | `id` | 'id'
+     */
     private final List<Pair<Expression, String>> selectExprList;
     private final TableReferences tables;
     private final Expression where;
@@ -131,7 +135,9 @@ public class DMLSelectStatement extends DMLQueryStatement {
         return selectExprList;
     }
 
-    /** @performance slow */
+    /**
+     * @performance slow
+     */
     public List<Expression> getSelectExprListWithoutAlias() {
         if (selectExprList == null || selectExprList.isEmpty())
             return Collections.emptyList();

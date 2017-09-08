@@ -24,7 +24,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * <code>higherPreExpr 'NOT'? 'LIKE' higherPreExpr ('ESCAPE' higherPreExpr)?</code>
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class LikeExpression extends TernaryOperatorExpression {

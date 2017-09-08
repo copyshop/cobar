@@ -46,7 +46,7 @@ public abstract class MySQLDMLInsertReplaceParser extends MySQLDMLParser {
         if (lexer.token() == PUNC_COMMA) {
             valuesList = new LinkedList<RowExpression>();
             valuesList.add(new RowExpression(tempRowValue));
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 tempRowValue = rowValue();
                 valuesList.add(new RowExpression(tempRowValue));
@@ -71,7 +71,7 @@ public abstract class MySQLDMLInsertReplaceParser extends MySQLDMLParser {
         if (lexer.token() == PUNC_COMMA) {
             row = new LinkedList<Expression>();
             row.add(expr);
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 expr = exprParser.expression();
                 row.add(expr);

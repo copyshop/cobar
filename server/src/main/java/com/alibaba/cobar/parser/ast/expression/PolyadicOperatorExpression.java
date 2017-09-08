@@ -26,7 +26,7 @@ import java.util.Map;
  * an operator with arity of n<br/>
  * associative and commutative<br/>
  * non-polyadic operator with same precedence is not exist
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public abstract class PolyadicOperatorExpression extends AbstractExpression {
@@ -67,7 +67,7 @@ public abstract class PolyadicOperatorExpression extends AbstractExpression {
     public Expression getOperand(int index) {
         if (index >= operands.size()) {
             throw new IllegalArgumentException("only contains " + operands.size() + " operands," + index
-                    + " is out of bound");
+                + " is out of bound");
         }
         return operands.get(index);
     }

@@ -30,16 +30,16 @@ public interface TableReference extends ASTNode {
 
     /**
      * remove last condition element is success
-     * 
+     *
      * @return {@link java.util.List List&lt;String&gt;} or
-     *         {@link com.alibaba.cobar.parser.ast.expression.Expression
-     *         Expression}. null if last condition element cannot be removed.
+     * {@link com.alibaba.cobar.parser.ast.expression.Expression
+     * Expression}. null if last condition element cannot be removed.
      */
     Object removeLastConditionElement();
 
     /**
      * @return true if and only if there is one table (not subquery) in table
-     *         reference
+     * reference
      */
     public boolean isSingleTable();
 

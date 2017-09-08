@@ -55,17 +55,17 @@ public class CobarDetectorAuthenticator implements NIOHandler {
             source.authenticate();
         } else { // 处理认证结果
             switch (data[4]) {
-            case OkPacket.FIELD_COUNT:
-                source.setHandler(new CobarDetectorHandler(source));
-                source.setAuthenticated(true);
-                source.heartbeat();// 认证成功后，发起心跳。
-                break;
-            case ErrorPacket.FIELD_COUNT:
-                ErrorPacket err = new ErrorPacket();
-                err.read(data);
-                throw new RuntimeException(new String(err.message));
-            default:
-                throw new RuntimeException("Unknown packet");
+                case OkPacket.FIELD_COUNT:
+                    source.setHandler(new CobarDetectorHandler(source));
+                    source.setAuthenticated(true);
+                    source.heartbeat();// 认证成功后，发起心跳。
+                    break;
+                case ErrorPacket.FIELD_COUNT:
+                    ErrorPacket err = new ErrorPacket();
+                    err.read(data);
+                    throw new RuntimeException(new String(err.message));
+                default:
+                    throw new RuntimeException("Unknown packet");
             }
         }
     }

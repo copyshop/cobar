@@ -27,7 +27,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * <code>higherPreExpr (NOT)? IN ( '(' expr (',' expr)* ')' | subquery )</code>
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class InExpression extends BinaryOperatorExpression implements ReplacableExpression {

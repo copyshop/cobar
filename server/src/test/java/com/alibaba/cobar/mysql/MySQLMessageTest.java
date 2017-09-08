@@ -25,7 +25,7 @@ public class MySQLMessageTest {
 
     @Test
     public void testReadBytesWithNull() {
-        byte[] bytes = new byte[] { 1, 2, 3, 0, 5 };
+        byte[] bytes = new byte[]{1, 2, 3, 0, 5};
         MySQLMessage message = new MySQLMessage(bytes);
         byte[] ab = message.readBytesWithNull();
         Assert.assertEquals(3, ab.length);
@@ -34,7 +34,7 @@ public class MySQLMessageTest {
 
     @Test
     public void testReadBytesWithNull2() {
-        byte[] bytes = new byte[] { 0, 1, 2, 3, 0, 5 };
+        byte[] bytes = new byte[]{0, 1, 2, 3, 0, 5};
         MySQLMessage message = new MySQLMessage(bytes);
         byte[] ab = message.readBytesWithNull();
         Assert.assertEquals(0, ab.length);
@@ -43,7 +43,7 @@ public class MySQLMessageTest {
 
     @Test
     public void testReadBytesWithNull3() {
-        byte[] bytes = new byte[] {};
+        byte[] bytes = new byte[]{};
         MySQLMessage message = new MySQLMessage(bytes);
         byte[] ab = message.readBytesWithNull();
         Assert.assertEquals(0, ab.length);

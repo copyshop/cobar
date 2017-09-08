@@ -26,7 +26,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * used in <code>FROM</code> fragment
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class TableReferences implements TableReference {

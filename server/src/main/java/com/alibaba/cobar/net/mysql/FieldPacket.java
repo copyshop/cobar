@@ -25,7 +25,7 @@ import com.alibaba.cobar.net.FrontendConnection;
  * From Server To Client, part of Result Set Packets. One for each column in the
  * result set. Thus, if the value of field_columns in the Result Set Header
  * Packet is 3, then the Field Packet occurs 3 times.
- * 
+ * <p>
  * <pre>
  * Bytes                      Name
  * -----                      ----
@@ -43,10 +43,10 @@ import com.alibaba.cobar.net.FrontendConnection;
  * 1                          decimals
  * 2                          (filler), always 0x00
  * n (Length Coded Binary)    default
- * 
+ *
  * @see http://forge.mysql.com/wiki/MySQL_Internals_ClientServer_Protocol#Field_Packet
  * </pre>
- * 
+ *
  * @author xianmao.hexm 2010-7-22 下午05:43:34
  */
 public class FieldPacket extends MySQLPacket {

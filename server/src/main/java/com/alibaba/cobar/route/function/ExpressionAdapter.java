@@ -77,7 +77,7 @@ public class ExpressionAdapter implements RuleAlgorithm {
             }
         } else {
             throw new IllegalArgumentException("rule calculate err: result of route function is wrong type or null: "
-                    + eval);
+                + eval);
         }
         return rst;
     }

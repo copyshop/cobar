@@ -48,7 +48,9 @@ public final class TableRuleConfig {
 
     public static final class RuleConfig {
         private String tableRuleName;
-        /** upper-case */
+        /**
+         * upper-case
+         */
         private final String[] columns;
         private final Expression algorithm;
 

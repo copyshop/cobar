@@ -65,14 +65,14 @@ public class MySQLDMLReplaceParser extends MySQLDMLInsertReplaceParser {
         match(KW_REPLACE);
         DMLReplaceStatement.ReplaceMode mode = DMLReplaceStatement.ReplaceMode.UNDEF;
         switch (lexer.token()) {
-        case KW_LOW_PRIORITY:
-            lexer.nextToken();
-            mode = DMLReplaceStatement.ReplaceMode.LOW;
-            break;
-        case KW_DELAYED:
-            lexer.nextToken();
-            mode = DMLReplaceStatement.ReplaceMode.DELAY;
-            break;
+            case KW_LOW_PRIORITY:
+                lexer.nextToken();
+                mode = DMLReplaceStatement.ReplaceMode.LOW;
+                break;
+            case KW_DELAYED:
+                lexer.nextToken();
+                mode = DMLReplaceStatement.ReplaceMode.DELAY;
+                break;
         }
         if (lexer.token() == KW_INTO) {
             lexer.nextToken();
@@ -84,60 +84,60 @@ public class MySQLDMLReplaceParser extends MySQLDMLInsertReplaceParser {
 
         List<Expression> tempRowValue;
         switch (lexer.token()) {
-        case KW_SET:
-            lexer.nextToken();
-            columnNameList = new LinkedList<Identifier>();
-            tempRowValue = new LinkedList<Expression>();
-            for (;; lexer.nextToken()) {
-                Identifier id = identifier();
-                match(OP_EQUALS, OP_ASSIGN);
-                Expression expr = exprParser.expression();
-                columnNameList.add(id);
-                tempRowValue.add(expr);
-                if (lexer.token() != PUNC_COMMA) {
+            case KW_SET:
+                lexer.nextToken();
+                columnNameList = new LinkedList<Identifier>();
+                tempRowValue = new LinkedList<Expression>();
+                for (; ; lexer.nextToken()) {
+                    Identifier id = identifier();
+                    match(OP_EQUALS, OP_ASSIGN);
+                    Expression expr = exprParser.expression();
+                    columnNameList.add(id);
+                    tempRowValue.add(expr);
+                    if (lexer.token() != PUNC_COMMA) {
+                        break;
+                    }
+                }
+                rowList = new ArrayList<RowExpression>(1);
+                rowList.add(new RowExpression(tempRowValue));
+                return new DMLReplaceStatement(mode, table, columnNameList, rowList);
+            case IDENTIFIER:
+                if (!"VALUE".equals(lexer.stringValueUppercase())) {
                     break;
                 }
-            }
-            rowList = new ArrayList<RowExpression>(1);
-            rowList.add(new RowExpression(tempRowValue));
-            return new DMLReplaceStatement(mode, table, columnNameList, rowList);
-        case IDENTIFIER:
-            if (!"VALUE".equals(lexer.stringValueUppercase())) {
-                break;
-            }
-        case KW_VALUES:
-            lexer.nextToken();
-            columnNameList = null;
-            rowList = rowList();
-            return new DMLReplaceStatement(mode, table, columnNameList, rowList);
-        case KW_SELECT:
-            columnNameList = null;
-            select = select();
-            return new DMLReplaceStatement(mode, table, columnNameList, select);
-        case PUNC_LEFT_PAREN:
-            switch (lexer.nextToken()) {
-            case PUNC_LEFT_PAREN:
-            case KW_SELECT:
-                columnNameList = null;
-                select = selectPrimary();
-                match(PUNC_RIGHT_PAREN);
-                return new DMLReplaceStatement(mode, table, columnNameList, select);
-            }
-            columnNameList = idList();
-            match(PUNC_RIGHT_PAREN);
-            switch (lexer.token()) {
-            case PUNC_LEFT_PAREN:
-            case KW_SELECT:
-                select = selectPrimary();
-                return new DMLReplaceStatement(mode, table, columnNameList, select);
             case KW_VALUES:
                 lexer.nextToken();
-                break;
-            default:
-                matchIdentifier("VALUE");
-            }
-            rowList = rowList();
-            return new DMLReplaceStatement(mode, table, columnNameList, rowList);
+                columnNameList = null;
+                rowList = rowList();
+                return new DMLReplaceStatement(mode, table, columnNameList, rowList);
+            case KW_SELECT:
+                columnNameList = null;
+                select = select();
+                return new DMLReplaceStatement(mode, table, columnNameList, select);
+            case PUNC_LEFT_PAREN:
+                switch (lexer.nextToken()) {
+                    case PUNC_LEFT_PAREN:
+                    case KW_SELECT:
+                        columnNameList = null;
+                        select = selectPrimary();
+                        match(PUNC_RIGHT_PAREN);
+                        return new DMLReplaceStatement(mode, table, columnNameList, select);
+                }
+                columnNameList = idList();
+                match(PUNC_RIGHT_PAREN);
+                switch (lexer.token()) {
+                    case PUNC_LEFT_PAREN:
+                    case KW_SELECT:
+                        select = selectPrimary();
+                        return new DMLReplaceStatement(mode, table, columnNameList, select);
+                    case KW_VALUES:
+                        lexer.nextToken();
+                        break;
+                    default:
+                        matchIdentifier("VALUE");
+                }
+                rowList = rowList();
+                return new DMLReplaceStatement(mode, table, columnNameList, rowList);
         }
         throw err("unexpected token for replace: " + lexer.token());
     }

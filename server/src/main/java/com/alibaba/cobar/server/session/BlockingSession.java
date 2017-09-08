@@ -41,7 +41,7 @@ import com.alibaba.cobar.server.parser.ServerParse;
 
 /**
  * 由前后端参与的一次执行会话过程
- * 
+ *
  * @author xianmao.hexm
  */
 public class BlockingSession implements Session {
@@ -190,9 +190,9 @@ public class BlockingSession implements Session {
 
     /**
      * MUST be called at the end of {@link NodeExecutor}
-     * 
+     *
      * @param pessimisticRelease true if this method might be invoked
-     *            concurrently with {@link #kill()}
+     *                           concurrently with {@link #kill()}
      */
     private void clear(boolean pessimisticRelease) {
         for (RouteResultsetNode rrn : target.keySet()) {
@@ -220,14 +220,14 @@ public class BlockingSession implements Session {
             try {
                 BinaryPacket bin = mc.rollback();
                 switch (bin.data[0]) {
-                case OkPacket.FIELD_COUNT:
-                    mc.release();
-                    break;
-                case ErrorPacket.FIELD_COUNT:
-                    mc.close();
-                    break;
-                default:
-                    throw new UnknownPacketException(bin.toString());
+                    case OkPacket.FIELD_COUNT:
+                        mc.release();
+                        break;
+                    case ErrorPacket.FIELD_COUNT:
+                        mc.close();
+                        break;
+                    default:
+                        throw new UnknownPacketException(bin.toString());
                 }
             } catch (IOException e) {
                 StringBuilder s = new StringBuilder();
@@ -258,13 +258,13 @@ public class BlockingSession implements Session {
      */
     private static boolean isModifySQL(int type) {
         switch (type) {
-        case ServerParse.INSERT:
-        case ServerParse.DELETE:
-        case ServerParse.UPDATE:
-        case ServerParse.REPLACE:
-            return true;
-        default:
-            return false;
+            case ServerParse.INSERT:
+            case ServerParse.DELETE:
+            case ServerParse.UPDATE:
+            case ServerParse.REPLACE:
+                return true;
+            default:
+                return false;
         }
     }
 

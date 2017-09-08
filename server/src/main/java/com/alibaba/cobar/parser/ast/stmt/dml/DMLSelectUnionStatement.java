@@ -29,7 +29,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class DMLSelectUnionStatement extends DMLQueryStatement {
-    /** might be {@link LinkedList} */
+    /**
+     * might be {@link LinkedList}
+     */
     private final List<DMLSelectStatement> selectStmtList;
     /**
      * <code>Mixed UNION types are treated such that a DISTINCT union overrides any ALL union to its left</code>

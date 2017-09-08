@@ -22,7 +22,7 @@ import com.alibaba.cobar.util.TimeUtil;
 
 /**
  * 记录最近3个时段的平均响应时间，默认1，10，30分钟。
- * 
+ *
  * @author xianmao.hexm 2012-4-25
  */
 public class HeartbeatRecorder {

@@ -20,7 +20,7 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * 加密解密工具类
- * 
+ *
  * @author xianmao.hexm 2010-4-14 下午03:22:05
  */
 public class SecurityUtil {
@@ -75,14 +75,14 @@ public class SecurityUtil {
         long tmp;
         for (int i = 0; i < src.length(); ++i) {
             switch (src.charAt(i)) {
-            case ' ':
-            case '\t':
-                continue;
-            default:
-                tmp = (0xff & src.charAt(i));
-                nr ^= ((((nr & 63) + add) * tmp) + (nr << 8));
-                nr2 += ((nr2 << 8) ^ nr);
-                add += tmp;
+                case ' ':
+                case '\t':
+                    continue;
+                default:
+                    tmp = (0xff & src.charAt(i));
+                    nr ^= ((((nr & 63) + add) * tmp) + (nr << 8));
+                    nr2 += ((nr2 << 8) ^ nr);
+                    add += tmp;
             }
         }
         long[] result = new long[2];

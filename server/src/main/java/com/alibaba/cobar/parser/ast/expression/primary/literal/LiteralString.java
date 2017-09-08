@@ -24,7 +24,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * literal date is also possible
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class LiteralString extends Literal {
@@ -34,7 +34,7 @@ public class LiteralString extends Literal {
 
     /**
      * @param string content of string, excluded of head and tail "'". e.g. for
-     *            string token of "'don\\'t'", argument of string is "don\\'t"
+     *               string token of "'don\\'t'", argument of string is "don\\'t"
      */
     public LiteralString(String introducer, String string, boolean nchars) {
         super();
@@ -76,26 +76,26 @@ public class LiteralString extends Literal {
             char c = chars[i];
             if (c == '\\') {
                 switch (c = chars[++i]) {
-                case '0':
-                    sb.append('\0');
-                    break;
-                case 'b':
-                    sb.append('\b');
-                    break;
-                case 'n':
-                    sb.append('\n');
-                    break;
-                case 'r':
-                    sb.append('\r');
-                    break;
-                case 't':
-                    sb.append('\t');
-                    break;
-                case 'Z':
-                    sb.append((char) 26);
-                    break;
-                default:
-                    sb.append(c);
+                    case '0':
+                        sb.append('\0');
+                        break;
+                    case 'b':
+                        sb.append('\b');
+                        break;
+                    case 'n':
+                        sb.append('\n');
+                        break;
+                    case 'r':
+                        sb.append('\r');
+                        break;
+                    case 't':
+                        sb.append('\t');
+                        break;
+                    case 'Z':
+                        sb.append((char) 26);
+                        break;
+                    default:
+                        sb.append(c);
                 }
             } else if (c == '\'') {
                 ++i;

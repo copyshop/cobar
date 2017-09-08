@@ -52,19 +52,19 @@ public class MySQLDMLInsertParser extends MySQLDMLInsertReplaceParser {
 
     /**
      * nothing has been pre-consumed <code><pre>
-     * 'INSERT' ('LOW_PRIORITY'|'DELAYED'|'HIGH_PRIORITY')? 'IGNORE'? 'INTO'? tbname 
+     * 'INSERT' ('LOW_PRIORITY'|'DELAYED'|'HIGH_PRIORITY')? 'IGNORE'? 'INTO'? tbname
      *  (  'SET' colName ('='|':=') (expr|'DEFAULT') (',' colName ('='|':=') (expr|'DEFAULT'))*
      *   | '(' (  colName (',' colName)* ')' ( ('VALUES'|'VALUE') value (',' value)*
      *                                        | '(' 'SELECT' ... ')'
-     *                                        | 'SELECT' ...  
+     *                                        | 'SELECT' ...
      *                                       )
-     *          | 'SELECT' ... ')' 
+     *          | 'SELECT' ... ')'
      *         )
      *   |('VALUES'|'VALUE') value  ( ',' value )*
      *   | 'SELECT' ...
      *  )
      * ( 'ON' 'DUPLICATE' 'KEY' 'UPDATE' colName ('='|':=') expr ( ',' colName ('='|':=') expr)* )?
-     * 
+     * <p>
      * value := '(' (expr|'DEFAULT') ( ',' (expr|'DEFAULT'))* ')'
      * </pre></code>
      */
@@ -73,18 +73,18 @@ public class MySQLDMLInsertParser extends MySQLDMLInsertReplaceParser {
         DMLInsertStatement.InsertMode mode = DMLInsertStatement.InsertMode.UNDEF;
         boolean ignore = false;
         switch (lexer.token()) {
-        case KW_LOW_PRIORITY:
-            lexer.nextToken();
-            mode = DMLInsertStatement.InsertMode.LOW;
-            break;
-        case KW_DELAYED:
-            lexer.nextToken();
-            mode = DMLInsertStatement.InsertMode.DELAY;
-            break;
-        case KW_HIGH_PRIORITY:
-            lexer.nextToken();
-            mode = DMLInsertStatement.InsertMode.HIGH;
-            break;
+            case KW_LOW_PRIORITY:
+                lexer.nextToken();
+                mode = DMLInsertStatement.InsertMode.LOW;
+                break;
+            case KW_DELAYED:
+                lexer.nextToken();
+                mode = DMLInsertStatement.InsertMode.DELAY;
+                break;
+            case KW_HIGH_PRIORITY:
+                lexer.nextToken();
+                mode = DMLInsertStatement.InsertMode.HIGH;
+                break;
         }
         if (lexer.token() == KW_IGNORE) {
             ignore = true;
@@ -101,66 +101,66 @@ public class MySQLDMLInsertParser extends MySQLDMLInsertReplaceParser {
 
         List<Expression> tempRowValue;
         switch (lexer.token()) {
-        case KW_SET:
-            lexer.nextToken();
-            columnNameList = new LinkedList<Identifier>();
-            tempRowValue = new LinkedList<Expression>();
-            for (;; lexer.nextToken()) {
-                Identifier id = identifier();
-                match(OP_EQUALS, OP_ASSIGN);
-                Expression expr = exprParser.expression();
-                columnNameList.add(id);
-                tempRowValue.add(expr);
-                if (lexer.token() != PUNC_COMMA) {
+            case KW_SET:
+                lexer.nextToken();
+                columnNameList = new LinkedList<Identifier>();
+                tempRowValue = new LinkedList<Expression>();
+                for (; ; lexer.nextToken()) {
+                    Identifier id = identifier();
+                    match(OP_EQUALS, OP_ASSIGN);
+                    Expression expr = exprParser.expression();
+                    columnNameList.add(id);
+                    tempRowValue.add(expr);
+                    if (lexer.token() != PUNC_COMMA) {
+                        break;
+                    }
+                }
+                rowList = new ArrayList<RowExpression>(1);
+                rowList.add(new RowExpression(tempRowValue));
+                dupUpdate = onDuplicateUpdate();
+                return new DMLInsertStatement(mode, ignore, table, columnNameList, rowList, dupUpdate);
+            case IDENTIFIER:
+                if (!"VALUE".equals(lexer.stringValueUppercase())) {
                     break;
                 }
-            }
-            rowList = new ArrayList<RowExpression>(1);
-            rowList.add(new RowExpression(tempRowValue));
-            dupUpdate = onDuplicateUpdate();
-            return new DMLInsertStatement(mode, ignore, table, columnNameList, rowList, dupUpdate);
-        case IDENTIFIER:
-            if (!"VALUE".equals(lexer.stringValueUppercase())) {
-                break;
-            }
-        case KW_VALUES:
-            lexer.nextToken();
-            columnNameList = null;
-            rowList = rowList();
-            dupUpdate = onDuplicateUpdate();
-            return new DMLInsertStatement(mode, ignore, table, columnNameList, rowList, dupUpdate);
-        case KW_SELECT:
-            columnNameList = null;
-            select = select();
-            dupUpdate = onDuplicateUpdate();
-            return new DMLInsertStatement(mode, ignore, table, columnNameList, select, dupUpdate);
-        case PUNC_LEFT_PAREN:
-            switch (lexer.nextToken()) {
-            case PUNC_LEFT_PAREN:
-            case KW_SELECT:
-                columnNameList = null;
-                select = selectPrimary();
-                match(PUNC_RIGHT_PAREN);
-                dupUpdate = onDuplicateUpdate();
-                return new DMLInsertStatement(mode, ignore, table, columnNameList, select, dupUpdate);
-            }
-            columnNameList = idList();
-            match(PUNC_RIGHT_PAREN);
-            switch (lexer.token()) {
-            case PUNC_LEFT_PAREN:
-            case KW_SELECT:
-                select = selectPrimary();
-                dupUpdate = onDuplicateUpdate();
-                return new DMLInsertStatement(mode, ignore, table, columnNameList, select, dupUpdate);
             case KW_VALUES:
                 lexer.nextToken();
-                break;
-            default:
-                matchIdentifier("VALUE");
-            }
-            rowList = rowList();
-            dupUpdate = onDuplicateUpdate();
-            return new DMLInsertStatement(mode, ignore, table, columnNameList, rowList, dupUpdate);
+                columnNameList = null;
+                rowList = rowList();
+                dupUpdate = onDuplicateUpdate();
+                return new DMLInsertStatement(mode, ignore, table, columnNameList, rowList, dupUpdate);
+            case KW_SELECT:
+                columnNameList = null;
+                select = select();
+                dupUpdate = onDuplicateUpdate();
+                return new DMLInsertStatement(mode, ignore, table, columnNameList, select, dupUpdate);
+            case PUNC_LEFT_PAREN:
+                switch (lexer.nextToken()) {
+                    case PUNC_LEFT_PAREN:
+                    case KW_SELECT:
+                        columnNameList = null;
+                        select = selectPrimary();
+                        match(PUNC_RIGHT_PAREN);
+                        dupUpdate = onDuplicateUpdate();
+                        return new DMLInsertStatement(mode, ignore, table, columnNameList, select, dupUpdate);
+                }
+                columnNameList = idList();
+                match(PUNC_RIGHT_PAREN);
+                switch (lexer.token()) {
+                    case PUNC_LEFT_PAREN:
+                    case KW_SELECT:
+                        select = selectPrimary();
+                        dupUpdate = onDuplicateUpdate();
+                        return new DMLInsertStatement(mode, ignore, table, columnNameList, select, dupUpdate);
+                    case KW_VALUES:
+                        lexer.nextToken();
+                        break;
+                    default:
+                        matchIdentifier("VALUE");
+                }
+                rowList = rowList();
+                dupUpdate = onDuplicateUpdate();
+                return new DMLInsertStatement(mode, ignore, table, columnNameList, rowList, dupUpdate);
         }
         throw err("unexpected token for insert: " + lexer.token());
     }
@@ -183,7 +183,7 @@ public class MySQLDMLInsertParser extends MySQLDMLInsertReplaceParser {
         if (lexer.token() == PUNC_COMMA) {
             list = new LinkedList<Pair<Identifier, Expression>>();
             list.add(new Pair<Identifier, Expression>(col, expr));
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 col = identifier();
                 match(OP_EQUALS, OP_ASSIGN);

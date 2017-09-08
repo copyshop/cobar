@@ -31,7 +31,7 @@ import com.alibaba.cobar.util.StringUtil;
 
 /**
  * 查询指定SQL在各个pool中的执行情况
- * 
+ *
  * @author wenfeng.cenwf 2011-4-20
  * @author xianmao.hexm
  */
@@ -42,6 +42,7 @@ public final class ShowSQLDetail {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         nf.setMaximumFractionDigits(3);
 

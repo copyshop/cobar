@@ -23,7 +23,7 @@ import com.alibaba.cobar.net.FrontendConnection;
 
 /**
  * From server to client in response to command, if error.
- * 
+ * <p>
  * <pre>
  * Bytes                       Name
  * -----                       ----
@@ -32,10 +32,10 @@ import com.alibaba.cobar.net.FrontendConnection;
  * 1                           (sqlstate marker), always '#'
  * 5                           sqlstate (5 characters)
  * n                           message
- * 
+ *
  * @see http://forge.mysql.com/wiki/MySQL_Internals_ClientServer_Protocol#Error_Packet
  * </pre>
- * 
+ *
  * @author xianmao.hexm 2010-7-16 上午10:45:01
  */
 public class ErrorPacket extends MySQLPacket {

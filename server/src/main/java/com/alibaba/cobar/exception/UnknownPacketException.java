@@ -17,7 +17,7 @@ package com.alibaba.cobar.exception;
 
 /**
  * 未知数据包异常
- * 
+ *
  * @author xianmao.hexm
  */
 public class UnknownPacketException extends RuntimeException {

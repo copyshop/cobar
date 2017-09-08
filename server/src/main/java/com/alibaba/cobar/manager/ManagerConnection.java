@@ -76,12 +76,12 @@ public class ManagerConnection extends FrontendConnection {
 
         // 异常返回码处理
         switch (errCode) {
-        case ErrorCode.ERR_HANDLE_DATA:
-            String msg = t.getMessage();
-            writeErrMessage(ErrorCode.ER_YES, msg == null ? t.getClass().getSimpleName() : msg);
-            break;
-        default:
-            close();
+            case ErrorCode.ERR_HANDLE_DATA:
+                String msg = t.getMessage();
+                writeErrMessage(ErrorCode.ER_YES, msg == null ? t.getClass().getSimpleName() : msg);
+                break;
+            default:
+                close();
         }
     }
 

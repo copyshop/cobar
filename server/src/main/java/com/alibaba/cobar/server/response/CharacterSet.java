@@ -72,12 +72,12 @@ public class CharacterSet {
 
         // check first
         switch (rs & 0xff) {
-        case CHARACTER_SET_RESULTS:
-            charResult = sqlList[0].substring(rs >>> 8).trim();
-            break;
-        case CHARACTER_SET_CONNECTION:
-            charConnection = sqlList[0].substring(rs >>> 8).trim();
-            break;
+            case CHARACTER_SET_RESULTS:
+                charResult = sqlList[0].substring(rs >>> 8).trim();
+                break;
+            case CHARACTER_SET_CONNECTION:
+                charConnection = sqlList[0].substring(rs >>> 8).trim();
+                break;
         }
 
         // check remaining
@@ -89,17 +89,17 @@ public class CharacterSet {
             }
             int rs2 = ServerParseSet.parse(sql, "set".length());
             switch (rs2 & 0xff) {
-            case CHARACTER_SET_RESULTS:
-                charResult = sql.substring(rs2 >>> 8).trim();
-                break;
-            case CHARACTER_SET_CONNECTION:
-                charConnection = sql.substring(rs2 >>> 8).trim();
-                break;
-            case CHARACTER_SET_CLIENT:
-                break;
-            default:
-                StringBuilder s = new StringBuilder();
-                logger.warn(s.append(c).append(sql).append(" is not executed").toString());
+                case CHARACTER_SET_RESULTS:
+                    charResult = sql.substring(rs2 >>> 8).trim();
+                    break;
+                case CHARACTER_SET_CONNECTION:
+                    charConnection = sql.substring(rs2 >>> 8).trim();
+                    break;
+                case CHARACTER_SET_CLIENT:
+                    break;
+                default:
+                    StringBuilder s = new StringBuilder();
+                    logger.warn(s.append(c).append(sql).append(" is not executed").toString());
             }
         }
 

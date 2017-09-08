@@ -184,24 +184,24 @@ public final class Dimension2PartitionFunction extends FunctionExpression implem
         if (eval == UNEVALUATABLE || eval == null)
             return null;
         switch (keyType) {
-        case PARTITION_KEY_TYPE_LONG:
-            long longVal;
-            if (eval instanceof Number) {
-                longVal = ((Number) eval).longValue();
-            } else if (eval instanceof String) {
-                longVal = Long.parseLong((String) eval);
-            } else {
-                throw new IllegalArgumentException("unsupported data type for partition key: " + eval.getClass());
-            }
-            return partitionUtil.partition(longVal);
-        case PARTITION_KEY_TYPE_STRING:
-            String key = String.valueOf(eval);
-            int start = hashSliceStart >= 0 ? hashSliceStart : key.length() + hashSliceStart;
-            int end = hashSliceEnd > 0 ? hashSliceEnd : key.length() + hashSliceEnd;
-            long hash = StringUtil.hash(key, start, end);
-            return partitionUtil.partition(hash);
-        default:
-            throw new IllegalArgumentException("unsupported partition key type: " + keyType);
+            case PARTITION_KEY_TYPE_LONG:
+                long longVal;
+                if (eval instanceof Number) {
+                    longVal = ((Number) eval).longValue();
+                } else if (eval instanceof String) {
+                    longVal = Long.parseLong((String) eval);
+                } else {
+                    throw new IllegalArgumentException("unsupported data type for partition key: " + eval.getClass());
+                }
+                return partitionUtil.partition(longVal);
+            case PARTITION_KEY_TYPE_STRING:
+                String key = String.valueOf(eval);
+                int start = hashSliceStart >= 0 ? hashSliceStart : key.length() + hashSliceStart;
+                int end = hashSliceEnd > 0 ? hashSliceEnd : key.length() + hashSliceEnd;
+                long hash = StringUtil.hash(key, start, end);
+                return partitionUtil.partition(hash);
+            default:
+                throw new IllegalArgumentException("unsupported partition key type: " + keyType);
         }
     }
 
@@ -214,7 +214,7 @@ public final class Dimension2PartitionFunction extends FunctionExpression implem
         Integer x = calculate(xInput, partitionUtilX, keyTypeX, hashSliceStartX, hashSliceEndX);
         Integer y = calculate(yInput, partitionUtilY, keyTypeY, hashSliceStartY, hashSliceEndY);
         if (x != null && y != null) {
-            return new Integer[] { getByXY(x, y) };
+            return new Integer[]{getByXY(x, y)};
         } else if (x == null && y != null) {
             return getByY(y);
         } else if (x != null && y == null) {
@@ -242,7 +242,7 @@ public final class Dimension2PartitionFunction extends FunctionExpression implem
     public FunctionExpression constructFunction(List<Expression> arguments) {
         if (arguments == null || arguments.size() != 2)
             throw new IllegalArgumentException("function " + getFunctionName() + " must have 2 arguments but is "
-                    + arguments);
+                + arguments);
         Object[] args = new Object[arguments.size()];
         int i = -1;
         for (Expression arg : arguments) {

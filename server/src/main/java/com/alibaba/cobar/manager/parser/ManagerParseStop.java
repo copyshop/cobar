@@ -31,16 +31,16 @@ public final class ManagerParseStop {
         int i = offset;
         for (; i < stmt.length(); i++) {
             switch (stmt.charAt(i)) {
-            case ' ':
-                continue;
-            case '/':
-            case '#':
-                i = ParseUtil.comment(stmt, i);
-                continue;
-            case '@':
-                return stop2Check(stmt, i);
-            default:
-                return OTHER;
+                case ' ':
+                    continue;
+                case '/':
+                case '#':
+                    i = ParseUtil.comment(stmt, i);
+                    continue;
+                case '@':
+                    return stop2Check(stmt, i);
+                default:
+                    return OTHER;
             }
         }
         return OTHER;
@@ -74,8 +74,8 @@ public final class ManagerParseStop {
                 char c8 = stmt.charAt(++offset);
                 char c9 = stmt.charAt(++offset);
                 if ((c1 == 'H' || c1 == 'h') && (c2 == 'E' || c2 == 'e') && (c3 == 'A' || c3 == 'a')
-                        && (c4 == 'R' || c4 == 'r') && (c5 == 'T' || c5 == 't') && (c6 == 'B' || c6 == 'b')
-                        && (c7 == 'E' || c7 == 'e') && (c8 == 'A' || c8 == 'a') && (c9 == 'T' || c9 == 't')) {
+                    && (c4 == 'R' || c4 == 'r') && (c5 == 'T' || c5 == 't') && (c6 == 'B' || c6 == 'b')
+                    && (c7 == 'E' || c7 == 'e') && (c8 == 'A' || c8 == 'a') && (c9 == 'T' || c9 == 't')) {
                     if (stmt.length() > ++offset && stmt.charAt(offset) != ' ') {
                         return OTHER;
                     }

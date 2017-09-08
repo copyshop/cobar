@@ -68,7 +68,7 @@ public final class PartitionByLong extends PartitionFunction implements RuleAlgo
     public FunctionExpression constructFunction(List<Expression> arguments) {
         if (arguments == null || arguments.size() != 1)
             throw new IllegalArgumentException("function " + getFunctionName() + " must have 1 argument but is "
-                    + arguments);
+                + arguments);
         Object[] args = new Object[arguments.size()];
         int i = -1;
         for (Expression arg : arguments) {

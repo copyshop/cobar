@@ -38,6 +38,7 @@ public final class ShowRouter {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;
@@ -93,6 +94,7 @@ public final class ShowRouter {
     }
 
     private static final NumberFormat nf = DecimalFormat.getInstance();
+
     static {
         nf.setMaximumFractionDigits(3);
     }

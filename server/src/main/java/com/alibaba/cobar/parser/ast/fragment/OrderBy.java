@@ -31,7 +31,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class OrderBy implements ASTNode {
-    /** might be {@link LinkedList} */
+    /**
+     * might be {@link LinkedList}
+     */
     private final List<Pair<Expression, SortOrder>> orderByList;
 
     public List<Pair<Expression, SortOrder>> getOrderByList() {

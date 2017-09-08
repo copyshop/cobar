@@ -126,15 +126,20 @@ public class MySQLDDLParser extends MySQLParser {
         ENABLE,
         DISCARD,
         IMPORT,
-        /** MySQL 5.1 legacy syntax */
+        /**
+         * MySQL 5.1 legacy syntax
+         */
         CHARSET,
-        /** EXTENSION syntax */
+        /**
+         * EXTENSION syntax
+         */
         POLICY
     }
 
     private static final Map<String, SpecialIdentifier> specialIdentifiers = new HashMap<String, SpecialIdentifier>(
-            1,
-            1);
+        1,
+        1);
+
     static {
         specialIdentifiers.put("TRUNCATE", SpecialIdentifier.TRUNCATE);
         specialIdentifiers.put("TEMPORARY", SpecialIdentifier.TEMPORARY);
@@ -193,126 +198,126 @@ public class MySQLDDLParser extends MySQLParser {
         Identifier idTemp2;
         SpecialIdentifier siTemp;
         switch (lexer.token()) {
-        case KW_ALTER:
-            boolean ignore = false;
-            if (lexer.nextToken() == KW_IGNORE) {
-                ignore = true;
-                lexer.nextToken();
-            }
-            switch (lexer.token()) {
-            case KW_TABLE:
-                lexer.nextToken();
-                idTemp1 = identifier();
-                DDLAlterTableStatement alterTableStatement = new DDLAlterTableStatement(ignore, idTemp1);
-                return alterTable(alterTableStatement);
-            default:
-                throw err("Only ALTER TABLE is supported");
-            }
-        case KW_CREATE:
-            switch (lexer.nextToken()) {
-            case KW_UNIQUE:
-            case KW_FULLTEXT:
-            case KW_SPATIAL:
-                lexer.nextToken();
-            case KW_INDEX:
-                lexer.nextToken();
-                idTemp1 = identifier();
-                for (; lexer.token() != KW_ON; lexer.nextToken());
-                lexer.nextToken();
-                idTemp2 = identifier();
-                return new DDLCreateIndexStatement(idTemp1, idTemp2);
-            case KW_TABLE:
-                lexer.nextToken();
-                return createTable(false);
-            case IDENTIFIER:
-                siTemp = specialIdentifiers.get(lexer.stringValueUppercase());
-                if (siTemp != null) {
-                    switch (siTemp) {
-                    case TEMPORARY:
+            case KW_ALTER:
+                boolean ignore = false;
+                if (lexer.nextToken() == KW_IGNORE) {
+                    ignore = true;
+                    lexer.nextToken();
+                }
+                switch (lexer.token()) {
+                    case KW_TABLE:
                         lexer.nextToken();
-                        match(KW_TABLE);
-                        return createTable(true);
-                    case POLICY:
+                        idTemp1 = identifier();
+                        DDLAlterTableStatement alterTableStatement = new DDLAlterTableStatement(ignore, idTemp1);
+                        return alterTable(alterTableStatement);
+                    default:
+                        throw err("Only ALTER TABLE is supported");
+                }
+            case KW_CREATE:
+                switch (lexer.nextToken()) {
+                    case KW_UNIQUE:
+                    case KW_FULLTEXT:
+                    case KW_SPATIAL:
                         lexer.nextToken();
-                        Identifier policyName = identifier();
-                        match(PUNC_LEFT_PAREN);
-                        ExtDDLCreatePolicy policy = new ExtDDLCreatePolicy(policyName);
-                        for (int j = 0; lexer.token() != PUNC_RIGHT_PAREN; ++j) {
-                            if (j > 0) {
-                                match(PUNC_COMMA);
+                    case KW_INDEX:
+                        lexer.nextToken();
+                        idTemp1 = identifier();
+                        for (; lexer.token() != KW_ON; lexer.nextToken()) ;
+                        lexer.nextToken();
+                        idTemp2 = identifier();
+                        return new DDLCreateIndexStatement(idTemp1, idTemp2);
+                    case KW_TABLE:
+                        lexer.nextToken();
+                        return createTable(false);
+                    case IDENTIFIER:
+                        siTemp = specialIdentifiers.get(lexer.stringValueUppercase());
+                        if (siTemp != null) {
+                            switch (siTemp) {
+                                case TEMPORARY:
+                                    lexer.nextToken();
+                                    match(KW_TABLE);
+                                    return createTable(true);
+                                case POLICY:
+                                    lexer.nextToken();
+                                    Identifier policyName = identifier();
+                                    match(PUNC_LEFT_PAREN);
+                                    ExtDDLCreatePolicy policy = new ExtDDLCreatePolicy(policyName);
+                                    for (int j = 0; lexer.token() != PUNC_RIGHT_PAREN; ++j) {
+                                        if (j > 0) {
+                                            match(PUNC_COMMA);
+                                        }
+                                        Integer id = lexer.integerValue().intValue();
+                                        match(LITERAL_NUM_PURE_DIGIT);
+                                        Expression val = exprParser.expression();
+                                        policy.addProportion(id, val);
+                                    }
+                                    match(PUNC_RIGHT_PAREN);
+                                    return policy;
                             }
-                            Integer id = lexer.integerValue().intValue();
-                            match(LITERAL_NUM_PURE_DIGIT);
-                            Expression val = exprParser.expression();
-                            policy.addProportion(id, val);
                         }
-                        match(PUNC_RIGHT_PAREN);
-                        return policy;
-                    }
+                    default:
+                        throw err("unsupported DDL for CREATE");
                 }
-            default:
-                throw err("unsupported DDL for CREATE");
-            }
-        case KW_DROP:
-            switch (lexer.nextToken()) {
-            case KW_INDEX:
-                lexer.nextToken();
-                idTemp1 = identifier();
-                match(KW_ON);
-                idTemp2 = identifier();
-                return new DDLDropIndexStatement(idTemp1, idTemp2);
-            case KW_TABLE:
-                lexer.nextToken();
-                return dropTable(false);
-            case IDENTIFIER:
-                siTemp = specialIdentifiers.get(lexer.stringValueUppercase());
-                if (siTemp != null) {
-                    switch (siTemp) {
-                    case TEMPORARY:
+            case KW_DROP:
+                switch (lexer.nextToken()) {
+                    case KW_INDEX:
                         lexer.nextToken();
-                        match(KW_TABLE);
-                        return dropTable(true);
-                    case POLICY:
+                        idTemp1 = identifier();
+                        match(KW_ON);
+                        idTemp2 = identifier();
+                        return new DDLDropIndexStatement(idTemp1, idTemp2);
+                    case KW_TABLE:
                         lexer.nextToken();
-                        Identifier policyName = identifier();
-                        return new ExtDDLDropPolicy(policyName);
-                    }
+                        return dropTable(false);
+                    case IDENTIFIER:
+                        siTemp = specialIdentifiers.get(lexer.stringValueUppercase());
+                        if (siTemp != null) {
+                            switch (siTemp) {
+                                case TEMPORARY:
+                                    lexer.nextToken();
+                                    match(KW_TABLE);
+                                    return dropTable(true);
+                                case POLICY:
+                                    lexer.nextToken();
+                                    Identifier policyName = identifier();
+                                    return new ExtDDLDropPolicy(policyName);
+                            }
+                        }
+                    default:
+                        throw err("unsupported DDL for DROP");
                 }
-            default:
-                throw err("unsupported DDL for DROP");
-            }
-        case KW_RENAME:
-            lexer.nextToken();
-            match(KW_TABLE);
-            idTemp1 = identifier();
-            match(KW_TO);
-            idTemp2 = identifier();
-            List<Pair<Identifier, Identifier>> list;
-            if (lexer.token() != PUNC_COMMA) {
-                list = new ArrayList<Pair<Identifier, Identifier>>(1);
-                list.add(new Pair<Identifier, Identifier>(idTemp1, idTemp2));
-                return new DDLRenameTableStatement(list);
-            }
-            list = new LinkedList<Pair<Identifier, Identifier>>();
-            list.add(new Pair<Identifier, Identifier>(idTemp1, idTemp2));
-            for (; lexer.token() == PUNC_COMMA;) {
+            case KW_RENAME:
                 lexer.nextToken();
+                match(KW_TABLE);
                 idTemp1 = identifier();
                 match(KW_TO);
                 idTemp2 = identifier();
-                list.add(new Pair<Identifier, Identifier>(idTemp1, idTemp2));
-            }
-            return new DDLRenameTableStatement(list);
-        case IDENTIFIER:
-            SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
-            if (si != null) {
-                switch (si) {
-                case TRUNCATE:
-                    return truncate();
+                List<Pair<Identifier, Identifier>> list;
+                if (lexer.token() != PUNC_COMMA) {
+                    list = new ArrayList<Pair<Identifier, Identifier>>(1);
+                    list.add(new Pair<Identifier, Identifier>(idTemp1, idTemp2));
+                    return new DDLRenameTableStatement(list);
                 }
-            }
-        default:
-            throw err("unsupported DDL");
+                list = new LinkedList<Pair<Identifier, Identifier>>();
+                list.add(new Pair<Identifier, Identifier>(idTemp1, idTemp2));
+                for (; lexer.token() == PUNC_COMMA; ) {
+                    lexer.nextToken();
+                    idTemp1 = identifier();
+                    match(KW_TO);
+                    idTemp2 = identifier();
+                    list.add(new Pair<Identifier, Identifier>(idTemp1, idTemp2));
+                }
+                return new DDLRenameTableStatement(list);
+            case IDENTIFIER:
+                SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
+                if (si != null) {
+                    switch (si) {
+                        case TRUNCATE:
+                            return truncate();
+                    }
+                }
+            default:
+                throw err("unsupported DDL");
         }
     }
 
@@ -334,7 +339,7 @@ public class MySQLDDLParser extends MySQLParser {
         } else {
             list = new LinkedList<Identifier>();
             list.add(tb);
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 tb = identifier();
                 list.add(tb);
@@ -342,21 +347,21 @@ public class MySQLDDLParser extends MySQLParser {
         }
         DDLDropTableStatement.Mode mode = DDLDropTableStatement.Mode.UNDEF;
         switch (lexer.token()) {
-        case KW_RESTRICT:
-            lexer.nextToken();
-            mode = DDLDropTableStatement.Mode.RESTRICT;
-            break;
-        case KW_CASCADE:
-            lexer.nextToken();
-            mode = DDLDropTableStatement.Mode.CASCADE;
-            break;
+            case KW_RESTRICT:
+                lexer.nextToken();
+                mode = DDLDropTableStatement.Mode.RESTRICT;
+                break;
+            case KW_CASCADE:
+                lexer.nextToken();
+                mode = DDLDropTableStatement.Mode.CASCADE;
+                break;
         }
         return new DDLDropTableStatement(list, temp, ifExists, mode);
     }
 
     /**
      * token of table name has been consumed
-     * 
+     *
      * @throws SQLSyntaxErrorException
      */
     private DDLAlterTableStatement alterTable(DDLAlterTableStatement stmt) throws SQLSyntaxErrorException {
@@ -375,303 +380,306 @@ public class MySQLDDLParser extends MySQLParser {
             if (tableOptions(options)) {
                 continue;
             }
-            main_switch: switch (lexer.token()) {
-            case KW_CONVERT:
-                // | CONVERT TO CHARACTER SET charset_name [COLLATE
-                // collation_name]
-                lexer.nextToken();
-                match(KW_TO);
-                match(KW_CHARACTER);
-                match(KW_SET);
-                id = identifier();
-                id2 = null;
-                if (lexer.token() == KW_COLLATE) {
+            main_switch:
+            switch (lexer.token()) {
+                case KW_CONVERT:
+                    // | CONVERT TO CHARACTER SET charset_name [COLLATE
+                    // collation_name]
                     lexer.nextToken();
-                    id2 = identifier();
-                }
-                stmt.setConvertCharset(new Pair<Identifier, Identifier>(id, id2));
-                break main_switch;
-            case KW_RENAME:
-                // | RENAME [TO] new_tbl_name
-                if (lexer.nextToken() == KW_TO) {
-                    lexer.nextToken();
-                }
-                id = identifier();
-                stmt.setRenameTo(id);
-                break main_switch;
-            case KW_DROP:
-                drop_switch: switch (lexer.nextToken()) {
-                case KW_INDEX:
-                case KW_KEY:
-                    // | DROP {INDEX|KEY} index_name
-                    lexer.nextToken();
+                    match(KW_TO);
+                    match(KW_CHARACTER);
+                    match(KW_SET);
                     id = identifier();
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.DropIndex(id));
-                    break drop_switch;
-                case KW_PRIMARY:
-                    // | DROP PRIMARY KEY
-                    lexer.nextToken();
-                    match(KW_KEY);
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.DropPrimaryKey());
-                    break drop_switch;
-                case IDENTIFIER:
-                    // | DROP [COLUMN] col_name
-                    id = identifier();
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.DropColumn(id));
-                    break drop_switch;
-                case KW_COLUMN:
-                    // | DROP [COLUMN] col_name
-                    lexer.nextToken();
-                    id = identifier();
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.DropColumn(id));
-                    break drop_switch;
-                default:
-                    throw new SQLSyntaxErrorException("ALTER TABLE error for DROP");
-                }
-                break main_switch;
-            case KW_CHANGE:
-                // | CHANGE [COLUMN] old_col_name new_col_name column_definition
-                // [FIRST|AFTER col_name]
-                if (lexer.nextToken() == KW_COLUMN) {
-                    lexer.nextToken();
-                }
-                id = identifier();
-                id2 = identifier();
-                colDef = columnDefinition();
-                if (lexer.token() == IDENTIFIER) {
-                    if ("FIRST".equals(lexer.stringValueUppercase())) {
+                    id2 = null;
+                    if (lexer.token() == KW_COLLATE) {
                         lexer.nextToken();
-                        stmt.addAlterSpecification(new DDLAlterTableStatement.ChangeColumn(id, id2, colDef, null));
-                    } else if ("AFTER".equals(lexer.stringValueUppercase())) {
-                        lexer.nextToken();
-                        id3 = identifier();
-                        stmt.addAlterSpecification(new DDLAlterTableStatement.ChangeColumn(id, id2, colDef, id3));
-                    } else {
-                        stmt.addAlterSpecification(new DDLAlterTableStatement.ChangeColumn(id, id2, colDef));
+                        id2 = identifier();
                     }
-                } else {
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.ChangeColumn(id, id2, colDef));
-                }
-                break main_switch;
-            case KW_ALTER:
-                // | ALTER [COLUMN] col_name {SET DEFAULT literal | DROP
-                // DEFAULT}
-                if (lexer.nextToken() == KW_COLUMN) {
-                    lexer.nextToken();
-                }
-                id = identifier();
-                switch (lexer.token()) {
-                case KW_SET:
-                    lexer.nextToken();
-                    match(KW_DEFAULT);
-                    expr = exprParser.expression();
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.AlterColumnDefaultVal(id, expr));
-                    break;
-                case KW_DROP:
-                    lexer.nextToken();
-                    match(KW_DEFAULT);
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.AlterColumnDefaultVal(id));
-                    break;
-                default:
-                    throw new SQLSyntaxErrorException("ALTER TABLE error for ALTER");
-                }
-                break main_switch;
-            case KW_ADD:
-                add_switch: switch (lexer.nextToken()) {
-                case IDENTIFIER:
-                    // | ADD [COLUMN] col_name column_definition [FIRST | AFTER
-                    // col_name ]
+                    stmt.setConvertCharset(new Pair<Identifier, Identifier>(id, id2));
+                    break main_switch;
+                case KW_RENAME:
+                    // | RENAME [TO] new_tbl_name
+                    if (lexer.nextToken() == KW_TO) {
+                        lexer.nextToken();
+                    }
                     id = identifier();
+                    stmt.setRenameTo(id);
+                    break main_switch;
+                case KW_DROP:
+                    drop_switch:
+                    switch (lexer.nextToken()) {
+                        case KW_INDEX:
+                        case KW_KEY:
+                            // | DROP {INDEX|KEY} index_name
+                            lexer.nextToken();
+                            id = identifier();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.DropIndex(id));
+                            break drop_switch;
+                        case KW_PRIMARY:
+                            // | DROP PRIMARY KEY
+                            lexer.nextToken();
+                            match(KW_KEY);
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.DropPrimaryKey());
+                            break drop_switch;
+                        case IDENTIFIER:
+                            // | DROP [COLUMN] col_name
+                            id = identifier();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.DropColumn(id));
+                            break drop_switch;
+                        case KW_COLUMN:
+                            // | DROP [COLUMN] col_name
+                            lexer.nextToken();
+                            id = identifier();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.DropColumn(id));
+                            break drop_switch;
+                        default:
+                            throw new SQLSyntaxErrorException("ALTER TABLE error for DROP");
+                    }
+                    break main_switch;
+                case KW_CHANGE:
+                    // | CHANGE [COLUMN] old_col_name new_col_name column_definition
+                    // [FIRST|AFTER col_name]
+                    if (lexer.nextToken() == KW_COLUMN) {
+                        lexer.nextToken();
+                    }
+                    id = identifier();
+                    id2 = identifier();
                     colDef = columnDefinition();
                     if (lexer.token() == IDENTIFIER) {
                         if ("FIRST".equals(lexer.stringValueUppercase())) {
                             lexer.nextToken();
-                            stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef, null));
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.ChangeColumn(id, id2, colDef, null));
                         } else if ("AFTER".equals(lexer.stringValueUppercase())) {
                             lexer.nextToken();
-                            id2 = identifier();
-                            stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef, id2));
+                            id3 = identifier();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.ChangeColumn(id, id2, colDef, id3));
                         } else {
-                            stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef));
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.ChangeColumn(id, id2, colDef));
                         }
                     } else {
-                        stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef));
+                        stmt.addAlterSpecification(new DDLAlterTableStatement.ChangeColumn(id, id2, colDef));
                     }
-                    break add_switch;
-                case PUNC_LEFT_PAREN:
-                    // | ADD [COLUMN] (col_name column_definition,...)
-                    lexer.nextToken();
-                    for (int j = 0; lexer.token() != PUNC_RIGHT_PAREN; ++j) {
-                        DDLAlterTableStatement.AddColumns addColumns = new DDLAlterTableStatement.AddColumns();
-                        stmt.addAlterSpecification(addColumns);
-                        if (j > 0) {
-                            match(PUNC_COMMA);
-                        }
-                        id = identifier();
-                        colDef = columnDefinition();
-                        addColumns.addColumn(id, colDef);
-                    }
-                    match(PUNC_RIGHT_PAREN);
-                    break add_switch;
-                case KW_COLUMN:
-                    if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                        // | ADD [COLUMN] (col_name column_definition,...)
+                    break main_switch;
+                case KW_ALTER:
+                    // | ALTER [COLUMN] col_name {SET DEFAULT literal | DROP
+                    // DEFAULT}
+                    if (lexer.nextToken() == KW_COLUMN) {
                         lexer.nextToken();
-                        for (int j = 0; lexer.token() != PUNC_RIGHT_PAREN; ++j) {
-                            DDLAlterTableStatement.AddColumns addColumns = new DDLAlterTableStatement.AddColumns();
-                            stmt.addAlterSpecification(addColumns);
-                            if (j > 0) {
-                                match(PUNC_COMMA);
-                            }
+                    }
+                    id = identifier();
+                    switch (lexer.token()) {
+                        case KW_SET:
+                            lexer.nextToken();
+                            match(KW_DEFAULT);
+                            expr = exprParser.expression();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.AlterColumnDefaultVal(id, expr));
+                            break;
+                        case KW_DROP:
+                            lexer.nextToken();
+                            match(KW_DEFAULT);
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.AlterColumnDefaultVal(id));
+                            break;
+                        default:
+                            throw new SQLSyntaxErrorException("ALTER TABLE error for ALTER");
+                    }
+                    break main_switch;
+                case KW_ADD:
+                    add_switch:
+                    switch (lexer.nextToken()) {
+                        case IDENTIFIER:
+                            // | ADD [COLUMN] col_name column_definition [FIRST | AFTER
+                            // col_name ]
                             id = identifier();
                             colDef = columnDefinition();
-                            addColumns.addColumn(id, colDef);
-                        }
-                        match(PUNC_RIGHT_PAREN);
-                    } else {
-                        // | ADD [COLUMN] col_name column_definition [FIRST |
-                        // AFTER col_name ]
-                        id = identifier();
-                        colDef = columnDefinition();
-                        if (lexer.token() == IDENTIFIER) {
-                            if ("FIRST".equals(lexer.stringValueUppercase())) {
-                                lexer.nextToken();
-                                stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef, null));
-                            } else if ("AFTER".equals(lexer.stringValueUppercase())) {
-                                lexer.nextToken();
-                                id2 = identifier();
-                                stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef, id2));
+                            if (lexer.token() == IDENTIFIER) {
+                                if ("FIRST".equals(lexer.stringValueUppercase())) {
+                                    lexer.nextToken();
+                                    stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef, null));
+                                } else if ("AFTER".equals(lexer.stringValueUppercase())) {
+                                    lexer.nextToken();
+                                    id2 = identifier();
+                                    stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef, id2));
+                                } else {
+                                    stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef));
+                                }
                             } else {
                                 stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef));
                             }
-                        } else {
-                            stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef));
-                        }
-                    }
-                    break add_switch;
-                case KW_INDEX:
-                case KW_KEY:
-                    // | ADD {INDEX|KEY} [index_name] [index_type]
-                    // (index_col_name,...) [index_option] ...
-                    id = null;
-                    if (lexer.nextToken() == IDENTIFIER) {
-                        id = identifier();
-                    }
-                    indexDef = indexDefinition();
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.AddIndex(id, indexDef));
-                    break add_switch;
-                case KW_PRIMARY:
-                    // | ADD PRIMARY KEY [index_type] (index_col_name,...)
-                    // [index_option] ...
-                    lexer.nextToken();
-                    match(KW_KEY);
-                    indexDef = indexDefinition();
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.AddPrimaryKey(indexDef));
-                    break add_switch;
-                case KW_UNIQUE:
-                    // | ADD UNIQUE [INDEX|KEY] [index_name] [index_type]
-                    // (index_col_name,...) [index_option] ...
-                    switch (lexer.nextToken()) {
-                    case KW_INDEX:
-                    case KW_KEY:
-                        lexer.nextToken();
-                    }
-                    id = null;
-                    if (lexer.token() == IDENTIFIER) {
-                        id = identifier();
-                    }
-                    indexDef = indexDefinition();
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.AddUniqueKey(id, indexDef));
-                    break add_switch;
-                case KW_FULLTEXT:
-                    // | ADD FULLTEXT [INDEX|KEY] [index_name]
-                    // (index_col_name,...) [index_option] ...
-                    switch (lexer.nextToken()) {
-                    case KW_INDEX:
-                    case KW_KEY:
-                        lexer.nextToken();
-                    }
-                    id = null;
-                    if (lexer.token() == IDENTIFIER) {
-                        id = identifier();
-                    }
-                    indexDef = indexDefinition();
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.AddFullTextIndex(id, indexDef));
-                    break add_switch;
-                case KW_SPATIAL:
-                    // | ADD SPATIAL [INDEX|KEY] [index_name]
-                    // (index_col_name,...) [index_option] ...
-                    switch (lexer.nextToken()) {
-                    case KW_INDEX:
-                    case KW_KEY:
-                        lexer.nextToken();
-                    }
-                    id = null;
-                    if (lexer.token() == IDENTIFIER) {
-                        id = identifier();
-                    }
-                    indexDef = indexDefinition();
-                    stmt.addAlterSpecification(new DDLAlterTableStatement.AddSpatialIndex(id, indexDef));
-                    break add_switch;
-                default:
-                    throw new SQLSyntaxErrorException("ALTER TABLE error for ADD");
-                }
-                break main_switch;
-            case IDENTIFIER:
-                SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
-                if (si != null) {
-                    switch (si) {
-                    case IMPORT:
-                        // | IMPORT TABLESPACE
-                        lexer.nextToken();
-                        matchIdentifier("TABLESPACE");
-                        stmt.setImportTableSpace(true);
-                        break main_switch;
-                    case DISCARD:
-                        // | DISCARD TABLESPACE
-                        lexer.nextToken();
-                        matchIdentifier("TABLESPACE");
-                        stmt.setDiscardTableSpace(true);
-                        break main_switch;
-                    case ENABLE:
-                        // | ENABLE KEYS
-                        lexer.nextToken();
-                        match(KW_KEYS);
-                        stmt.setEnableKeys(true);
-                        break main_switch;
-                    case DISABLE:
-                        // | DISABLE KEYS
-                        lexer.nextToken();
-                        match(KW_KEYS);
-                        stmt.setDisableKeys(true);
-                        break main_switch;
-                    case MODIFY:
-                        // | MODIFY [COLUMN] col_name column_definition [FIRST |
-                        // AFTER col_name]
-                        if (lexer.nextToken() == KW_COLUMN) {
+                            break add_switch;
+                        case PUNC_LEFT_PAREN:
+                            // | ADD [COLUMN] (col_name column_definition,...)
                             lexer.nextToken();
-                        }
-                        id = identifier();
-                        colDef = columnDefinition();
-                        if (lexer.token() == IDENTIFIER) {
-                            if ("FIRST".equals(lexer.stringValueUppercase())) {
-                                lexer.nextToken();
-                                stmt.addAlterSpecification(new DDLAlterTableStatement.ModifyColumn(id, colDef, null));
-                            } else if ("AFTER".equals(lexer.stringValueUppercase())) {
-                                lexer.nextToken();
-                                id2 = identifier();
-                                stmt.addAlterSpecification(new DDLAlterTableStatement.ModifyColumn(id, colDef, id2));
-                            } else {
-                                stmt.addAlterSpecification(new DDLAlterTableStatement.ModifyColumn(id, colDef));
+                            for (int j = 0; lexer.token() != PUNC_RIGHT_PAREN; ++j) {
+                                DDLAlterTableStatement.AddColumns addColumns = new DDLAlterTableStatement.AddColumns();
+                                stmt.addAlterSpecification(addColumns);
+                                if (j > 0) {
+                                    match(PUNC_COMMA);
+                                }
+                                id = identifier();
+                                colDef = columnDefinition();
+                                addColumns.addColumn(id, colDef);
                             }
-                        } else {
-                            stmt.addAlterSpecification(new DDLAlterTableStatement.ModifyColumn(id, colDef));
-                        }
-                        break main_switch;
+                            match(PUNC_RIGHT_PAREN);
+                            break add_switch;
+                        case KW_COLUMN:
+                            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                                // | ADD [COLUMN] (col_name column_definition,...)
+                                lexer.nextToken();
+                                for (int j = 0; lexer.token() != PUNC_RIGHT_PAREN; ++j) {
+                                    DDLAlterTableStatement.AddColumns addColumns = new DDLAlterTableStatement.AddColumns();
+                                    stmt.addAlterSpecification(addColumns);
+                                    if (j > 0) {
+                                        match(PUNC_COMMA);
+                                    }
+                                    id = identifier();
+                                    colDef = columnDefinition();
+                                    addColumns.addColumn(id, colDef);
+                                }
+                                match(PUNC_RIGHT_PAREN);
+                            } else {
+                                // | ADD [COLUMN] col_name column_definition [FIRST |
+                                // AFTER col_name ]
+                                id = identifier();
+                                colDef = columnDefinition();
+                                if (lexer.token() == IDENTIFIER) {
+                                    if ("FIRST".equals(lexer.stringValueUppercase())) {
+                                        lexer.nextToken();
+                                        stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef, null));
+                                    } else if ("AFTER".equals(lexer.stringValueUppercase())) {
+                                        lexer.nextToken();
+                                        id2 = identifier();
+                                        stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef, id2));
+                                    } else {
+                                        stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef));
+                                    }
+                                } else {
+                                    stmt.addAlterSpecification(new DDLAlterTableStatement.AddColumn(id, colDef));
+                                }
+                            }
+                            break add_switch;
+                        case KW_INDEX:
+                        case KW_KEY:
+                            // | ADD {INDEX|KEY} [index_name] [index_type]
+                            // (index_col_name,...) [index_option] ...
+                            id = null;
+                            if (lexer.nextToken() == IDENTIFIER) {
+                                id = identifier();
+                            }
+                            indexDef = indexDefinition();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.AddIndex(id, indexDef));
+                            break add_switch;
+                        case KW_PRIMARY:
+                            // | ADD PRIMARY KEY [index_type] (index_col_name,...)
+                            // [index_option] ...
+                            lexer.nextToken();
+                            match(KW_KEY);
+                            indexDef = indexDefinition();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.AddPrimaryKey(indexDef));
+                            break add_switch;
+                        case KW_UNIQUE:
+                            // | ADD UNIQUE [INDEX|KEY] [index_name] [index_type]
+                            // (index_col_name,...) [index_option] ...
+                            switch (lexer.nextToken()) {
+                                case KW_INDEX:
+                                case KW_KEY:
+                                    lexer.nextToken();
+                            }
+                            id = null;
+                            if (lexer.token() == IDENTIFIER) {
+                                id = identifier();
+                            }
+                            indexDef = indexDefinition();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.AddUniqueKey(id, indexDef));
+                            break add_switch;
+                        case KW_FULLTEXT:
+                            // | ADD FULLTEXT [INDEX|KEY] [index_name]
+                            // (index_col_name,...) [index_option] ...
+                            switch (lexer.nextToken()) {
+                                case KW_INDEX:
+                                case KW_KEY:
+                                    lexer.nextToken();
+                            }
+                            id = null;
+                            if (lexer.token() == IDENTIFIER) {
+                                id = identifier();
+                            }
+                            indexDef = indexDefinition();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.AddFullTextIndex(id, indexDef));
+                            break add_switch;
+                        case KW_SPATIAL:
+                            // | ADD SPATIAL [INDEX|KEY] [index_name]
+                            // (index_col_name,...) [index_option] ...
+                            switch (lexer.nextToken()) {
+                                case KW_INDEX:
+                                case KW_KEY:
+                                    lexer.nextToken();
+                            }
+                            id = null;
+                            if (lexer.token() == IDENTIFIER) {
+                                id = identifier();
+                            }
+                            indexDef = indexDefinition();
+                            stmt.addAlterSpecification(new DDLAlterTableStatement.AddSpatialIndex(id, indexDef));
+                            break add_switch;
+                        default:
+                            throw new SQLSyntaxErrorException("ALTER TABLE error for ADD");
                     }
-                }
-            default:
-                throw new SQLSyntaxErrorException("unknown ALTER specification");
+                    break main_switch;
+                case IDENTIFIER:
+                    SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
+                    if (si != null) {
+                        switch (si) {
+                            case IMPORT:
+                                // | IMPORT TABLESPACE
+                                lexer.nextToken();
+                                matchIdentifier("TABLESPACE");
+                                stmt.setImportTableSpace(true);
+                                break main_switch;
+                            case DISCARD:
+                                // | DISCARD TABLESPACE
+                                lexer.nextToken();
+                                matchIdentifier("TABLESPACE");
+                                stmt.setDiscardTableSpace(true);
+                                break main_switch;
+                            case ENABLE:
+                                // | ENABLE KEYS
+                                lexer.nextToken();
+                                match(KW_KEYS);
+                                stmt.setEnableKeys(true);
+                                break main_switch;
+                            case DISABLE:
+                                // | DISABLE KEYS
+                                lexer.nextToken();
+                                match(KW_KEYS);
+                                stmt.setDisableKeys(true);
+                                break main_switch;
+                            case MODIFY:
+                                // | MODIFY [COLUMN] col_name column_definition [FIRST |
+                                // AFTER col_name]
+                                if (lexer.nextToken() == KW_COLUMN) {
+                                    lexer.nextToken();
+                                }
+                                id = identifier();
+                                colDef = columnDefinition();
+                                if (lexer.token() == IDENTIFIER) {
+                                    if ("FIRST".equals(lexer.stringValueUppercase())) {
+                                        lexer.nextToken();
+                                        stmt.addAlterSpecification(new DDLAlterTableStatement.ModifyColumn(id, colDef, null));
+                                    } else if ("AFTER".equals(lexer.stringValueUppercase())) {
+                                        lexer.nextToken();
+                                        id2 = identifier();
+                                        stmt.addAlterSpecification(new DDLAlterTableStatement.ModifyColumn(id, colDef, id2));
+                                    } else {
+                                        stmt.addAlterSpecification(new DDLAlterTableStatement.ModifyColumn(id, colDef));
+                                    }
+                                } else {
+                                    stmt.addAlterSpecification(new DDLAlterTableStatement.ModifyColumn(id, colDef));
+                                }
+                                break main_switch;
+                        }
+                    }
+                default:
+                    throw new SQLSyntaxErrorException("unknown ALTER specification");
             }
         }
         return stmt;
@@ -698,26 +706,26 @@ public class MySQLDDLParser extends MySQLParser {
 
         DDLCreateTableStatement.SelectOption selectOpt = null;
         switch (lexer.token()) {
-        case KW_IGNORE:
-            selectOpt = DDLCreateTableStatement.SelectOption.IGNORED;
-            if (lexer.nextToken() == KW_AS) {
+            case KW_IGNORE:
+                selectOpt = DDLCreateTableStatement.SelectOption.IGNORED;
+                if (lexer.nextToken() == KW_AS) {
+                    lexer.nextToken();
+                }
+                break;
+            case KW_REPLACE:
+                selectOpt = DDLCreateTableStatement.SelectOption.REPLACE;
+                if (lexer.nextToken() == KW_AS) {
+                    lexer.nextToken();
+                }
+                break;
+            case KW_AS:
                 lexer.nextToken();
-            }
-            break;
-        case KW_REPLACE:
-            selectOpt = DDLCreateTableStatement.SelectOption.REPLACE;
-            if (lexer.nextToken() == KW_AS) {
-                lexer.nextToken();
-            }
-            break;
-        case KW_AS:
-            lexer.nextToken();
-        case KW_SELECT:
-            break;
-        case EOF:
-            return stmt;
-        default:
-            throw new SQLSyntaxErrorException("DDL CREATE TABLE statement not end properly");
+            case KW_SELECT:
+                break;
+            case EOF:
+                return stmt;
+            default:
+                throw new SQLSyntaxErrorException("DDL CREATE TABLE statement not end properly");
         }
         DMLSelectStatement select = new MySQLDMLSelectParser(lexer, exprParser).select();
         stmt.setSelect(selectOpt, select);
@@ -737,88 +745,88 @@ public class MySQLDDLParser extends MySQLParser {
                 match(PUNC_COMMA);
             }
             switch (lexer.token()) {
-            case KW_PRIMARY:
-                lexer.nextToken();
-                match(KW_KEY);
-                indexDef = indexDefinition();
-                stmt.setPrimaryKey(indexDef);
-                break;
-            case KW_INDEX:
-            case KW_KEY:
-                lexer.nextToken();
-                if (lexer.token() == IDENTIFIER) {
-                    id = identifier();
-                } else {
-                    id = null;
-                }
-                indexDef = indexDefinition();
-                stmt.addIndex(id, indexDef);
-                break;
-            case KW_UNIQUE:
-                switch (lexer.nextToken()) {
+                case KW_PRIMARY:
+                    lexer.nextToken();
+                    match(KW_KEY);
+                    indexDef = indexDefinition();
+                    stmt.setPrimaryKey(indexDef);
+                    break;
                 case KW_INDEX:
                 case KW_KEY:
                     lexer.nextToken();
+                    if (lexer.token() == IDENTIFIER) {
+                        id = identifier();
+                    } else {
+                        id = null;
+                    }
+                    indexDef = indexDefinition();
+                    stmt.addIndex(id, indexDef);
                     break;
-                }
-                if (lexer.token() == IDENTIFIER) {
-                    id = identifier();
-                } else {
-                    id = null;
-                }
-                indexDef = indexDefinition();
-                stmt.addUniqueIndex(id, indexDef);
-                break;
-            case KW_FULLTEXT:
-                switch (lexer.nextToken()) {
-                case KW_INDEX:
-                case KW_KEY:
+                case KW_UNIQUE:
+                    switch (lexer.nextToken()) {
+                        case KW_INDEX:
+                        case KW_KEY:
+                            lexer.nextToken();
+                            break;
+                    }
+                    if (lexer.token() == IDENTIFIER) {
+                        id = identifier();
+                    } else {
+                        id = null;
+                    }
+                    indexDef = indexDefinition();
+                    stmt.addUniqueIndex(id, indexDef);
+                    break;
+                case KW_FULLTEXT:
+                    switch (lexer.nextToken()) {
+                        case KW_INDEX:
+                        case KW_KEY:
+                            lexer.nextToken();
+                            break;
+                    }
+                    if (lexer.token() == IDENTIFIER) {
+                        id = identifier();
+                    } else {
+                        id = null;
+                    }
+                    indexDef = indexDefinition();
+                    if (indexDef.getIndexType() != null) {
+                        throw new SQLSyntaxErrorException("FULLTEXT INDEX can specify no index_type");
+                    }
+                    stmt.addFullTextIndex(id, indexDef);
+                    break;
+                case KW_SPATIAL:
+                    switch (lexer.nextToken()) {
+                        case KW_INDEX:
+                        case KW_KEY:
+                            lexer.nextToken();
+                            break;
+                    }
+                    if (lexer.token() == IDENTIFIER) {
+                        id = identifier();
+                    } else {
+                        id = null;
+                    }
+                    indexDef = indexDefinition();
+                    if (indexDef.getIndexType() != null) {
+                        throw new SQLSyntaxErrorException("SPATIAL INDEX can specify no index_type");
+                    }
+                    stmt.addSpatialIndex(id, indexDef);
+                    break;
+                case KW_CHECK:
                     lexer.nextToken();
+                    match(PUNC_LEFT_PAREN);
+                    Expression expr = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                    stmt.addCheck(expr);
                     break;
-                }
-                if (lexer.token() == IDENTIFIER) {
-                    id = identifier();
-                } else {
-                    id = null;
-                }
-                indexDef = indexDefinition();
-                if (indexDef.getIndexType() != null) {
-                    throw new SQLSyntaxErrorException("FULLTEXT INDEX can specify no index_type");
-                }
-                stmt.addFullTextIndex(id, indexDef);
-                break;
-            case KW_SPATIAL:
-                switch (lexer.nextToken()) {
-                case KW_INDEX:
-                case KW_KEY:
-                    lexer.nextToken();
+                case IDENTIFIER:
+                    Identifier columnName = identifier();
+                    ColumnDefinition columnDef = columnDefinition();
+                    stmt.addColumnDefinition(columnName, columnDef);
                     break;
-                }
-                if (lexer.token() == IDENTIFIER) {
-                    id = identifier();
-                } else {
-                    id = null;
-                }
-                indexDef = indexDefinition();
-                if (indexDef.getIndexType() != null) {
-                    throw new SQLSyntaxErrorException("SPATIAL INDEX can specify no index_type");
-                }
-                stmt.addSpatialIndex(id, indexDef);
-                break;
-            case KW_CHECK:
-                lexer.nextToken();
-                match(PUNC_LEFT_PAREN);
-                Expression expr = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-                stmt.addCheck(expr);
-                break;
-            case IDENTIFIER:
-                Identifier columnName = identifier();
-                ColumnDefinition columnDef = columnDefinition();
-                stmt.addColumnDefinition(columnName, columnDef);
-                break;
-            default:
-                throw new SQLSyntaxErrorException("unsupportted column definition");
+                default:
+                    throw new SQLSyntaxErrorException("unsupportted column definition");
             }
         }
         match(PUNC_RIGHT_PAREN);
@@ -858,53 +866,54 @@ public class MySQLDDLParser extends MySQLParser {
 
     private List<IndexOption> indexOptions() throws SQLSyntaxErrorException {
         List<IndexOption> list = null;
-        for (;;) {
-            main_switch: switch (lexer.token()) {
-            case KW_USING:
-                lexer.nextToken();
-                IndexOption.IndexType indexType = matchIdentifier("BTREE", "HASH") == 0
+        for (; ; ) {
+            main_switch:
+            switch (lexer.token()) {
+                case KW_USING:
+                    lexer.nextToken();
+                    IndexOption.IndexType indexType = matchIdentifier("BTREE", "HASH") == 0
                         ? IndexOption.IndexType.BTREE : IndexOption.IndexType.HASH;
-                if (list == null) {
-                    list = new ArrayList<IndexOption>(1);
-                }
-                list.add(new IndexOption(indexType));
-                break main_switch;
-            case KW_WITH:
-                lexer.nextToken();
-                matchIdentifier("PARSER");
-                Identifier id = identifier();
-                if (list == null) {
-                    list = new ArrayList<IndexOption>(1);
-                }
-                list.add(new IndexOption(id));
-                break main_switch;
-            case IDENTIFIER:
-                SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
-                if (si != null) {
-                    switch (si) {
-                    case KEY_BLOCK_SIZE:
-                        lexer.nextToken();
-                        if (lexer.token() == OP_EQUALS) {
-                            lexer.nextToken();
-                        }
-                        Expression val = exprParser.expression();
-                        if (list == null) {
-                            list = new ArrayList<IndexOption>(1);
-                        }
-                        list.add(new IndexOption(val));
-                        break main_switch;
-                    case COMMENT:
-                        lexer.nextToken();
-                        LiteralString string = (LiteralString) exprParser.expression();
-                        if (list == null) {
-                            list = new ArrayList<IndexOption>(1);
-                        }
-                        list.add(new IndexOption(string));
-                        break main_switch;
+                    if (list == null) {
+                        list = new ArrayList<IndexOption>(1);
                     }
-                }
-            default:
-                return list;
+                    list.add(new IndexOption(indexType));
+                    break main_switch;
+                case KW_WITH:
+                    lexer.nextToken();
+                    matchIdentifier("PARSER");
+                    Identifier id = identifier();
+                    if (list == null) {
+                        list = new ArrayList<IndexOption>(1);
+                    }
+                    list.add(new IndexOption(id));
+                    break main_switch;
+                case IDENTIFIER:
+                    SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
+                    if (si != null) {
+                        switch (si) {
+                            case KEY_BLOCK_SIZE:
+                                lexer.nextToken();
+                                if (lexer.token() == OP_EQUALS) {
+                                    lexer.nextToken();
+                                }
+                                Expression val = exprParser.expression();
+                                if (list == null) {
+                                    list = new ArrayList<IndexOption>(1);
+                                }
+                                list.add(new IndexOption(val));
+                                break main_switch;
+                            case COMMENT:
+                                lexer.nextToken();
+                                LiteralString string = (LiteralString) exprParser.expression();
+                                if (list == null) {
+                                    list = new ArrayList<IndexOption>(1);
+                                }
+                                list.add(new IndexOption(string));
+                                break main_switch;
+                        }
+                    }
+                default:
+                    return list;
             }
         }
     }
@@ -919,14 +928,14 @@ public class MySQLDDLParser extends MySQLParser {
             match(PUNC_RIGHT_PAREN);
         }
         switch (lexer.token()) {
-        case KW_ASC:
-            lexer.nextToken();
-            return new IndexColumnName(colName, len, true);
-        case KW_DESC:
-            lexer.nextToken();
-            return new IndexColumnName(colName, len, false);
-        default:
-            return new IndexColumnName(colName, len, true);
+            case KW_ASC:
+                lexer.nextToken();
+                return new IndexColumnName(colName, len, true);
+            case KW_DESC:
+                lexer.nextToken();
+                return new IndexColumnName(colName, len, false);
+            default:
+                return new IndexColumnName(colName, len, true);
         }
     }
 
@@ -949,402 +958,403 @@ public class MySQLDDLParser extends MySQLParser {
         Identifier charSet = null;
         Identifier collation = null;
         List<Expression> collectionVals = null;
-        typeName: switch (lexer.token()) {
-        case KW_TINYINT:
-            // | TINYINT[(length)] [UNSIGNED] [ZEROFILL]
-            typeName = DataType.DataTypeName.TINYINT;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_UNSIGNED) {
-                unsigned = true;
-                lexer.nextToken();
-            }
-            if (lexer.token() == KW_ZEROFILL) {
-                zerofill = true;
-                lexer.nextToken();
-            }
-            break typeName;
-        case KW_SMALLINT:
-            // | SMALLINT[(length)] [UNSIGNED] [ZEROFILL]
-            typeName = DataType.DataTypeName.SMALLINT;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_UNSIGNED) {
-                unsigned = true;
-                lexer.nextToken();
-            }
-            if (lexer.token() == KW_ZEROFILL) {
-                zerofill = true;
-                lexer.nextToken();
-            }
-            break typeName;
-        case KW_MEDIUMINT:
-            // | MEDIUMINT[(length)] [UNSIGNED] [ZEROFILL]
-            typeName = DataType.DataTypeName.MEDIUMINT;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_UNSIGNED) {
-                unsigned = true;
-                lexer.nextToken();
-            }
-            if (lexer.token() == KW_ZEROFILL) {
-                zerofill = true;
-                lexer.nextToken();
-            }
-            break typeName;
-        case KW_INTEGER:
-        case KW_INT:
-            // | INT[(length)] [UNSIGNED] [ZEROFILL]
-            // | INTEGER[(length)] [UNSIGNED] [ZEROFILL]
-            typeName = DataType.DataTypeName.INT;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_UNSIGNED) {
-                unsigned = true;
-                lexer.nextToken();
-            }
-            if (lexer.token() == KW_ZEROFILL) {
-                zerofill = true;
-                lexer.nextToken();
-            }
-            break typeName;
-        case KW_BIGINT:
-            // | BIGINT[(length)] [UNSIGNED] [ZEROFILL]
-            typeName = DataType.DataTypeName.BIGINT;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_UNSIGNED) {
-                unsigned = true;
-                lexer.nextToken();
-            }
-            if (lexer.token() == KW_ZEROFILL) {
-                zerofill = true;
-                lexer.nextToken();
-            }
-            break typeName;
-        case KW_REAL:
-            // | REAL[(length,decimals)] [UNSIGNED] [ZEROFILL]
-            typeName = DataType.DataTypeName.REAL;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_COMMA);
-                decimals = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_UNSIGNED) {
-                unsigned = true;
-                lexer.nextToken();
-            }
-            if (lexer.token() == KW_ZEROFILL) {
-                zerofill = true;
-                lexer.nextToken();
-            }
-            break typeName;
-        case KW_DOUBLE:
-            // | DOUBLE[(length,decimals)] [UNSIGNED] [ZEROFILL]
-            typeName = DataType.DataTypeName.DOUBLE;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_COMMA);
-                decimals = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_UNSIGNED) {
-                unsigned = true;
-                lexer.nextToken();
-            }
-            if (lexer.token() == KW_ZEROFILL) {
-                zerofill = true;
-                lexer.nextToken();
-            }
-            break typeName;
-        case KW_FLOAT:
-            // | FLOAT[(length,decimals)] [UNSIGNED] [ZEROFILL]
-            typeName = DataType.DataTypeName.FLOAT;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_COMMA);
-                decimals = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_UNSIGNED) {
-                unsigned = true;
-                lexer.nextToken();
-            }
-            if (lexer.token() == KW_ZEROFILL) {
-                zerofill = true;
-                lexer.nextToken();
-            }
-            break typeName;
-        case KW_NUMERIC:
-        case KW_DECIMAL:
-        case KW_DEC:
-            // | DECIMAL[(length[,decimals])] [UNSIGNED] [ZEROFILL]
-            // | NUMERIC[(length[,decimals])] [UNSIGNED] [ZEROFILL]
-            typeName = DataType.DataTypeName.DECIMAL;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                if (lexer.token() == PUNC_COMMA) {
+        typeName:
+        switch (lexer.token()) {
+            case KW_TINYINT:
+                // | TINYINT[(length)] [UNSIGNED] [ZEROFILL]
+                typeName = DataType.DataTypeName.TINYINT;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                    lexer.nextToken();
+                    length = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                }
+                if (lexer.token() == KW_UNSIGNED) {
+                    unsigned = true;
+                    lexer.nextToken();
+                }
+                if (lexer.token() == KW_ZEROFILL) {
+                    zerofill = true;
+                    lexer.nextToken();
+                }
+                break typeName;
+            case KW_SMALLINT:
+                // | SMALLINT[(length)] [UNSIGNED] [ZEROFILL]
+                typeName = DataType.DataTypeName.SMALLINT;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                    lexer.nextToken();
+                    length = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                }
+                if (lexer.token() == KW_UNSIGNED) {
+                    unsigned = true;
+                    lexer.nextToken();
+                }
+                if (lexer.token() == KW_ZEROFILL) {
+                    zerofill = true;
+                    lexer.nextToken();
+                }
+                break typeName;
+            case KW_MEDIUMINT:
+                // | MEDIUMINT[(length)] [UNSIGNED] [ZEROFILL]
+                typeName = DataType.DataTypeName.MEDIUMINT;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                    lexer.nextToken();
+                    length = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                }
+                if (lexer.token() == KW_UNSIGNED) {
+                    unsigned = true;
+                    lexer.nextToken();
+                }
+                if (lexer.token() == KW_ZEROFILL) {
+                    zerofill = true;
+                    lexer.nextToken();
+                }
+                break typeName;
+            case KW_INTEGER:
+            case KW_INT:
+                // | INT[(length)] [UNSIGNED] [ZEROFILL]
+                // | INTEGER[(length)] [UNSIGNED] [ZEROFILL]
+                typeName = DataType.DataTypeName.INT;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                    lexer.nextToken();
+                    length = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                }
+                if (lexer.token() == KW_UNSIGNED) {
+                    unsigned = true;
+                    lexer.nextToken();
+                }
+                if (lexer.token() == KW_ZEROFILL) {
+                    zerofill = true;
+                    lexer.nextToken();
+                }
+                break typeName;
+            case KW_BIGINT:
+                // | BIGINT[(length)] [UNSIGNED] [ZEROFILL]
+                typeName = DataType.DataTypeName.BIGINT;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                    lexer.nextToken();
+                    length = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                }
+                if (lexer.token() == KW_UNSIGNED) {
+                    unsigned = true;
+                    lexer.nextToken();
+                }
+                if (lexer.token() == KW_ZEROFILL) {
+                    zerofill = true;
+                    lexer.nextToken();
+                }
+                break typeName;
+            case KW_REAL:
+                // | REAL[(length,decimals)] [UNSIGNED] [ZEROFILL]
+                typeName = DataType.DataTypeName.REAL;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                    lexer.nextToken();
+                    length = exprParser.expression();
                     match(PUNC_COMMA);
                     decimals = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
                 }
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_UNSIGNED) {
-                unsigned = true;
-                lexer.nextToken();
-            }
-            if (lexer.token() == KW_ZEROFILL) {
-                zerofill = true;
-                lexer.nextToken();
-            }
-            break typeName;
-        case KW_CHAR:
-            // | CHAR[(length)] [CHARACTER SET charset_name] [COLLATE
-            // collation_name]
-            typeName = DataType.DataTypeName.CHAR;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            if (lexer.token() == KW_CHARACTER) {
-                lexer.nextToken();
-                match(KW_SET);
-                charSet = identifier();
-            }
-            if (lexer.token() == KW_COLLATE) {
-                lexer.nextToken();
-                collation = identifier();
-            }
-            break typeName;
-        case KW_VARCHAR:
-            // | VARCHAR(length) [CHARACTER SET charset_name] [COLLATE
-            // collation_name]
-            typeName = DataType.DataTypeName.VARCHAR;
-            lexer.nextToken();
-            match(PUNC_LEFT_PAREN);
-            length = exprParser.expression();
-            match(PUNC_RIGHT_PAREN);
-            if (lexer.token() == KW_CHARACTER) {
-                lexer.nextToken();
-                match(KW_SET);
-                charSet = identifier();
-            }
-            if (lexer.token() == KW_COLLATE) {
-                lexer.nextToken();
-                collation = identifier();
-            }
-            break typeName;
-        case KW_BINARY:
-            // | BINARY[(length)]
-            typeName = DataType.DataTypeName.BINARY;
-            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                lexer.nextToken();
-                length = exprParser.expression();
-                match(PUNC_RIGHT_PAREN);
-            }
-            break typeName;
-        case KW_VARBINARY:
-            // | VARBINARY(length)
-            typeName = DataType.DataTypeName.VARBINARY;
-            lexer.nextToken();
-            match(PUNC_LEFT_PAREN);
-            length = exprParser.expression();
-            match(PUNC_RIGHT_PAREN);
-            break typeName;
-        case KW_TINYBLOB:
-            typeName = DataType.DataTypeName.TINYBLOB;
-            lexer.nextToken();
-            break typeName;
-        case KW_BLOB:
-            typeName = DataType.DataTypeName.BLOB;
-            lexer.nextToken();
-            break typeName;
-        case KW_MEDIUMBLOB:
-            typeName = DataType.DataTypeName.MEDIUMBLOB;
-            lexer.nextToken();
-            break typeName;
-        case KW_LONGBLOB:
-            typeName = DataType.DataTypeName.LONGBLOB;
-            lexer.nextToken();
-            break typeName;
-        case KW_TINYTEXT:
-            // | TINYTEXT [BINARY] [CHARACTER SET charset_name] [COLLATE
-            // collation_name]
-            typeName = DataType.DataTypeName.TINYTEXT;
-            if (lexer.nextToken() == KW_BINARY) {
-                lexer.nextToken();
-                binary = true;
-            }
-            if (lexer.token() == KW_CHARACTER) {
-                lexer.nextToken();
-                match(KW_SET);
-                charSet = identifier();
-            }
-            if (lexer.token() == KW_COLLATE) {
-                lexer.nextToken();
-                collation = identifier();
-            }
-            break typeName;
-        case KW_MEDIUMTEXT:
-            // | MEDIUMTEXT [BINARY] [CHARACTER SET charset_name] [COLLATE
-            // collation_name]
-            typeName = DataType.DataTypeName.MEDIUMTEXT;
-            if (lexer.nextToken() == KW_BINARY) {
-                lexer.nextToken();
-                binary = true;
-            }
-            if (lexer.token() == KW_CHARACTER) {
-                lexer.nextToken();
-                match(KW_SET);
-                charSet = identifier();
-            }
-            if (lexer.token() == KW_COLLATE) {
-                lexer.nextToken();
-                collation = identifier();
-            }
-            break typeName;
-        case KW_LONGTEXT:
-            // | LONGTEXT [BINARY] [CHARACTER SET charset_name] [COLLATE
-            // collation_name]
-            typeName = DataType.DataTypeName.LONGTEXT;
-            if (lexer.nextToken() == KW_BINARY) {
-                lexer.nextToken();
-                binary = true;
-            }
-            if (lexer.token() == KW_CHARACTER) {
-                lexer.nextToken();
-                match(KW_SET);
-                charSet = identifier();
-            }
-            if (lexer.token() == KW_COLLATE) {
-                lexer.nextToken();
-                collation = identifier();
-            }
-            break typeName;
-        case KW_SET:
-            // | SET(value1,value2,value3,...) [CHARACTER SET charset_name]
-            // [COLLATE collation_name]
-            typeName = DataType.DataTypeName.SET;
-            lexer.nextToken();
-            match(PUNC_LEFT_PAREN);
-            for (int i = 0; lexer.token() != PUNC_RIGHT_PAREN; ++i) {
-                if (i > 0)
+                if (lexer.token() == KW_UNSIGNED) {
+                    unsigned = true;
+                    lexer.nextToken();
+                }
+                if (lexer.token() == KW_ZEROFILL) {
+                    zerofill = true;
+                    lexer.nextToken();
+                }
+                break typeName;
+            case KW_DOUBLE:
+                // | DOUBLE[(length,decimals)] [UNSIGNED] [ZEROFILL]
+                typeName = DataType.DataTypeName.DOUBLE;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                    lexer.nextToken();
+                    length = exprParser.expression();
                     match(PUNC_COMMA);
-                else
-                    collectionVals = new ArrayList<Expression>(2);
-                collectionVals.add(exprParser.expression());
-            }
-            match(PUNC_RIGHT_PAREN);
-            if (lexer.token() == KW_CHARACTER) {
-                lexer.nextToken();
-                match(KW_SET);
-                charSet = identifier();
-            }
-            if (lexer.token() == KW_COLLATE) {
-                lexer.nextToken();
-                collation = identifier();
-            }
-            break typeName;
-        case IDENTIFIER:
-            SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
-            if (si != null) {
-                switch (si) {
-                case BIT:
-                    // BIT[(length)]
-                    typeName = DataType.DataTypeName.BIT;
-                    if (lexer.nextToken() == PUNC_LEFT_PAREN) {
-                        lexer.nextToken();
-                        length = exprParser.expression();
-                        match(PUNC_RIGHT_PAREN);
-                    }
-                    break typeName;
-                case DATE:
-                    typeName = DataType.DataTypeName.DATE;
+                    decimals = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                }
+                if (lexer.token() == KW_UNSIGNED) {
+                    unsigned = true;
                     lexer.nextToken();
-                    break typeName;
-                case TIME:
-                    typeName = DataType.DataTypeName.TIME;
+                }
+                if (lexer.token() == KW_ZEROFILL) {
+                    zerofill = true;
                     lexer.nextToken();
-                    break typeName;
-                case TIMESTAMP:
-                    typeName = DataType.DataTypeName.TIMESTAMP;
+                }
+                break typeName;
+            case KW_FLOAT:
+                // | FLOAT[(length,decimals)] [UNSIGNED] [ZEROFILL]
+                typeName = DataType.DataTypeName.FLOAT;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
                     lexer.nextToken();
-                    break typeName;
-                case DATETIME:
-                    typeName = DataType.DataTypeName.DATETIME;
+                    length = exprParser.expression();
+                    match(PUNC_COMMA);
+                    decimals = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                }
+                if (lexer.token() == KW_UNSIGNED) {
+                    unsigned = true;
                     lexer.nextToken();
-                    break typeName;
-                case YEAR:
-                    typeName = DataType.DataTypeName.YEAR;
+                }
+                if (lexer.token() == KW_ZEROFILL) {
+                    zerofill = true;
                     lexer.nextToken();
-                    break typeName;
-                case TEXT:
-                    // | TEXT [BINARY] [CHARACTER SET charset_name] [COLLATE
-                    // collation_name]
-                    typeName = DataType.DataTypeName.TEXT;
-                    if (lexer.nextToken() == KW_BINARY) {
-                        lexer.nextToken();
-                        binary = true;
-                    }
-                    if (lexer.token() == KW_CHARACTER) {
-                        lexer.nextToken();
-                        match(KW_SET);
-                        charSet = identifier();
-                    }
-                    if (lexer.token() == KW_COLLATE) {
-                        lexer.nextToken();
-                        collation = identifier();
-                    }
-                    break typeName;
-                case ENUM:
-                    // | ENUM(value1,value2,value3,...) [CHARACTER SET
-                    // charset_name] [COLLATE collation_name]
-                    typeName = DataType.DataTypeName.ENUM;
+                }
+                break typeName;
+            case KW_NUMERIC:
+            case KW_DECIMAL:
+            case KW_DEC:
+                // | DECIMAL[(length[,decimals])] [UNSIGNED] [ZEROFILL]
+                // | NUMERIC[(length[,decimals])] [UNSIGNED] [ZEROFILL]
+                typeName = DataType.DataTypeName.DECIMAL;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
                     lexer.nextToken();
-                    match(PUNC_LEFT_PAREN);
-                    for (int i = 0; lexer.token() != PUNC_RIGHT_PAREN; ++i) {
-                        if (i > 0)
-                            match(PUNC_COMMA);
-                        else
-                            collectionVals = new ArrayList<Expression>(2);
-                        collectionVals.add(exprParser.expression());
+                    length = exprParser.expression();
+                    if (lexer.token() == PUNC_COMMA) {
+                        match(PUNC_COMMA);
+                        decimals = exprParser.expression();
                     }
                     match(PUNC_RIGHT_PAREN);
-                    if (lexer.token() == KW_CHARACTER) {
-                        lexer.nextToken();
-                        match(KW_SET);
-                        charSet = identifier();
-                    }
-                    if (lexer.token() == KW_COLLATE) {
-                        lexer.nextToken();
-                        collation = identifier();
-                    }
-                    break typeName;
                 }
-            }
-        default:
-            return null;
+                if (lexer.token() == KW_UNSIGNED) {
+                    unsigned = true;
+                    lexer.nextToken();
+                }
+                if (lexer.token() == KW_ZEROFILL) {
+                    zerofill = true;
+                    lexer.nextToken();
+                }
+                break typeName;
+            case KW_CHAR:
+                // | CHAR[(length)] [CHARACTER SET charset_name] [COLLATE
+                // collation_name]
+                typeName = DataType.DataTypeName.CHAR;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                    lexer.nextToken();
+                    length = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                }
+                if (lexer.token() == KW_CHARACTER) {
+                    lexer.nextToken();
+                    match(KW_SET);
+                    charSet = identifier();
+                }
+                if (lexer.token() == KW_COLLATE) {
+                    lexer.nextToken();
+                    collation = identifier();
+                }
+                break typeName;
+            case KW_VARCHAR:
+                // | VARCHAR(length) [CHARACTER SET charset_name] [COLLATE
+                // collation_name]
+                typeName = DataType.DataTypeName.VARCHAR;
+                lexer.nextToken();
+                match(PUNC_LEFT_PAREN);
+                length = exprParser.expression();
+                match(PUNC_RIGHT_PAREN);
+                if (lexer.token() == KW_CHARACTER) {
+                    lexer.nextToken();
+                    match(KW_SET);
+                    charSet = identifier();
+                }
+                if (lexer.token() == KW_COLLATE) {
+                    lexer.nextToken();
+                    collation = identifier();
+                }
+                break typeName;
+            case KW_BINARY:
+                // | BINARY[(length)]
+                typeName = DataType.DataTypeName.BINARY;
+                if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                    lexer.nextToken();
+                    length = exprParser.expression();
+                    match(PUNC_RIGHT_PAREN);
+                }
+                break typeName;
+            case KW_VARBINARY:
+                // | VARBINARY(length)
+                typeName = DataType.DataTypeName.VARBINARY;
+                lexer.nextToken();
+                match(PUNC_LEFT_PAREN);
+                length = exprParser.expression();
+                match(PUNC_RIGHT_PAREN);
+                break typeName;
+            case KW_TINYBLOB:
+                typeName = DataType.DataTypeName.TINYBLOB;
+                lexer.nextToken();
+                break typeName;
+            case KW_BLOB:
+                typeName = DataType.DataTypeName.BLOB;
+                lexer.nextToken();
+                break typeName;
+            case KW_MEDIUMBLOB:
+                typeName = DataType.DataTypeName.MEDIUMBLOB;
+                lexer.nextToken();
+                break typeName;
+            case KW_LONGBLOB:
+                typeName = DataType.DataTypeName.LONGBLOB;
+                lexer.nextToken();
+                break typeName;
+            case KW_TINYTEXT:
+                // | TINYTEXT [BINARY] [CHARACTER SET charset_name] [COLLATE
+                // collation_name]
+                typeName = DataType.DataTypeName.TINYTEXT;
+                if (lexer.nextToken() == KW_BINARY) {
+                    lexer.nextToken();
+                    binary = true;
+                }
+                if (lexer.token() == KW_CHARACTER) {
+                    lexer.nextToken();
+                    match(KW_SET);
+                    charSet = identifier();
+                }
+                if (lexer.token() == KW_COLLATE) {
+                    lexer.nextToken();
+                    collation = identifier();
+                }
+                break typeName;
+            case KW_MEDIUMTEXT:
+                // | MEDIUMTEXT [BINARY] [CHARACTER SET charset_name] [COLLATE
+                // collation_name]
+                typeName = DataType.DataTypeName.MEDIUMTEXT;
+                if (lexer.nextToken() == KW_BINARY) {
+                    lexer.nextToken();
+                    binary = true;
+                }
+                if (lexer.token() == KW_CHARACTER) {
+                    lexer.nextToken();
+                    match(KW_SET);
+                    charSet = identifier();
+                }
+                if (lexer.token() == KW_COLLATE) {
+                    lexer.nextToken();
+                    collation = identifier();
+                }
+                break typeName;
+            case KW_LONGTEXT:
+                // | LONGTEXT [BINARY] [CHARACTER SET charset_name] [COLLATE
+                // collation_name]
+                typeName = DataType.DataTypeName.LONGTEXT;
+                if (lexer.nextToken() == KW_BINARY) {
+                    lexer.nextToken();
+                    binary = true;
+                }
+                if (lexer.token() == KW_CHARACTER) {
+                    lexer.nextToken();
+                    match(KW_SET);
+                    charSet = identifier();
+                }
+                if (lexer.token() == KW_COLLATE) {
+                    lexer.nextToken();
+                    collation = identifier();
+                }
+                break typeName;
+            case KW_SET:
+                // | SET(value1,value2,value3,...) [CHARACTER SET charset_name]
+                // [COLLATE collation_name]
+                typeName = DataType.DataTypeName.SET;
+                lexer.nextToken();
+                match(PUNC_LEFT_PAREN);
+                for (int i = 0; lexer.token() != PUNC_RIGHT_PAREN; ++i) {
+                    if (i > 0)
+                        match(PUNC_COMMA);
+                    else
+                        collectionVals = new ArrayList<Expression>(2);
+                    collectionVals.add(exprParser.expression());
+                }
+                match(PUNC_RIGHT_PAREN);
+                if (lexer.token() == KW_CHARACTER) {
+                    lexer.nextToken();
+                    match(KW_SET);
+                    charSet = identifier();
+                }
+                if (lexer.token() == KW_COLLATE) {
+                    lexer.nextToken();
+                    collation = identifier();
+                }
+                break typeName;
+            case IDENTIFIER:
+                SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
+                if (si != null) {
+                    switch (si) {
+                        case BIT:
+                            // BIT[(length)]
+                            typeName = DataType.DataTypeName.BIT;
+                            if (lexer.nextToken() == PUNC_LEFT_PAREN) {
+                                lexer.nextToken();
+                                length = exprParser.expression();
+                                match(PUNC_RIGHT_PAREN);
+                            }
+                            break typeName;
+                        case DATE:
+                            typeName = DataType.DataTypeName.DATE;
+                            lexer.nextToken();
+                            break typeName;
+                        case TIME:
+                            typeName = DataType.DataTypeName.TIME;
+                            lexer.nextToken();
+                            break typeName;
+                        case TIMESTAMP:
+                            typeName = DataType.DataTypeName.TIMESTAMP;
+                            lexer.nextToken();
+                            break typeName;
+                        case DATETIME:
+                            typeName = DataType.DataTypeName.DATETIME;
+                            lexer.nextToken();
+                            break typeName;
+                        case YEAR:
+                            typeName = DataType.DataTypeName.YEAR;
+                            lexer.nextToken();
+                            break typeName;
+                        case TEXT:
+                            // | TEXT [BINARY] [CHARACTER SET charset_name] [COLLATE
+                            // collation_name]
+                            typeName = DataType.DataTypeName.TEXT;
+                            if (lexer.nextToken() == KW_BINARY) {
+                                lexer.nextToken();
+                                binary = true;
+                            }
+                            if (lexer.token() == KW_CHARACTER) {
+                                lexer.nextToken();
+                                match(KW_SET);
+                                charSet = identifier();
+                            }
+                            if (lexer.token() == KW_COLLATE) {
+                                lexer.nextToken();
+                                collation = identifier();
+                            }
+                            break typeName;
+                        case ENUM:
+                            // | ENUM(value1,value2,value3,...) [CHARACTER SET
+                            // charset_name] [COLLATE collation_name]
+                            typeName = DataType.DataTypeName.ENUM;
+                            lexer.nextToken();
+                            match(PUNC_LEFT_PAREN);
+                            for (int i = 0; lexer.token() != PUNC_RIGHT_PAREN; ++i) {
+                                if (i > 0)
+                                    match(PUNC_COMMA);
+                                else
+                                    collectionVals = new ArrayList<Expression>(2);
+                                collectionVals.add(exprParser.expression());
+                            }
+                            match(PUNC_RIGHT_PAREN);
+                            if (lexer.token() == KW_CHARACTER) {
+                                lexer.nextToken();
+                                match(KW_SET);
+                                charSet = identifier();
+                            }
+                            if (lexer.token() == KW_COLLATE) {
+                                lexer.nextToken();
+                                collation = identifier();
+                            }
+                            break typeName;
+                    }
+                }
+            default:
+                return null;
         }
         return new DataType(typeName, unsigned, zerofill, binary, length, decimals, charSet, collation, collectionVals);
     }
@@ -1382,18 +1392,18 @@ public class MySQLDDLParser extends MySQLParser {
             autoIncrement = true;
         }
         switch (lexer.token()) {
-        case KW_UNIQUE:
-            if (lexer.nextToken() == KW_KEY) {
+            case KW_UNIQUE:
+                if (lexer.nextToken() == KW_KEY) {
+                    lexer.nextToken();
+                }
+                sindex = ColumnDefinition.SpecialIndex.UNIQUE;
+                break;
+            case KW_PRIMARY:
                 lexer.nextToken();
-            }
-            sindex = ColumnDefinition.SpecialIndex.UNIQUE;
-            break;
-        case KW_PRIMARY:
-            lexer.nextToken();
-        case KW_KEY:
-            match(KW_KEY);
-            sindex = ColumnDefinition.SpecialIndex.PRIMARY;
-            break;
+            case KW_KEY:
+                match(KW_KEY);
+                sindex = ColumnDefinition.SpecialIndex.PRIMARY;
+                break;
         }
         if (lexer.token() == IDENTIFIER && "COMMENT".equals(lexer.stringValueUppercase())) {
             lexer.nextToken();
@@ -1401,24 +1411,24 @@ public class MySQLDDLParser extends MySQLParser {
         }
         if (lexer.token() == IDENTIFIER && "COLUMN_FORMAT".equals(lexer.stringValueUppercase())) {
             switch (lexer.nextToken()) {
-            case KW_DEFAULT:
-                lexer.nextToken();
-                format = ColumnDefinition.ColumnFormat.DEFAULT;
-                break;
-            case IDENTIFIER:
-                SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
-                if (si != null) {
-                    switch (si) {
-                    case FIXED:
-                        lexer.nextToken();
-                        format = ColumnDefinition.ColumnFormat.FIXED;
-                        break;
-                    case DYNAMIC:
-                        lexer.nextToken();
-                        format = ColumnDefinition.ColumnFormat.DYNAMIC;
-                        break;
+                case KW_DEFAULT:
+                    lexer.nextToken();
+                    format = ColumnDefinition.ColumnFormat.DEFAULT;
+                    break;
+                case IDENTIFIER:
+                    SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
+                    if (si != null) {
+                        switch (si) {
+                            case FIXED:
+                                lexer.nextToken();
+                                format = ColumnDefinition.ColumnFormat.FIXED;
+                                break;
+                            case DYNAMIC:
+                                lexer.nextToken();
+                                format = ColumnDefinition.ColumnFormat.DYNAMIC;
+                                break;
+                        }
                     }
-                }
             }
         }
         return new ColumnDefinition(dataType, notNull, defaultVal, autoIncrement, sindex, comment, format);
@@ -1426,7 +1436,7 @@ public class MySQLDDLParser extends MySQLParser {
 
     private boolean tableOptions(TableOptions options) throws SQLSyntaxErrorException {
         boolean matched = false;
-        for (int i = 0;; ++i) {
+        for (int i = 0; ; ++i) {
             boolean comma = false;
             if (i > 0 && lexer.token() == PUNC_COMMA) {
                 lexer.nextToken();
@@ -1447,29 +1457,8 @@ public class MySQLDDLParser extends MySQLParser {
     private boolean tableOption(TableOptions options) throws SQLSyntaxErrorException {
         Identifier id = null;
         Expression expr = null;
-        os: switch (lexer.token()) {
-        case KW_CHARACTER:
-            lexer.nextToken();
-            match(KW_SET);
-            if (lexer.token() == OP_EQUALS) {
-                lexer.nextToken();
-            }
-            id = identifier();
-            options.setCharSet(id);
-            break;
-        case KW_COLLATE:
-            lexer.nextToken();
-            if (lexer.token() == OP_EQUALS) {
-                lexer.nextToken();
-            }
-            id = identifier();
-            options.setCollation(id);
-            break;
-        case KW_DEFAULT:
-            // | [DEFAULT] CHARSET [=] charset_name { MySQL 5.1 legacy}
-            // | [DEFAULT] CHARACTER SET [=] charset_name
-            // | [DEFAULT] COLLATE [=] collation_name
-            switch (lexer.nextToken()) {
+        os:
+        switch (lexer.token()) {
             case KW_CHARACTER:
                 lexer.nextToken();
                 match(KW_SET);
@@ -1478,7 +1467,7 @@ public class MySQLDDLParser extends MySQLParser {
                 }
                 id = identifier();
                 options.setCharSet(id);
-                break os;
+                break;
             case KW_COLLATE:
                 lexer.nextToken();
                 if (lexer.token() == OP_EQUALS) {
@@ -1486,285 +1475,307 @@ public class MySQLDDLParser extends MySQLParser {
                 }
                 id = identifier();
                 options.setCollation(id);
-                break os;
-            case IDENTIFIER:
-                SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
-                if (si != null) {
-                    switch (si) {
-                    case CHARSET:
+                break;
+            case KW_DEFAULT:
+                // | [DEFAULT] CHARSET [=] charset_name { MySQL 5.1 legacy}
+                // | [DEFAULT] CHARACTER SET [=] charset_name
+                // | [DEFAULT] COLLATE [=] collation_name
+                switch (lexer.nextToken()) {
+                    case KW_CHARACTER:
                         lexer.nextToken();
+                        match(KW_SET);
                         if (lexer.token() == OP_EQUALS) {
                             lexer.nextToken();
                         }
                         id = identifier();
                         options.setCharSet(id);
                         break os;
-                    }
-                }
-            default:
-                lexer.addCacheToke(KW_DEFAULT);
-                return false;
-            }
-        case KW_INDEX:
-            // | INDEX DIRECTORY [=] 'absolute path to directory'
-            lexer.nextToken();
-            if (lexer.token() == IDENTIFIER && "DIRECTORY".equals(lexer.stringValueUppercase())) {
-                if (lexer.nextToken() == OP_EQUALS) {
-                    lexer.nextToken();
-                }
-                options.setIndexDir((LiteralString) exprParser.expression());
-                break;
-            }
-            lexer.addCacheToke(KW_INDEX);
-            return true;
-        case KW_UNION:
-            // | UNION [=] (tbl_name[,tbl_name]...)
-            if (lexer.nextToken() == OP_EQUALS) {
-                lexer.nextToken();
-            }
-            match(PUNC_LEFT_PAREN);
-            List<Identifier> union = new ArrayList<Identifier>(2);
-            for (int j = 0; lexer.token() != PUNC_RIGHT_PAREN; ++j) {
-                if (j > 0)
-                    match(PUNC_COMMA);
-                id = identifier();
-                union.add(id);
-            }
-            match(PUNC_RIGHT_PAREN);
-            options.setUnion(union);
-            break os;
-        case IDENTIFIER:
-            SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
-            if (si != null) {
-                switch (si) {
-                case CHARSET:
-                    // CHARSET [=] charset_name
-                    lexer.nextToken();
-                    if (lexer.token() == OP_EQUALS) {
+                    case KW_COLLATE:
                         lexer.nextToken();
-                    }
-                    id = identifier();
-                    options.setCharSet(id);
-                    break os;
-                case ENGINE:
-                    // ENGINE [=] engine_name
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    id = identifier();
-                    options.setEngine(id);
-                    break os;
-                case AUTO_INCREMENT:
-                    // | AUTO_INCREMENT [=] value
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    expr = exprParser.expression();
-                    options.setAutoIncrement(expr);
-                    break os;
-                case AVG_ROW_LENGTH:
-                    // | AVG_ROW_LENGTH [=] value
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    expr = exprParser.expression();
-                    options.setAvgRowLength(expr);
-                    break os;
-                case CHECKSUM:
-                    // | CHECKSUM [=] {0 | 1}
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    switch (lexer.token()) {
-                    case LITERAL_BOOL_FALSE:
-                        lexer.nextToken();
-                        options.setCheckSum(false);
-                    case LITERAL_BOOL_TRUE:
-                        lexer.nextToken();
-                        options.setCheckSum(true);
-                        break;
-                    case LITERAL_NUM_PURE_DIGIT:
-                        int intVal = lexer.integerValue().intValue();
-                        lexer.nextToken();
-                        if (intVal == 0) {
-                            options.setCheckSum(false);
-                        } else {
-                            options.setCheckSum(true);
+                        if (lexer.token() == OP_EQUALS) {
+                            lexer.nextToken();
                         }
-                        break;
-                    default:
-                        throw new SQLSyntaxErrorException("table option of CHECKSUM error");
-                    }
-                    break os;
-                case DELAY_KEY_WRITE:
-                    // | DELAY_KEY_WRITE [=] {0 | 1}
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    switch (lexer.token()) {
-                    case LITERAL_BOOL_FALSE:
-                        lexer.nextToken();
-                        options.setDelayKeyWrite(false);
-                    case LITERAL_BOOL_TRUE:
-                        lexer.nextToken();
-                        options.setDelayKeyWrite(true);
-                        break;
-                    case LITERAL_NUM_PURE_DIGIT:
-                        int intVal = lexer.integerValue().intValue();
-                        lexer.nextToken();
-                        if (intVal == 0) {
-                            options.setDelayKeyWrite(false);
-                        } else {
-                            options.setDelayKeyWrite(true);
-                        }
-                        break;
-                    default:
-                        throw new SQLSyntaxErrorException("table option of DELAY_KEY_WRITE error");
-                    }
-                    break os;
-                case COMMENT:
-                    // | COMMENT [=] 'string'
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    options.setComment((LiteralString) exprParser.expression());
-                    break os;
-                case CONNECTION:
-                    // | CONNECTION [=] 'connect_string'
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    options.setConnection((LiteralString) exprParser.expression());
-                    break os;
-                case DATA:
-                    // | DATA DIRECTORY [=] 'absolute path to directory'
-                    lexer.nextToken();
-                    matchIdentifier("DIRECTORY");
-                    if (lexer.token() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    options.setDataDir((LiteralString) exprParser.expression());
-                    break os;
-                case INSERT_METHOD:
-                    // | INSERT_METHOD [=] { NO | FIRST | LAST }
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    switch (matchIdentifier("NO", "FIRST", "LAST")) {
-                    case 0:
-                        options.setInsertMethod(TableOptions.InsertMethod.NO);
-                        break;
-                    case 1:
-                        options.setInsertMethod(TableOptions.InsertMethod.FIRST);
-                        break;
-                    case 2:
-                        options.setInsertMethod(TableOptions.InsertMethod.LAST);
-                        break;
-                    }
-                    break os;
-                case KEY_BLOCK_SIZE:
-                    // | KEY_BLOCK_SIZE [=] value
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    options.setKeyBlockSize(exprParser.expression());
-                    break os;
-                case MAX_ROWS:
-                    // | MAX_ROWS [=] value
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    options.setMaxRows(exprParser.expression());
-                    break os;
-                case MIN_ROWS:
-                    // | MIN_ROWS [=] value
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    options.setMinRows(exprParser.expression());
-                    break os;
-                case PACK_KEYS:
-                    // | PACK_KEYS [=] {0 | 1 | DEFAULT}
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    switch (lexer.token()) {
-                    case LITERAL_BOOL_FALSE:
-                        lexer.nextToken();
-                        options.setPackKeys(TableOptions.PackKeys.FALSE);
-                        break;
-                    case LITERAL_BOOL_TRUE:
-                        lexer.nextToken();
-                        options.setPackKeys(TableOptions.PackKeys.TRUE);
-                        break;
-                    case LITERAL_NUM_PURE_DIGIT:
-                        int intVal = lexer.integerValue().intValue();
-                        lexer.nextToken();
-                        if (intVal == 0) {
-                            options.setPackKeys(TableOptions.PackKeys.FALSE);
-                        } else {
-                            options.setPackKeys(TableOptions.PackKeys.TRUE);
-                        }
-                        break;
-                    case KW_DEFAULT:
-                        lexer.nextToken();
-                        options.setPackKeys(TableOptions.PackKeys.DEFAULT);
-                        break;
-                    default:
-                        throw new SQLSyntaxErrorException("table option of PACK_KEYS error");
-                    }
-                    break os;
-                case PASSWORD:
-                    // | PASSWORD [=] 'string'
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    options.setPassword((LiteralString) exprParser.expression());
-                    break os;
-                case ROW_FORMAT:
-                    // | ROW_FORMAT [=]
-                    // {DEFAULT|DYNAMIC|FIXED|COMPRESSED|REDUNDANT|COMPACT}
-                    if (lexer.nextToken() == OP_EQUALS) {
-                        lexer.nextToken();
-                    }
-                    switch (lexer.token()) {
-                    case KW_DEFAULT:
-                        lexer.nextToken();
-                        options.setRowFormat(TableOptions.RowFormat.DEFAULT);
+                        id = identifier();
+                        options.setCollation(id);
                         break os;
                     case IDENTIFIER:
-                        SpecialIdentifier sid = specialIdentifiers.get(lexer.stringValueUppercase());
-                        if (sid != null) {
-                            switch (sid) {
-                            case DYNAMIC:
-                                lexer.nextToken();
-                                options.setRowFormat(TableOptions.RowFormat.DYNAMIC);
-                                break os;
-                            case FIXED:
-                                lexer.nextToken();
-                                options.setRowFormat(TableOptions.RowFormat.FIXED);
-                                break os;
-                            case COMPRESSED:
-                                lexer.nextToken();
-                                options.setRowFormat(TableOptions.RowFormat.COMPRESSED);
-                                break os;
-                            case REDUNDANT:
-                                lexer.nextToken();
-                                options.setRowFormat(TableOptions.RowFormat.REDUNDANT);
-                                break os;
-                            case COMPACT:
-                                lexer.nextToken();
-                                options.setRowFormat(TableOptions.RowFormat.COMPACT);
-                                break os;
+                        SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
+                        if (si != null) {
+                            switch (si) {
+                                case CHARSET:
+                                    lexer.nextToken();
+                                    if (lexer.token() == OP_EQUALS) {
+                                        lexer.nextToken();
+                                    }
+                                    id = identifier();
+                                    options.setCharSet(id);
+                                    break os;
                             }
                         }
                     default:
-                        throw new SQLSyntaxErrorException("table option of ROW_FORMAT error");
+                        lexer.addCacheToke(KW_DEFAULT);
+                        return false;
+                }
+            case KW_INDEX:
+                // | INDEX DIRECTORY [=] 'absolute path to directory'
+                lexer.nextToken();
+                if (lexer.token() == IDENTIFIER && "DIRECTORY".equals(lexer.stringValueUppercase())) {
+                    if (lexer.nextToken() == OP_EQUALS) {
+                        lexer.nextToken();
+                    }
+                    options.setIndexDir((LiteralString) exprParser.expression());
+                    break;
+                }
+                lexer.addCacheToke(KW_INDEX);
+                return true;
+            case KW_UNION:
+                // | UNION [=] (tbl_name[,tbl_name]...)
+                if (lexer.nextToken() == OP_EQUALS) {
+                    lexer.nextToken();
+                }
+                match(PUNC_LEFT_PAREN);
+                List<Identifier> union = new ArrayList<Identifier>(2);
+                for (int j = 0; lexer.token() != PUNC_RIGHT_PAREN; ++j) {
+                    if (j > 0)
+                        match(PUNC_COMMA);
+                    id = identifier();
+                    union.add(id);
+                }
+                match(PUNC_RIGHT_PAREN);
+                options.setUnion(union);
+                break os;
+            case IDENTIFIER:
+                SpecialIdentifier si = specialIdentifiers.get(lexer.stringValueUppercase());
+                if (si != null) {
+                    switch (si) {
+                        case CHARSET:
+                            // CHARSET [=] charset_name
+                            lexer.nextToken();
+                            if (lexer.token() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            id = identifier();
+                            options.setCharSet(id);
+                            break os;
+                        case ENGINE:
+                            // ENGINE [=] engine_name
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            id = identifier();
+                            options.setEngine(id);
+                            break os;
+                        case AUTO_INCREMENT:
+                            // | AUTO_INCREMENT [=] value
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            expr = exprParser.expression();
+                            options.setAutoIncrement(expr);
+                            break os;
+                        case AVG_ROW_LENGTH:
+                            // | AVG_ROW_LENGTH [=] value
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            expr = exprParser.expression();
+                            options.setAvgRowLength(expr);
+                            break os;
+                        case CHECKSUM:
+                            // | CHECKSUM [=] {0 | 1}
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            switch (lexer.token()) {
+                                case LITERAL_BOOL_FALSE:
+                                    lexer.nextToken();
+                                    options.setCheckSum(false);
+                                case LITERAL_BOOL_TRUE:
+                                    lexer.nextToken();
+                                    options.setCheckSum(true);
+                                    break;
+                                case LITERAL_NUM_PURE_DIGIT:
+                                    int intVal = lexer.integerValue().intValue();
+                                    lexer.nextToken();
+                                    if (intVal == 0) {
+                                        options.setCheckSum(false);
+                                    } else {
+                                        options.setCheckSum(true);
+                                    }
+                                    break;
+                                default:
+                                    throw new SQLSyntaxErrorException("table option of CHECKSUM error");
+                            }
+                            break os;
+                        case DELAY_KEY_WRITE:
+                            // | DELAY_KEY_WRITE [=] {0 | 1}
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            switch (lexer.token()) {
+                                case LITERAL_BOOL_FALSE:
+                                    lexer.nextToken();
+                                    options.setDelayKeyWrite(false);
+                                case LITERAL_BOOL_TRUE:
+                                    lexer.nextToken();
+                                    options.setDelayKeyWrite(true);
+                                    break;
+                                case LITERAL_NUM_PURE_DIGIT:
+                                    int intVal = lexer.integerValue().intValue();
+                                    lexer.nextToken();
+                                    if (intVal == 0) {
+                                        options.setDelayKeyWrite(false);
+                                    } else {
+                                        options.setDelayKeyWrite(true);
+                                    }
+                                    break;
+                                default:
+                                    throw new SQLSyntaxErrorException("table option of DELAY_KEY_WRITE error");
+                            }
+                            break os;
+                        case COMMENT:
+                            // | COMMENT [=] 'string'
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            options.setComment((LiteralString) exprParser.expression());
+                            break os;
+                        case CONNECTION:
+                            // | CONNECTION [=] 'connect_string'
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            options.setConnection((LiteralString) exprParser.expression());
+                            break os;
+                        case DATA:
+                            // | DATA DIRECTORY [=] 'absolute path to directory'
+                            lexer.nextToken();
+                            matchIdentifier("DIRECTORY");
+                            if (lexer.token() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            options.setDataDir((LiteralString) exprParser.expression());
+                            break os;
+                        case INSERT_METHOD:
+                            // | INSERT_METHOD [=] { NO | FIRST | LAST }
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            switch (matchIdentifier("NO", "FIRST", "LAST")) {
+                                case 0:
+                                    options.setInsertMethod(TableOptions.InsertMethod.NO);
+                                    break;
+                                case 1:
+                                    options.setInsertMethod(TableOptions.InsertMethod.FIRST);
+                                    break;
+                                case 2:
+                                    options.setInsertMethod(TableOptions.InsertMethod.LAST);
+                                    break;
+                            }
+                            break os;
+                        case KEY_BLOCK_SIZE:
+                            // | KEY_BLOCK_SIZE [=] value
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            options.setKeyBlockSize(exprParser.expression());
+                            break os;
+                        case MAX_ROWS:
+                            // | MAX_ROWS [=] value
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            options.setMaxRows(exprParser.expression());
+                            break os;
+                        case MIN_ROWS:
+                            // | MIN_ROWS [=] value
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            options.setMinRows(exprParser.expression());
+                            break os;
+                        case PACK_KEYS:
+                            // | PACK_KEYS [=] {0 | 1 | DEFAULT}
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            switch (lexer.token()) {
+                                case LITERAL_BOOL_FALSE:
+                                    lexer.nextToken();
+                                    options.setPackKeys(TableOptions.PackKeys.FALSE);
+                                    break;
+                                case LITERAL_BOOL_TRUE:
+                                    lexer.nextToken();
+                                    options.setPackKeys(TableOptions.PackKeys.TRUE);
+                                    break;
+                                case LITERAL_NUM_PURE_DIGIT:
+                                    int intVal = lexer.integerValue().intValue();
+                                    lexer.nextToken();
+                                    if (intVal == 0) {
+                                        options.setPackKeys(TableOptions.PackKeys.FALSE);
+                                    } else {
+                                        options.setPackKeys(TableOptions.PackKeys.TRUE);
+                                    }
+                                    break;
+                                case KW_DEFAULT:
+                                    lexer.nextToken();
+                                    options.setPackKeys(TableOptions.PackKeys.DEFAULT);
+                                    break;
+                                default:
+                                    throw new SQLSyntaxErrorException("table option of PACK_KEYS error");
+                            }
+                            break os;
+                        case PASSWORD:
+                            // | PASSWORD [=] 'string'
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            options.setPassword((LiteralString) exprParser.expression());
+                            break os;
+                        case ROW_FORMAT:
+                            // | ROW_FORMAT [=]
+                            // {DEFAULT|DYNAMIC|FIXED|COMPRESSED|REDUNDANT|COMPACT}
+                            if (lexer.nextToken() == OP_EQUALS) {
+                                lexer.nextToken();
+                            }
+                            switch (lexer.token()) {
+                                case KW_DEFAULT:
+                                    lexer.nextToken();
+                                    options.setRowFormat(TableOptions.RowFormat.DEFAULT);
+                                    break os;
+                                case IDENTIFIER:
+                                    SpecialIdentifier sid = specialIdentifiers.get(lexer.stringValueUppercase());
+                                    if (sid != null) {
+                                        switch (sid) {
+                                            case DYNAMIC:
+                                                lexer.nextToken();
+                                                options.setRowFormat(TableOptions.RowFormat.DYNAMIC);
+                                                break os;
+                                            case FIXED:
+                                                lexer.nextToken();
+                                                options.setRowFormat(TableOptions.RowFormat.FIXED);
+                                                break os;
+                                            case COMPRESSED:
+                                                lexer.nextToken();
+                                                options.setRowFormat(TableOptions.RowFormat.COMPRESSED);
+                                                break os;
+                                            case REDUNDANT:
+                                                lexer.nextToken();
+                                                options.setRowFormat(TableOptions.RowFormat.REDUNDANT);
+                                                break os;
+                                            case COMPACT:
+                                                lexer.nextToken();
+                                                options.setRowFormat(TableOptions.RowFormat.COMPACT);
+                                                break os;
+                                        }
+                                    }
+                                default:
+                                    throw new SQLSyntaxErrorException("table option of ROW_FORMAT error");
+                            }
                     }
                 }
-            }
-        default:
-            return false;
+            default:
+                return false;
         }
         return true;
     }

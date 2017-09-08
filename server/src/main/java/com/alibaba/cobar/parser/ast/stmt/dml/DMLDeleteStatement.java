@@ -36,7 +36,9 @@ public class DMLDeleteStatement extends DMLStatement {
     private final boolean lowPriority;
     private final boolean quick;
     private final boolean ignore;
-    /** tableName[.*] */
+    /**
+     * tableName[.*]
+     */
     private final List<Identifier> tableNames;
     private final TableReferences tableRefs;
     private final Expression whereCondition;
@@ -45,12 +47,12 @@ public class DMLDeleteStatement extends DMLStatement {
 
     // ------- single-row delete------------
     public DMLDeleteStatement(boolean lowPriority, boolean quick, boolean ignore, Identifier tableName)
-            throws SQLSyntaxErrorException {
+        throws SQLSyntaxErrorException {
         this(lowPriority, quick, ignore, tableName, null, null, null);
     }
 
     public DMLDeleteStatement(boolean lowPriority, boolean quick, boolean ignore, Identifier tableName, Expression where)
-            throws SQLSyntaxErrorException {
+        throws SQLSyntaxErrorException {
         this(lowPriority, quick, ignore, tableName, where, null, null);
     }
 

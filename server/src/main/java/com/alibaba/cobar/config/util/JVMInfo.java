@@ -42,7 +42,7 @@ public class JVMInfo {
     /**
      * Parses the java version system property to determine the major java
      * version, ie 1.x
-     * 
+     *
      * @param javaVersion the system property 'java.specification.version'
      * @return A float of the form 1.x
      */
@@ -147,7 +147,7 @@ public class JVMInfo {
 
     protected boolean canUseSun14ReflectionProvider() {
         return (isSun() || isApple() || isHPUX() || isIBM() || isBlackdown() || isBEAWithUnsafeSupport()) && is14()
-                && loadClass("sun.misc.Unsafe") != null;
+            && loadClass("sun.misc.Unsafe") != null;
     }
 
     public static boolean reverseFieldDefinition() {

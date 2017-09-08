@@ -27,7 +27,7 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
 
 /**
  * <code>'CASE' value? ('WHEN' condition 'THEN' result)+ ('ELSE' result)? 'END' </code>
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class CaseWhenOperatorExpression extends PrimaryExpression {
@@ -38,7 +38,7 @@ public class CaseWhenOperatorExpression extends PrimaryExpression {
     /**
      * @param whenList never null or empry; no pair contains null key or value
      * @param comparee null for format of <code>CASE WHEN ...</code>, otherwise,
-     *            <code>CASE comparee WHEN ...</code>
+     *                 <code>CASE comparee WHEN ...</code>
      */
     public CaseWhenOperatorExpression(Expression comparee, List<Pair<Expression, Expression>> whenList,
                                       Expression elseResult) {

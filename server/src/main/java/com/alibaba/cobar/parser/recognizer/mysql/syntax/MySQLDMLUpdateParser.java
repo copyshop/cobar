@@ -78,7 +78,7 @@ public class MySQLDMLUpdateParser extends MySQLDMLParser {
         if (lexer.token() == PUNC_COMMA) {
             values = new LinkedList<Pair<Identifier, Expression>>();
             values.add(new Pair<Identifier, Expression>(col, expr));
-            for (; lexer.token() == PUNC_COMMA;) {
+            for (; lexer.token() == PUNC_COMMA; ) {
                 lexer.nextToken();
                 col = identifier();
                 match(OP_EQUALS, OP_ASSIGN);

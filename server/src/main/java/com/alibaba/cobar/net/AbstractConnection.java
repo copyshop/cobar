@@ -167,7 +167,7 @@ public abstract class AbstractConnection implements NIOConnection {
 
         // 处理数据
         int offset = readBufferOffset, length = 0, position = buffer.position();
-        for (;;) {
+        for (; ; ) {
             length = getPacketLength(buffer, offset);
             if (length == -1) {// 未达到可计算数据包长度的数据
                 if (!buffer.hasRemaining()) {

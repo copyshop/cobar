@@ -17,7 +17,7 @@ package com.alibaba.cobar.config.model;
 
 /**
  * 用于描述一个数据节点的配置
- * 
+ *
  * @author xianmao.hexm
  */
 public final class DataNodeConfig {

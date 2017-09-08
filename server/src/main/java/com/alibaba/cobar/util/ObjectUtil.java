@@ -22,7 +22,7 @@ public final class ObjectUtil {
      * <p>
      * 如果比较的对象不是数组，则此方法的结果同<code>ObjectUtil.equals</code>。
      * </p>
-     * 
+     *
      * @param array1 数组1
      * @param array2 数组2
      * @return 如果相等, 则返回<code>true</code>

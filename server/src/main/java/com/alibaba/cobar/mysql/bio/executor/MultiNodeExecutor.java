@@ -51,7 +51,7 @@ import com.alibaba.cobar.util.StringUtil;
 
 /**
  * 多数据节点执行器
- * 
+ *
  * @author xianmao.hexm
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
@@ -122,7 +122,7 @@ public final class MultiNodeExecutor extends NodeExecutor {
 
     /**
      * 多数据节点执行
-     * 
+     *
      * @param nodes never null
      */
     public void execute(RouteResultsetNode[] nodes, final boolean autocommit, final BlockingSession ss, final int flag) {
@@ -186,7 +186,7 @@ public final class MultiNodeExecutor extends NodeExecutor {
         final MySQLDataNode dn = conf.getDataNodes().get(rrn.getName());
         if (dn == null) {
             handleFailure(ss, rrn, new SimpleErrInfo(new UnknownDataNodeException("Unknown dataNode '" + rrn.getName()
-                    + "'"), ErrorCode.ER_BAD_DB_ERROR, sc, rrn));
+                + "'"), ErrorCode.ER_BAD_DB_ERROR, sc, rrn));
             return;
         }
 
@@ -236,74 +236,74 @@ public final class MultiNodeExecutor extends NodeExecutor {
             lock.lock();
             try {
                 switch (bin.data[0]) {
-                case ErrorPacket.FIELD_COUNT:
-                    c.setRunning(false);
-                    handleFailure(ss, rrn, new BinaryErrInfo((MySQLChannel) c, bin, sc, rrn));
-                    break;
-                case OkPacket.FIELD_COUNT:
-                    OkPacket ok = new OkPacket();
-                    ok.read(bin);
-                    affectedRows += ok.affectedRows;
-                    // set lastInsertId
-                    if (ok.insertId > 0) {
-                        insertId = (insertId == 0) ? ok.insertId : Math.min(insertId, ok.insertId);
-                    }
-                    c.setRunning(false);
-                    handleSuccessOK(ss, rrn, autocommit, ok);
-                    break;
-                default: // HEADER|FIELDS|FIELD_EOF|ROWS|LAST_EOF
-                    final MySQLChannel mc = (MySQLChannel) c;
-                    if (fieldEOF) {
-                        for (;;) {
-                            bin = mc.receive();
-                            switch (bin.data[0]) {
-                            case ErrorPacket.FIELD_COUNT:
-                                c.setRunning(false);
-                                handleFailure(ss, rrn, new BinaryErrInfo(mc, bin, sc, rrn));
-                                return;
-                            case EOFPacket.FIELD_COUNT:
-                                handleRowData(rrn, c, ss);
-                                return;
-                            default:
-                                continue;
-                            }
+                    case ErrorPacket.FIELD_COUNT:
+                        c.setRunning(false);
+                        handleFailure(ss, rrn, new BinaryErrInfo((MySQLChannel) c, bin, sc, rrn));
+                        break;
+                    case OkPacket.FIELD_COUNT:
+                        OkPacket ok = new OkPacket();
+                        ok.read(bin);
+                        affectedRows += ok.affectedRows;
+                        // set lastInsertId
+                        if (ok.insertId > 0) {
+                            insertId = (insertId == 0) ? ok.insertId : Math.min(insertId, ok.insertId);
                         }
-                    } else {
-                        bin.packetId = ++packetId;// HEADER
-                        List<MySQLPacket> headerList = new LinkedList<MySQLPacket>();
-                        headerList.add(bin);
-                        for (;;) {
-                            bin = mc.receive();
-                            switch (bin.data[0]) {
-                            case ErrorPacket.FIELD_COUNT:
-                                c.setRunning(false);
-                                handleFailure(ss, rrn, new BinaryErrInfo(mc, bin, sc, rrn));
-                                return;
-                            case EOFPacket.FIELD_COUNT:
-                                bin.packetId = ++packetId;// FIELD_EOF
-                                for (MySQLPacket packet : headerList) {
-                                    buffer = packet.write(buffer, sc);
-                                }
-                                headerList = null;
-                                buffer = bin.write(buffer, sc);
-                                fieldEOF = true;
-                                handleRowData(rrn, c, ss);
-                                return;
-                            default:
-                                bin.packetId = ++packetId;// FIELDS
-                                switch (flag) {
-                                case RouteResultset.REWRITE_FIELD:
-                                    StringBuilder fieldName = new StringBuilder();
-                                    fieldName.append("Tables_in_").append(ss.getSource().getSchema());
-                                    FieldPacket field = PacketUtil.getField(bin, fieldName.toString());
-                                    headerList.add(field);
-                                    break;
-                                default:
-                                    headerList.add(bin);
+                        c.setRunning(false);
+                        handleSuccessOK(ss, rrn, autocommit, ok);
+                        break;
+                    default: // HEADER|FIELDS|FIELD_EOF|ROWS|LAST_EOF
+                        final MySQLChannel mc = (MySQLChannel) c;
+                        if (fieldEOF) {
+                            for (; ; ) {
+                                bin = mc.receive();
+                                switch (bin.data[0]) {
+                                    case ErrorPacket.FIELD_COUNT:
+                                        c.setRunning(false);
+                                        handleFailure(ss, rrn, new BinaryErrInfo(mc, bin, sc, rrn));
+                                        return;
+                                    case EOFPacket.FIELD_COUNT:
+                                        handleRowData(rrn, c, ss);
+                                        return;
+                                    default:
+                                        continue;
                                 }
                             }
+                        } else {
+                            bin.packetId = ++packetId;// HEADER
+                            List<MySQLPacket> headerList = new LinkedList<MySQLPacket>();
+                            headerList.add(bin);
+                            for (; ; ) {
+                                bin = mc.receive();
+                                switch (bin.data[0]) {
+                                    case ErrorPacket.FIELD_COUNT:
+                                        c.setRunning(false);
+                                        handleFailure(ss, rrn, new BinaryErrInfo(mc, bin, sc, rrn));
+                                        return;
+                                    case EOFPacket.FIELD_COUNT:
+                                        bin.packetId = ++packetId;// FIELD_EOF
+                                        for (MySQLPacket packet : headerList) {
+                                            buffer = packet.write(buffer, sc);
+                                        }
+                                        headerList = null;
+                                        buffer = bin.write(buffer, sc);
+                                        fieldEOF = true;
+                                        handleRowData(rrn, c, ss);
+                                        return;
+                                    default:
+                                        bin.packetId = ++packetId;// FIELDS
+                                        switch (flag) {
+                                            case RouteResultset.REWRITE_FIELD:
+                                                StringBuilder fieldName = new StringBuilder();
+                                                fieldName.append("Tables_in_").append(ss.getSource().getSchema());
+                                                FieldPacket field = PacketUtil.getField(bin, fieldName.toString());
+                                                headerList.add(field);
+                                                break;
+                                            default:
+                                                headerList.add(bin);
+                                        }
+                                }
+                            }
                         }
-                    }
                 }
             } finally {
                 lock.unlock();
@@ -324,40 +324,40 @@ public final class MultiNodeExecutor extends NodeExecutor {
         final ServerConnection source = ss.getSource();
         BinaryPacket bin = null;
         int size = 0;
-        for (;;) {
+        for (; ; ) {
             bin = ((MySQLChannel) c).receive();
             switch (bin.data[0]) {
-            case ErrorPacket.FIELD_COUNT:
-                c.setRunning(false);
-                handleFailure(ss, rrn, new BinaryErrInfo(((MySQLChannel) c), bin, source, rrn));
-                return;
-            case EOFPacket.FIELD_COUNT:
-                c.setRunning(false);
-                if (source.isAutocommit()) {
-                    c = ss.getTarget().remove(rrn);
-                    if (c != null) {
-                        if (isFail.get() || source.isClosed()) {
-                            /**
-                             * this {@link Channel} might be closed by other
-                             * thread in this condition, so that do not release
-                             * this channel
-                             */
-                            c.close();
-                        } else {
-                            c.release();
+                case ErrorPacket.FIELD_COUNT:
+                    c.setRunning(false);
+                    handleFailure(ss, rrn, new BinaryErrInfo(((MySQLChannel) c), bin, source, rrn));
+                    return;
+                case EOFPacket.FIELD_COUNT:
+                    c.setRunning(false);
+                    if (source.isAutocommit()) {
+                        c = ss.getTarget().remove(rrn);
+                        if (c != null) {
+                            if (isFail.get() || source.isClosed()) {
+                                /**
+                                 * this {@link Channel} might be closed by other
+                                 * thread in this condition, so that do not release
+                                 * this channel
+                                 */
+                                c.close();
+                            } else {
+                                c.release();
+                            }
                         }
                     }
-                }
-                handleSuccessEOF(ss, bin);
-                return;
-            default:
-                bin.packetId = ++packetId;// ROWS
-                buffer = bin.write(buffer, source);
-                size += bin.packetLength;
-                if (size > RECEIVE_CHUNK_SIZE) {
-                    handleNext(rrn, c, ss);
+                    handleSuccessEOF(ss, bin);
                     return;
-                }
+                default:
+                    bin.packetId = ++packetId;// ROWS
+                    buffer = bin.write(buffer, source);
+                    size += bin.packetLength;
+                    if (size > RECEIVE_CHUNK_SIZE) {
+                        handleNext(rrn, c, ss);
+                        return;
+                    }
             }
         }
     }
@@ -464,7 +464,7 @@ public final class MultiNodeExecutor extends NodeExecutor {
 
     /**
      * 通知，执行异常
-     * 
+     *
      * @throws nothing never throws any exception
      */
     private void notifyFailure(BlockingSession ss) {

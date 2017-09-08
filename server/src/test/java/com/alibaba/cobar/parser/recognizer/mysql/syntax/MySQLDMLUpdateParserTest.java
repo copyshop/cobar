@@ -74,8 +74,8 @@ public class MySQLDMLUpdateParserTest extends AbstractSyntaxTest {
         update = parser.update();
         output = output2MySQL(update, sql);
         Assert.assertEquals(
-                "UPDATE LOW_PRIORITY t1, test.t2 SET col2 = DEFAULT, col2 = '123\\'4' WHERE id = 'a'",
-                output);
+            "UPDATE LOW_PRIORITY t1, test.t2 SET col2 = DEFAULT, col2 = '123\\'4' WHERE id = 'a'",
+            output);
 
     }
 }

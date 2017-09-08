@@ -64,7 +64,7 @@ public abstract class DMLInsertReplaceStatement extends DMLStatement {
 
     /**
      * @return {@link java.util.ArrayList ArrayList} or
-     *         {@link java.util.Collections#emptyList() EMPTY_LIST}
+     * {@link java.util.Collections#emptyList() EMPTY_LIST}
      */
     public List<RowExpression> getRowList() {
         return rowList;

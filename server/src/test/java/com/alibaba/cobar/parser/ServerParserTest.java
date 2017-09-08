@@ -173,20 +173,20 @@ public class ServerParserTest {
     @Test
     public void testIsCharacterSetResults() {
         Assert.assertEquals(
-                ServerParseSet.CHARACTER_SET_RESULTS,
-                0xff & ServerParseSet.parse("SET character_set_results  = NULL", 3));
+            ServerParseSet.CHARACTER_SET_RESULTS,
+            0xff & ServerParseSet.parse("SET character_set_results  = NULL", 3));
         Assert.assertEquals(
-                ServerParseSet.CHARACTER_SET_RESULTS,
-                0xff & ServerParseSet.parse("SET CHARACTER_SET_RESULTS= NULL", 3));
+            ServerParseSet.CHARACTER_SET_RESULTS,
+            0xff & ServerParseSet.parse("SET CHARACTER_SET_RESULTS= NULL", 3));
         Assert.assertEquals(
-                ServerParseSet.CHARACTER_SET_RESULTS,
-                0xff & ServerParseSet.parse("Set chARActer_SET_RESults =  NULL", 3));
+            ServerParseSet.CHARACTER_SET_RESULTS,
+            0xff & ServerParseSet.parse("Set chARActer_SET_RESults =  NULL", 3));
         Assert.assertEquals(
-                ServerParseSet.CHARACTER_SET_CONNECTION,
-                0xff & ServerParseSet.parse("Set chARActer_SET_Connection =  NULL", 3));
+            ServerParseSet.CHARACTER_SET_CONNECTION,
+            0xff & ServerParseSet.parse("Set chARActer_SET_Connection =  NULL", 3));
         Assert.assertEquals(
-                ServerParseSet.CHARACTER_SET_CLIENT,
-                0xff & ServerParseSet.parse("Set chARActer_SET_client =  NULL", 3));
+            ServerParseSet.CHARACTER_SET_CLIENT,
+            0xff & ServerParseSet.parse("Set chARActer_SET_client =  NULL", 3));
     }
 
     @Test
@@ -234,12 +234,12 @@ public class ServerParserTest {
     @Test
     public void testIsSelectVersionComment() {
         Assert.assertEquals(
-                ServerParseSelect.VERSION_COMMENT,
-                ServerParseSelect.parse(" select @@version_comment  ", 7));
+            ServerParseSelect.VERSION_COMMENT,
+            ServerParseSelect.parse(" select @@version_comment  ", 7));
         Assert.assertEquals(ServerParseSelect.VERSION_COMMENT, ServerParseSelect.parse("SELECT @@VERSION_COMMENT", 6));
         Assert.assertEquals(
-                ServerParseSelect.VERSION_COMMENT,
-                ServerParseSelect.parse(" selECT    @@VERSION_comment  ", 7));
+            ServerParseSelect.VERSION_COMMENT,
+            ServerParseSelect.parse(" selECT    @@VERSION_comment  ", 7));
     }
 
     @Test
@@ -266,53 +266,53 @@ public class ServerParserTest {
     @Test
     public void testTxReadUncommitted() {
         Assert.assertEquals(
-                ServerParseSet.TX_READ_UNCOMMITTED,
-                ServerParseSet.parse("  SET SESSION TRANSACTION ISOLATION LEVEL READ  UNCOMMITTED  ", "  SET".length()));
+            ServerParseSet.TX_READ_UNCOMMITTED,
+            ServerParseSet.parse("  SET SESSION TRANSACTION ISOLATION LEVEL READ  UNCOMMITTED  ", "  SET".length()));
         Assert.assertEquals(
-                ServerParseSet.TX_READ_UNCOMMITTED,
-                ServerParseSet.parse(" set session transaction isolation level read  uncommitted  ", " SET".length()));
+            ServerParseSet.TX_READ_UNCOMMITTED,
+            ServerParseSet.parse(" set session transaction isolation level read  uncommitted  ", " SET".length()));
         Assert.assertEquals(
-                ServerParseSet.TX_READ_UNCOMMITTED,
-                ServerParseSet.parse(" set session transaCTION ISOLATION LEvel read  uncommitteD ", " SET".length()));
+            ServerParseSet.TX_READ_UNCOMMITTED,
+            ServerParseSet.parse(" set session transaCTION ISOLATION LEvel read  uncommitteD ", " SET".length()));
     }
 
     @Test
     public void testTxReadCommitted() {
         Assert.assertEquals(
-                ServerParseSet.TX_READ_COMMITTED,
-                ServerParseSet.parse("  SET SESSION TRANSACTION ISOLATION LEVEL READ  COMMITTED  ", "  SET".length()));
+            ServerParseSet.TX_READ_COMMITTED,
+            ServerParseSet.parse("  SET SESSION TRANSACTION ISOLATION LEVEL READ  COMMITTED  ", "  SET".length()));
         Assert.assertEquals(
-                ServerParseSet.TX_READ_COMMITTED,
-                ServerParseSet.parse(" set session transaction isolation level read  committed  ", " SET".length()));
+            ServerParseSet.TX_READ_COMMITTED,
+            ServerParseSet.parse(" set session transaction isolation level read  committed  ", " SET".length()));
         Assert.assertEquals(
-                ServerParseSet.TX_READ_COMMITTED,
-                ServerParseSet.parse(" set session transaCTION ISOLATION LEVel read  committed ", " SET".length()));
+            ServerParseSet.TX_READ_COMMITTED,
+            ServerParseSet.parse(" set session transaCTION ISOLATION LEVel read  committed ", " SET".length()));
     }
 
     @Test
     public void testTxRepeatedRead() {
         Assert.assertEquals(
-                ServerParseSet.TX_REPEATED_READ,
-                ServerParseSet.parse("  SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE   READ  ", "  SET".length()));
+            ServerParseSet.TX_REPEATED_READ,
+            ServerParseSet.parse("  SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE   READ  ", "  SET".length()));
         Assert.assertEquals(
-                ServerParseSet.TX_REPEATED_READ,
-                ServerParseSet.parse(" set session transaction isolation level repeatable   read  ", " SET".length()));
+            ServerParseSet.TX_REPEATED_READ,
+            ServerParseSet.parse(" set session transaction isolation level repeatable   read  ", " SET".length()));
         Assert.assertEquals(
-                ServerParseSet.TX_REPEATED_READ,
-                ServerParseSet.parse(" set session transaction isOLATION LEVEL REPEatable   read ", " SET".length()));
+            ServerParseSet.TX_REPEATED_READ,
+            ServerParseSet.parse(" set session transaction isOLATION LEVEL REPEatable   read ", " SET".length()));
     }
 
     @Test
     public void testTxSerializable() {
         Assert.assertEquals(
-                ServerParseSet.TX_SERIALIZABLE,
-                ServerParseSet.parse("  SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE  ", "  SET".length()));
+            ServerParseSet.TX_SERIALIZABLE,
+            ServerParseSet.parse("  SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE  ", "  SET".length()));
         Assert.assertEquals(
-                ServerParseSet.TX_SERIALIZABLE,
-                ServerParseSet.parse(" set session transaction   isolation level serializable  ", " SET".length()));
+            ServerParseSet.TX_SERIALIZABLE,
+            ServerParseSet.parse(" set session transaction   isolation level serializable  ", " SET".length()));
         Assert.assertEquals(
-                ServerParseSet.TX_SERIALIZABLE,
-                ServerParseSet.parse(" set session   transaction  isOLATION LEVEL SERIAlizable ", " SET".length()));
+            ServerParseSet.TX_SERIALIZABLE,
+            ServerParseSet.parse(" set session   transaction  isOLATION LEVEL SERIAlizable ", " SET".length()));
     }
 
     @Test

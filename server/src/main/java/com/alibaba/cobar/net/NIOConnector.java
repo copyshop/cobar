@@ -63,7 +63,7 @@ public final class NIOConnector extends Thread {
     @Override
     public void run() {
         final Selector selector = this.selector;
-        for (;;) {
+        for (; ; ) {
             ++connectCount;
             try {
                 selector.select(1000L);
@@ -130,7 +130,7 @@ public final class NIOConnector extends Thread {
 
     /**
      * 后端连接ID生成器
-     * 
+     *
      * @author xianmao.hexm
      */
     private static class ConnectIdGenerator {

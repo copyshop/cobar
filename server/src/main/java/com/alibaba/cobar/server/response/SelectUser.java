@@ -38,6 +38,7 @@ public class SelectUser {
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
     private static final ErrorPacket error = PacketUtil.getShutdown();
+
     static {
         int i = 0;
         byte packetId = 0;

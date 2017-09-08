@@ -160,22 +160,22 @@ public class NonBlockingSession implements Session {
             @Override
             public void run() {
                 new Terminator().nextInvocation(singleNodeHandler)
-                                .nextInvocation(multiNodeHandler)
-                                .nextInvocation(commitHandler)
-                                .nextInvocation(rollbackHandler)
-                                .nextInvocation(new Terminatable() {
-                                    @Override
-                                    public void terminate(Runnable runnable) {
-                                        clearConnections(false);
-                                    }
-                                })
-                                .nextInvocation(new Terminatable() {
-                                    @Override
-                                    public void terminate(Runnable runnable) {
-                                        terminating.set(false);
-                                    }
-                                })
-                                .invoke();
+                    .nextInvocation(multiNodeHandler)
+                    .nextInvocation(commitHandler)
+                    .nextInvocation(rollbackHandler)
+                    .nextInvocation(new Terminatable() {
+                        @Override
+                        public void terminate(Runnable runnable) {
+                            clearConnections(false);
+                        }
+                    })
+                    .nextInvocation(new Terminatable() {
+                        @Override
+                        public void terminate(Runnable runnable) {
+                            terminating.set(false);
+                        }
+                    })
+                    .invoke();
             }
         });
     }
@@ -326,13 +326,13 @@ public class NonBlockingSession implements Session {
 
     private static boolean isModifySQL(int type) {
         switch (type) {
-        case ServerParse.INSERT:
-        case ServerParse.DELETE:
-        case ServerParse.UPDATE:
-        case ServerParse.REPLACE:
-            return true;
-        default:
-            return false;
+            case ServerParse.INSERT:
+            case ServerParse.DELETE:
+            case ServerParse.UPDATE:
+            case ServerParse.REPLACE:
+                return true;
+            default:
+                return false;
         }
     }
 

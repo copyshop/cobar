@@ -33,7 +33,7 @@ import com.alibaba.cobar.util.StringUtil;
 
 /**
  * 打印CobarServer所支持的语句
- * 
+ *
  * @author xianmao.hexm 2010-9-29 下午05:17:15
  * @author wenfeng.cenwf 2011-4-13
  */
@@ -43,6 +43,7 @@ public final class ShowHelp {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;
@@ -97,6 +98,7 @@ public final class ShowHelp {
 
     private static final Map<String, String> helps = new HashMap<String, String>();
     private static final List<String> keys = new ArrayList<String>();
+
     static {
         // show
         helps.put("show @@time.current", "Report current timestamp");

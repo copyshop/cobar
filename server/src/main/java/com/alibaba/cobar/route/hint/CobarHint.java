@@ -46,6 +46,7 @@ public final class CobarHint {
 
     public static final String COBAR_HINT_PREFIX = "/*!cobar:";
     private static final Map<String, HintParser> HINT_PARSERS = new HashMap<String, HintParser>();
+
     {
         HINT_PARSERS.put("table", new SimpleHintParser());
         HINT_PARSERS.put("replica", new SimpleHintParser());
@@ -125,16 +126,18 @@ public final class CobarHint {
     }
 
     private void parse(String sql) throws SQLSyntaxErrorException {
-        cobarHint: for (;;) {
-            skip: for (;;) {
+        cobarHint:
+        for (; ; ) {
+            skip:
+            for (; ; ) {
                 switch (sql.charAt(currentIndex)) {
-                case '$':
-                    break skip;
-                case '*':
-                    currentIndex += 2;
-                    break cobarHint;
-                default:
-                    ++currentIndex;
+                    case '$':
+                        break skip;
+                    case '*':
+                        currentIndex += 2;
+                        break cobarHint;
+                    default:
+                        ++currentIndex;
                 }
             }
             int hintNameEnd = sql.indexOf('=', currentIndex);

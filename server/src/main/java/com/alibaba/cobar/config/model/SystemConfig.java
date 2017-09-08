@@ -19,7 +19,7 @@ import com.alibaba.cobar.config.Isolations;
 
 /**
  * 系统基础配置项
- * 
+ *
  * @author xianmao.hexm 2011-1-11 下午02:14:04
  */
 public final class SystemConfig {
@@ -135,16 +135,16 @@ public final class SystemConfig {
     public void setProcessorExecutor(int processorExecutor) {
         this.processorExecutor = processorExecutor;
     }
-    
-	public int getProcessorCommitter() {
-		return processorCommitter;
-	}
 
-	public void setProcessorCommitter(int processorCommitter) {
-		this.processorCommitter = processorCommitter;
-	}
+    public int getProcessorCommitter() {
+        return processorCommitter;
+    }
 
-	public int getManagerExecutor() {
+    public void setProcessorCommitter(int processorCommitter) {
+        this.processorCommitter = processorCommitter;
+    }
+
+    public int getManagerExecutor() {
         return managerExecutor;
     }
 

@@ -23,7 +23,7 @@ import com.alibaba.cobar.net.FrontendConnection;
 
 /**
  * From server to client in response to command, if no error and no result set.
- * 
+ * <p>
  * <pre>
  * Bytes                       Name
  * -----                       ----
@@ -33,15 +33,15 @@ import com.alibaba.cobar.net.FrontendConnection;
  * 2                           server_status
  * 2                           warning_count
  * n   (until end of packet)   message fix:(Length Coded String)
- * 
+ *
  * @see http://forge.mysql.com/wiki/MySQL_Internals_ClientServer_Protocol#OK_Packet
  * </pre>
- * 
+ *
  * @author xianmao.hexm 2010-7-16 上午10:33:50
  */
 public class OkPacket extends MySQLPacket {
     public static final byte FIELD_COUNT = 0x00;
-    public static final byte[] OK = new byte[] { 7, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0 };
+    public static final byte[] OK = new byte[]{7, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0};
 
     public byte fieldCount = FIELD_COUNT;
     public long affectedRows;

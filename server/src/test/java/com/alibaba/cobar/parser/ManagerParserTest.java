@@ -86,14 +86,14 @@ public class ManagerParserTest {
         Assert.assertEquals(ManagerParseShow.DATANODE, ManagerParseShow.parse("show @@DATANODE", 5));
         Assert.assertEquals(ManagerParseShow.DATANODE, ManagerParseShow.parse("show @@DATANODE   ", 5));
         Assert.assertEquals(
-                ManagerParseShow.DATANODE_WHERE,
-                0xff & ManagerParseShow.parse("show @@DATANODE WHERE SCHEMA=1", 5));
+            ManagerParseShow.DATANODE_WHERE,
+            0xff & ManagerParseShow.parse("show @@DATANODE WHERE SCHEMA=1", 5));
         Assert.assertEquals(
-                ManagerParseShow.DATANODE_WHERE,
-                0xff & ManagerParseShow.parse("show @@DATANODE WHERE schema =1", 5));
+            ManagerParseShow.DATANODE_WHERE,
+            0xff & ManagerParseShow.parse("show @@DATANODE WHERE schema =1", 5));
         Assert.assertEquals(
-                ManagerParseShow.DATANODE_WHERE,
-                0xff & ManagerParseShow.parse("show @@DATANODE WHERE SCHEMA= 1", 5));
+            ManagerParseShow.DATANODE_WHERE,
+            0xff & ManagerParseShow.parse("show @@DATANODE WHERE SCHEMA= 1", 5));
     }
 
     @Test
@@ -103,17 +103,17 @@ public class ManagerParserTest {
         Assert.assertEquals(ManagerParseShow.DATASOURCE, ManagerParseShow.parse(" show  @@DATASOURCE ", 5));
         Assert.assertEquals(ManagerParseShow.DATASOURCE, ManagerParseShow.parse(" show  @@DATASOURCE   ", 5));
         Assert.assertEquals(
-                ManagerParseShow.DATASOURCE_WHERE,
-                0xff & ManagerParseShow.parse(" show  @@DATASOURCE where datanode = 1", 5));
+            ManagerParseShow.DATASOURCE_WHERE,
+            0xff & ManagerParseShow.parse(" show  @@DATASOURCE where datanode = 1", 5));
         Assert.assertEquals(
-                ManagerParseShow.DATASOURCE_WHERE,
-                0xff & ManagerParseShow.parse(" show  @@DATASOURCE where datanode=1", 5));
+            ManagerParseShow.DATASOURCE_WHERE,
+            0xff & ManagerParseShow.parse(" show  @@DATASOURCE where datanode=1", 5));
         Assert.assertEquals(
-                ManagerParseShow.DATASOURCE_WHERE,
-                0xff & ManagerParseShow.parse(" show  @@DATASOURCE WHERE datanode = 1", 5));
+            ManagerParseShow.DATASOURCE_WHERE,
+            0xff & ManagerParseShow.parse(" show  @@DATASOURCE WHERE datanode = 1", 5));
         Assert.assertEquals(
-                ManagerParseShow.DATASOURCE_WHERE,
-                0xff & ManagerParseShow.parse(" show  @@DATASOURCE where DATAnode= 1 ", 5));
+            ManagerParseShow.DATASOURCE_WHERE,
+            0xff & ManagerParseShow.parse(" show  @@DATASOURCE where DATAnode= 1 ", 5));
     }
 
     @Test
@@ -205,20 +205,20 @@ public class ManagerParserTest {
     @Test
     public void testShowSQLDetail() {
         Assert.assertEquals(
-                ManagerParseShow.SQL_DETAIL,
-                ManagerParseShow.parse("show @@sql.detail where id = -1079800749", 5));
+            ManagerParseShow.SQL_DETAIL,
+            ManagerParseShow.parse("show @@sql.detail where id = -1079800749", 5));
         Assert.assertEquals(
-                ManagerParseShow.SQL_DETAIL,
-                ManagerParseShow.parse("SHOW @@SQL.DETAIL WHERE ID = -1079800749", 5));
+            ManagerParseShow.SQL_DETAIL,
+            ManagerParseShow.parse("SHOW @@SQL.DETAIL WHERE ID = -1079800749", 5));
         Assert.assertEquals(
-                ManagerParseShow.SQL_DETAIL,
-                ManagerParseShow.parse("show @@SQL.DETAIL WHERE ID = -1079800749", 5));
+            ManagerParseShow.SQL_DETAIL,
+            ManagerParseShow.parse("show @@SQL.DETAIL WHERE ID = -1079800749", 5));
         Assert.assertEquals(
-                ManagerParseShow.SQL_DETAIL,
-                ManagerParseShow.parse("show @@sql.detail where id=1079800749 ", 5));
+            ManagerParseShow.SQL_DETAIL,
+            ManagerParseShow.parse("show @@sql.detail where id=1079800749 ", 5));
         Assert.assertEquals(
-                ManagerParseShow.SQL_DETAIL,
-                ManagerParseShow.parse("show @@sql.detail where id= -1079800749", 5));
+            ManagerParseShow.SQL_DETAIL,
+            ManagerParseShow.parse("show @@sql.detail where id= -1079800749", 5));
     }
 
     @Test
@@ -266,14 +266,14 @@ public class ManagerParserTest {
     @Test
     public void testShowWhitComment() {
         Assert.assertEquals(
-                ManagerParseShow.VARIABLES,
-                ManagerParseShow.parse(" /** 111**/show variables", " /** 111**/show".length()));
+            ManagerParseShow.VARIABLES,
+            ManagerParseShow.parse(" /** 111**/show variables", " /** 111**/show".length()));
         Assert.assertEquals(
-                ManagerParseShow.VARIABLES,
-                ManagerParseShow.parse(" /**111**/ SHOW VARIABLES", " /** 111**/show".length()));
+            ManagerParseShow.VARIABLES,
+            ManagerParseShow.parse(" /**111**/ SHOW VARIABLES", " /** 111**/show".length()));
         Assert.assertEquals(
-                ManagerParseShow.VARIABLES,
-                ManagerParseShow.parse(" /**111**/ SHOW variables", " /** 111**/show".length()));
+            ManagerParseShow.VARIABLES,
+            ManagerParseShow.parse(" /**111**/ SHOW variables", " /** 111**/show".length()));
     }
 
     @Test
@@ -365,53 +365,53 @@ public class ManagerParserTest {
     @Test
     public void testShowSlowSchema() {
         Assert.assertEquals(
-                ManagerParseShow.SLOW_SCHEMA,
-                0xff & ManagerParseShow.parse("show @@slow where schema=a", 5));
+            ManagerParseShow.SLOW_SCHEMA,
+            0xff & ManagerParseShow.parse("show @@slow where schema=a", 5));
         Assert.assertEquals(
-                ManagerParseShow.SLOW_SCHEMA,
-                0xff & ManagerParseShow.parse("  SHOW @@SLOW   WHERE SCHEMA=B", 6));
+            ManagerParseShow.SLOW_SCHEMA,
+            0xff & ManagerParseShow.parse("  SHOW @@SLOW   WHERE SCHEMA=B", 6));
         Assert.assertEquals(
-                ManagerParseShow.SLOW_SCHEMA,
-                0xff & ManagerParseShow.parse(" show @@slow  WHERE  SCHEMA  = a ", 5));
+            ManagerParseShow.SLOW_SCHEMA,
+            0xff & ManagerParseShow.parse(" show @@slow  WHERE  SCHEMA  = a ", 5));
     }
 
     @Test
     public void testShowSlowDataNode() {
         Assert.assertEquals(
-                ManagerParseShow.SLOW_DATANODE,
-                0xff & ManagerParseShow.parse("show @@slow where datanode= a", 5));
+            ManagerParseShow.SLOW_DATANODE,
+            0xff & ManagerParseShow.parse("show @@slow where datanode= a", 5));
         Assert.assertEquals(
-                ManagerParseShow.SLOW_DATANODE,
-                0xff & ManagerParseShow.parse("SHOW @@SLOW WHERE DATANODE= A", 5));
+            ManagerParseShow.SLOW_DATANODE,
+            0xff & ManagerParseShow.parse("SHOW @@SLOW WHERE DATANODE= A", 5));
         Assert.assertEquals(
-                ManagerParseShow.SLOW_DATANODE,
-                0xff & ManagerParseShow.parse(" show @@SLOW where DATANODE= b ", 5));
+            ManagerParseShow.SLOW_DATANODE,
+            0xff & ManagerParseShow.parse(" show @@SLOW where DATANODE= b ", 5));
     }
 
     @Test
     public void testclearSlowSchema() {
         Assert.assertEquals(
-                ManagerParseClear.SLOW_SCHEMA,
-                0xff & ManagerParseClear.parse("clear @@slow where schema=s", 5));
+            ManagerParseClear.SLOW_SCHEMA,
+            0xff & ManagerParseClear.parse("clear @@slow where schema=s", 5));
         Assert.assertEquals(
-                ManagerParseClear.SLOW_SCHEMA,
-                0xff & ManagerParseClear.parse("CLEAR @@SLOW WHERE SCHEMA= S", 5));
+            ManagerParseClear.SLOW_SCHEMA,
+            0xff & ManagerParseClear.parse("CLEAR @@SLOW WHERE SCHEMA= S", 5));
         Assert.assertEquals(
-                ManagerParseClear.SLOW_SCHEMA,
-                0xff & ManagerParseClear.parse("CLEAR @@slow where SCHEMA= s", 5));
+            ManagerParseClear.SLOW_SCHEMA,
+            0xff & ManagerParseClear.parse("CLEAR @@slow where SCHEMA= s", 5));
     }
 
     @Test
     public void testclearSlowDataNode() {
         Assert.assertEquals(
-                ManagerParseClear.SLOW_DATANODE,
-                0xff & ManagerParseClear.parse("clear @@slow where datanode=d", 5));
+            ManagerParseClear.SLOW_DATANODE,
+            0xff & ManagerParseClear.parse("clear @@slow where datanode=d", 5));
         Assert.assertEquals(
-                ManagerParseClear.SLOW_DATANODE,
-                0xff & ManagerParseClear.parse("CLEAR @@SLOW WHERE DATANODE= D", 5));
+            ManagerParseClear.SLOW_DATANODE,
+            0xff & ManagerParseClear.parse("CLEAR @@SLOW WHERE DATANODE= D", 5));
         Assert.assertEquals(
-                ManagerParseClear.SLOW_DATANODE,
-                0xff & ManagerParseClear.parse("clear @@SLOW where  DATANODE= d", 5));
+            ManagerParseClear.SLOW_DATANODE,
+            0xff & ManagerParseClear.parse("clear @@SLOW where  DATANODE= d", 5));
     }
 
 }

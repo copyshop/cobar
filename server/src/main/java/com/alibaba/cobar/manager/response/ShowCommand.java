@@ -31,7 +31,7 @@ import com.alibaba.cobar.util.LongUtil;
 
 /**
  * 统计各类数据包的执行次数
- * 
+ *
  * @author xianmao.hexm 2010-9-29 下午03:06:42
  * @author wenfeng.cenwf 2011-4-25
  */
@@ -41,6 +41,7 @@ public final class ShowCommand {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;

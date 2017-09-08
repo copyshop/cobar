@@ -41,7 +41,9 @@ public class IndexHint implements ASTNode {
     }
 
     public static enum IndexScope {
-        /** not specified */
+        /**
+         * not specified
+         */
         ALL,
         JOIN,
         GROUP_BY,

@@ -38,18 +38,18 @@ public class MySQLLexerTest extends TestCase {
         long start = System.currentTimeMillis();
         long end = System.currentTimeMillis();
         for (int i = 0; i < 1; ++i) {
-            for (; !sut.eof();) {
+            for (; !sut.eof(); ) {
                 sut.nextToken();
                 switch (sut.token()) {
-                case LITERAL_NUM_MIX_DIGIT:
-                    sut.decimalValue();
-                    break;
-                case LITERAL_NUM_PURE_DIGIT:
-                    sut.integerValue();
-                    break;
-                default:
-                    sut.stringValue();
-                    break;
+                    case LITERAL_NUM_MIX_DIGIT:
+                        sut.decimalValue();
+                        break;
+                    case LITERAL_NUM_PURE_DIGIT:
+                        sut.integerValue();
+                        break;
+                    default:
+                        sut.stringValue();
+                        break;
                 }
             }
         }
@@ -59,18 +59,18 @@ public class MySQLLexerTest extends TestCase {
         start = System.currentTimeMillis();
         for (int i = 0; i < loop; ++i) {
             sut = new MySQLLexer(chars);
-            for (; !sut.eof();) {
+            for (; !sut.eof(); ) {
                 sut.nextToken();
                 switch (sut.token()) {
-                case LITERAL_NUM_MIX_DIGIT:
-                    sut.decimalValue();
-                    break;
-                case LITERAL_NUM_PURE_DIGIT:
-                    sut.integerValue();
-                    break;
-                default:
-                    sut.stringValue();
-                    break;
+                    case LITERAL_NUM_MIX_DIGIT:
+                        sut.decimalValue();
+                        break;
+                    case LITERAL_NUM_PURE_DIGIT:
+                        sut.integerValue();
+                        break;
+                    default:
+                        sut.stringValue();
+                        break;
                 }
             }
         }
@@ -440,7 +440,7 @@ public class MySQLLexerTest extends TestCase {
         Assert.assertEquals(MySQLToken.EOF, sut.token());
 
         sut = new MySQLLexer(
-                "@@.  /*@@abc*/@@`abc''\"\\@@!%*&+_abcQ`//@@_1.  @@$#\n@@$var.-- @@a\t\n@@system_var:@@a`b`?");
+            "@@.  /*@@abc*/@@`abc''\"\\@@!%*&+_abcQ`//@@_1.  @@$#\n@@$var.-- @@a\t\n@@system_var:@@a`b`?");
         Assert.assertEquals(MySQLToken.SYS_VAR, sut.token());
         Assert.assertEquals("", sut.stringValue());
         sut.nextToken();
@@ -993,7 +993,7 @@ public class MySQLLexerTest extends TestCase {
 
     public void testNumber() throws SQLSyntaxErrorException {
         MySQLLexer sut = new MySQLLexer(
-                " . 12e3/***/.12e3#/**\n.123ee123.1--  \r\t\n.12e/*a*//* !*/.12e_a/12e-- \r\t.12e-1");
+            " . 12e3/***/.12e3#/**\n.123ee123.1--  \r\t\n.12e/*a*//* !*/.12e_a/12e-- \r\t.12e-1");
         Assert.assertEquals(MySQLToken.PUNC_DOT, sut.token());
         sut.nextToken();
         Assert.assertEquals(MySQLToken.LITERAL_NUM_MIX_DIGIT, sut.token());

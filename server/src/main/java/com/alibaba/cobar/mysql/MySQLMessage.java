@@ -128,16 +128,16 @@ public class MySQLMessage {
     public long readLength() {
         int length = data[position++] & 0xff;
         switch (length) {
-        case 251:
-            return NULL_LENGTH;
-        case 252:
-            return readUB2();
-        case 253:
-            return readUB3();
-        case 254:
-            return readLong();
-        default:
-            return length;
+            case 251:
+                return NULL_LENGTH;
+            case 252:
+                return readUB2();
+            case 253:
+                return readUB3();
+            case 254:
+                return readLong();
+            default:
+                return length;
         }
     }
 
@@ -171,19 +171,19 @@ public class MySQLMessage {
             }
         }
         switch (offset) {
-        case -1:
-            byte[] ab1 = new byte[length - position];
-            System.arraycopy(b, position, ab1, 0, ab1.length);
-            position = length;
-            return ab1;
-        case 0:
-            position++;
-            return EMPTY_BYTES;
-        default:
-            byte[] ab2 = new byte[offset - position];
-            System.arraycopy(b, position, ab2, 0, ab2.length);
-            position = offset + 1;
-            return ab2;
+            case -1:
+                byte[] ab1 = new byte[length - position];
+                System.arraycopy(b, position, ab1, 0, ab1.length);
+                position = length;
+                return ab1;
+            case 0:
+                position++;
+                return EMPTY_BYTES;
+            default:
+                byte[] ab2 = new byte[offset - position];
+                System.arraycopy(b, position, ab2, 0, ab2.length);
+                position = offset + 1;
+                return ab2;
         }
     }
 
@@ -256,17 +256,17 @@ public class MySQLMessage {
             }
         }
         switch (offset) {
-        case -1:
-            String s1 = new String(b, position, length - position, charset);
-            position = length;
-            return s1;
-        case 0:
-            position++;
-            return null;
-        default:
-            String s2 = new String(b, position, offset - position, charset);
-            position = offset + 1;
-            return s2;
+            case -1:
+                String s1 = new String(b, position, length - position, charset);
+                position = length;
+                return s1;
+            case 0:
+                position++;
+                return null;
+            default:
+                String s2 = new String(b, position, offset - position, charset);
+                position = offset + 1;
+                return s2;
         }
     }
 

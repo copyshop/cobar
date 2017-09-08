@@ -21,7 +21,7 @@ import java.util.Set;
 
 /**
  * 隔离区配置定义
- * 
+ *
  * @author haiqing.zhuhq 2012-4-17
  */
 public final class QuarantineConfig {

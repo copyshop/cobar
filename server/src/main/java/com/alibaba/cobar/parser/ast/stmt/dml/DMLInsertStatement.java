@@ -32,7 +32,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  */
 public class DMLInsertStatement extends DMLInsertReplaceStatement {
     public static enum InsertMode {
-        /** default */
+        /**
+         * default
+         */
         UNDEF,
         LOW,
         DELAY,
@@ -45,7 +47,7 @@ public class DMLInsertStatement extends DMLInsertReplaceStatement {
 
     /**
      * (insert ... values | insert ... set) format
-     * 
+     *
      * @param columnNameList can be null
      */
     @SuppressWarnings("unchecked")
@@ -59,7 +61,7 @@ public class DMLInsertStatement extends DMLInsertReplaceStatement {
 
     /**
      * insert ... select format
-     * 
+     *
      * @param columnNameList can be null
      */
     @SuppressWarnings("unchecked")

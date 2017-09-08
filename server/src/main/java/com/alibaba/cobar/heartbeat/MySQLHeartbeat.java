@@ -173,42 +173,42 @@ public class MySQLHeartbeat {
 
     public void setResult(int result, MySQLDetector detector, boolean isTransferError) {
         switch (result) {
-        case OK_STATUS:
-            setOk(detector);
-            break;
-        case ERROR_STATUS:
-            if (detector.isQuit()) {
-                isChecking.set(false);
-            } else {
-                if (isTransferError) {
-                    detector.close();
+            case OK_STATUS:
+                setOk(detector);
+                break;
+            case ERROR_STATUS:
+                if (detector.isQuit()) {
+                    isChecking.set(false);
+                } else {
+                    if (isTransferError) {
+                        detector.close();
+                    }
+                    setError(detector);
                 }
-                setError(detector);
-            }
-            break;
+                break;
         }
     }
 
     private void setOk(MySQLDetector detector) {
         recorder.set(detector.lastReadTime() - detector.lastWriteTime());
         switch (status) {
-        case TIMEOUT_STATUS:
-            this.status = INIT_STATUS;
-            this.errorCount = 0;
-            this.isChecking.set(false);
-            if (isStop.get()) {
-                detector.quit();
-            } else {
-                heartbeat();// timeout, heart beat again
-            }
-            break;
-        default:
-            this.status = OK_STATUS;
-            this.errorCount = 0;
-            this.isChecking.set(false);
-            if (isStop.get()) {
-                detector.quit();
-            }
+            case TIMEOUT_STATUS:
+                this.status = INIT_STATUS;
+                this.errorCount = 0;
+                this.isChecking.set(false);
+                if (isStop.get()) {
+                    detector.quit();
+                } else {
+                    heartbeat();// timeout, heart beat again
+                }
+                break;
+            default:
+                this.status = OK_STATUS;
+                this.errorCount = 0;
+                this.isChecking.set(false);
+                if (isStop.get()) {
+                    detector.quit();
+                }
         }
     }
 

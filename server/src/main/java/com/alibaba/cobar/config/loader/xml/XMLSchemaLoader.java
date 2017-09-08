@@ -217,7 +217,7 @@ public class XMLSchemaLoader implements SchemaLoader {
                 Element dsElement = findPropertyByName(element, "dataSource");
                 if (dsElement == null) {
                     throw new NullPointerException("dataNode xml Element with name of " + dnNamePrefix
-                            + " has no dataSource Element");
+                        + " has no dataSource Element");
                 }
                 NodeList dataSourceList = dsElement.getElementsByTagName("dataSourceRef");
                 String dataSources[][] = new String[dataSourceList.getLength()][];
@@ -246,12 +246,12 @@ public class XMLSchemaLoader implements SchemaLoader {
                     ParameterMapping.mapping(conf, ConfigUtil.loadElements(element));
                     confList.add(conf);
                     switch (k) {
-                    case 0:
-                        conf.setName((limit == 1) ? dnNamePrefix : dnNamePrefix + "[" + k + "]");
-                        break;
-                    default:
-                        conf.setName(dnNamePrefix + "[" + k + "]");
-                        break;
+                        case 0:
+                            conf.setName((limit == 1) ? dnNamePrefix : dnNamePrefix + "[" + k + "]");
+                            break;
+                        default:
+                            conf.setName(dnNamePrefix + "[" + k + "]");
+                            break;
                     }
                     conf.setDataSource(dsString.toString());
                 }
@@ -279,7 +279,7 @@ public class XMLSchemaLoader implements SchemaLoader {
                 Element locElement = findPropertyByName(element, "location");
                 if (locElement == null) {
                     throw new NullPointerException("dataSource xml Element with name of " + dsNamePrefix
-                            + " has no location Element");
+                        + " has no location Element");
                 }
                 NodeList locationList = locElement.getElementsByTagName("location");
                 int dsIndex = 0;
@@ -295,13 +295,13 @@ public class XMLSchemaLoader implements SchemaLoader {
                         ParameterMapping.mapping(dsConf, ConfigUtil.loadElements(element));
                         dscList.add(dsConf);
                         switch (dsIndex) {
-                        case 0:
-                            dsConf.setName(dsNamePrefix);
-                            break;
-                        case 1:
-                            dscList.get(0).setName(dsNamePrefix + "[0]");
-                        default:
-                            dsConf.setName(dsNamePrefix + "[" + dsIndex + "]");
+                            case 0:
+                                dsConf.setName(dsNamePrefix);
+                                break;
+                            case 1:
+                                dscList.get(0).setName(dsNamePrefix + "[0]");
+                            default:
+                                dsConf.setName(dsNamePrefix + "[" + dsIndex + "]");
                         }
                         dsConf.setType(dsType);
                         dsConf.setDatabase(dsSchema);

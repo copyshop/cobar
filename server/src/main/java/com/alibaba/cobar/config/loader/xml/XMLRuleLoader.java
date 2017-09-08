@@ -142,7 +142,7 @@ public class XMLRuleLoader {
     }
 
     private void loadFunctions(Element root) throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, InvocationTargetException {
+        IllegalAccessException, InvocationTargetException {
         NodeList list = root.getElementsByTagName("function");
         for (int i = 0, n = list.getLength(); i < n; ++i) {
             Node node = list.item(i);
@@ -161,11 +161,11 @@ public class XMLRuleLoader {
     }
 
     private RuleAlgorithm createFunction(String name, String clazz) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException, InvocationTargetException {
+        InstantiationException, IllegalAccessException, InvocationTargetException {
         Class<?> clz = Class.forName(clazz);
         if (!RuleAlgorithm.class.isAssignableFrom(clz)) {
             throw new IllegalArgumentException("rule function must implements " + RuleAlgorithm.class.getName()
-                    + ", name=" + name);
+                + ", name=" + name);
         }
         Constructor<?> constructor = null;
         for (Constructor<?> cons : clz.getConstructors()) {
@@ -180,7 +180,7 @@ public class XMLRuleLoader {
         }
         if (constructor == null) {
             throw new ConfigException("function " + name + " with class of " + clazz
-                    + " must have a constructor with one parameter: String funcName");
+                + " must have a constructor with one parameter: String funcName");
         }
         return (RuleAlgorithm) constructor.newInstance(name);
     }

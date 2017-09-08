@@ -37,6 +37,7 @@ public final class ShowTime {
     private static final ResultSetHeaderPacket header = PacketUtil.getHeader(FIELD_COUNT);
     private static final FieldPacket[] fields = new FieldPacket[FIELD_COUNT];
     private static final EOFPacket eof = new EOFPacket();
+
     static {
         int i = 0;
         byte packetId = 0;
@@ -80,14 +81,14 @@ public final class ShowTime {
     private static RowDataPacket getRow(int type) {
         RowDataPacket row = new RowDataPacket(FIELD_COUNT);
         switch (type) {
-        case ManagerParseShow.TIME_CURRENT:
-            row.add(LongUtil.toBytes(System.currentTimeMillis()));
-            break;
-        case ManagerParseShow.TIME_STARTUP:
-            row.add(LongUtil.toBytes(CobarServer.getInstance().getStartupTime()));
-            break;
-        default:
-            row.add(LongUtil.toBytes(0L));
+            case ManagerParseShow.TIME_CURRENT:
+                row.add(LongUtil.toBytes(System.currentTimeMillis()));
+                break;
+            case ManagerParseShow.TIME_STARTUP:
+                row.add(LongUtil.toBytes(CobarServer.getInstance().getStartupTime()));
+                break;
+            default:
+                row.add(LongUtil.toBytes(0L));
         }
         return row;
     }

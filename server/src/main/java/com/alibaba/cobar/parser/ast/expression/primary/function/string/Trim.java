@@ -30,7 +30,9 @@ import com.alibaba.cobar.parser.visitor.SQLASTVisitor;
  */
 public class Trim extends FunctionExpression {
     public static enum Direction {
-        /** no tag for direction */
+        /**
+         * no tag for direction
+         */
         DEFAULT,
         BOTH,
         LEADING,

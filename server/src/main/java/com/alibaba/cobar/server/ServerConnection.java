@@ -182,7 +182,7 @@ public class ServerConnection extends FrontendConnection {
 
     /**
      * 撤销执行中的语句
-     * 
+     *
      * @param sponsor 发起者为null表示是自己
      */
     public void cancel(final FrontendConnection sponsor) {
@@ -211,12 +211,12 @@ public class ServerConnection extends FrontendConnection {
 
         // 异常返回码处理
         switch (errCode) {
-        case ErrorCode.ERR_HANDLE_DATA:
-            String msg = t.getMessage();
-            writeErrMessage(ErrorCode.ER_YES, msg == null ? t.getClass().getSimpleName() : msg);
-            break;
-        default:
-            close();
+            case ErrorCode.ERR_HANDLE_DATA:
+                String msg = t.getMessage();
+                writeErrMessage(ErrorCode.ER_YES, msg == null ? t.getClass().getSimpleName() : msg);
+                break;
+            default:
+                close();
         }
     }
 

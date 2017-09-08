@@ -150,7 +150,7 @@ import com.alibaba.cobar.parser.util.Pair;
  */
 public class EmptySQLASTVisitor implements SQLASTVisitor {
 
-    @SuppressWarnings({ "rawtypes" })
+    @SuppressWarnings({"rawtypes"})
     private void visitInternal(Object obj) {
         if (obj == null)
             return;

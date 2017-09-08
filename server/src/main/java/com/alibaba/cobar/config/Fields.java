@@ -17,12 +17,14 @@ package com.alibaba.cobar.config;
 
 /**
  * 字段类型及标识定义
- * 
+ *
  * @author xianmao.hexm
  */
 public interface Fields {
 
-    /** field data type */
+    /**
+     * field data type
+     */
     int FIELD_TYPE_DECIMAL = 0;
     int FIELD_TYPE_TINY = 1;
     int FIELD_TYPE_SHORT = 2;
@@ -51,7 +53,9 @@ public interface Fields {
     int FIELD_TYPE_STRING = 254;
     int FIELD_TYPE_GEOMETRY = 255;
 
-    /** field flag */
+    /**
+     * field flag
+     */
     int NOT_NULL_FLAG = 0x0001;
     int PRI_KEY_FLAG = 0x0002;
     int UNIQUE_KEY_FLAG = 0x0004;

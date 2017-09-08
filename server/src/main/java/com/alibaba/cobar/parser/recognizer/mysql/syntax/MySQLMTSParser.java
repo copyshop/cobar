@@ -15,7 +15,6 @@
  */
 /**
  * (created at 2011-9-12)
-
  */
 package com.alibaba.cobar.parser.recognizer.mysql.syntax;
 
@@ -45,6 +44,7 @@ public class MySQLMTSParser extends MySQLParser {
     }
 
     private static final Map<String, SpecialIdentifier> specialIdentifiers = new HashMap<String, SpecialIdentifier>();
+
     static {
         specialIdentifiers.put("SAVEPOINT", SpecialIdentifier.SAVEPOINT);
         specialIdentifiers.put("WORK", SpecialIdentifier.WORK);
@@ -82,7 +82,7 @@ public class MySQLMTSParser extends MySQLParser {
 
     /**
      * first token <code>ROLLBACK</code> is scanned but not yet consumed
-     * 
+     *
      * <pre>
      *         ROLLBACK [WORK] TO [SAVEPOINT] identifier
      *         ROLLBACK [WORK] [AND [NO] CHAIN | [NO] RELEASE]
@@ -97,43 +97,43 @@ public class MySQLMTSParser extends MySQLParser {
             lexer.nextToken();
         }
         switch (lexer.token()) {
-        case EOF:
-            return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.UN_DEF);
-        case KW_TO:
-            lexer.nextToken();
-            String str = lexer.stringValueUppercase();
-            if (specialIdentifiers.get(str) == SpecialIdentifier.SAVEPOINT) {
+            case EOF:
+                return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.UN_DEF);
+            case KW_TO:
                 lexer.nextToken();
-            }
-            Identifier savepoint = identifier();
-            match(EOF);
-            return new MTSRollbackStatement(savepoint);
-        case KW_AND:
-            lexer.nextToken();
-            siTemp = specialIdentifiers.get(lexer.stringValueUppercase());
-            if (siTemp == SpecialIdentifier.NO) {
+                String str = lexer.stringValueUppercase();
+                if (specialIdentifiers.get(str) == SpecialIdentifier.SAVEPOINT) {
+                    lexer.nextToken();
+                }
+                Identifier savepoint = identifier();
+                match(EOF);
+                return new MTSRollbackStatement(savepoint);
+            case KW_AND:
                 lexer.nextToken();
+                siTemp = specialIdentifiers.get(lexer.stringValueUppercase());
+                if (siTemp == SpecialIdentifier.NO) {
+                    lexer.nextToken();
+                    matchIdentifier("CHAIN");
+                    match(EOF);
+                    return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.NO_CHAIN);
+                }
                 matchIdentifier("CHAIN");
                 match(EOF);
-                return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.NO_CHAIN);
-            }
-            matchIdentifier("CHAIN");
-            match(EOF);
-            return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.CHAIN);
-        case KW_RELEASE:
-            lexer.nextToken();
-            match(EOF);
-            return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.RELEASE);
-        case IDENTIFIER:
-            siTemp = specialIdentifiers.get(lexer.stringValueUppercase());
-            if (siTemp == SpecialIdentifier.NO) {
+                return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.CHAIN);
+            case KW_RELEASE:
                 lexer.nextToken();
-                match(KW_RELEASE);
                 match(EOF);
-                return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.NO_RELEASE);
-            }
-        default:
-            throw err("unrecognized complete type: " + lexer.token());
+                return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.RELEASE);
+            case IDENTIFIER:
+                siTemp = specialIdentifiers.get(lexer.stringValueUppercase());
+                if (siTemp == SpecialIdentifier.NO) {
+                    lexer.nextToken();
+                    match(KW_RELEASE);
+                    match(EOF);
+                    return new MTSRollbackStatement(MTSRollbackStatement.CompleteType.NO_RELEASE);
+                }
+            default:
+                throw err("unrecognized complete type: " + lexer.token());
         }
     }
 

@@ -27,11 +27,11 @@ public final class StartHandler {
 
     public static void handle(String stmt, ServerConnection c, int offset) {
         switch (ServerParseStart.parse(stmt, offset)) {
-        case ServerParseStart.TRANSACTION:
-            c.writeErrMessage(ErrorCode.ER_UNKNOWN_COM_ERROR, "Unsupported statement");
-            break;
-        default:
-            c.execute(stmt, ServerParse.START);
+            case ServerParseStart.TRANSACTION:
+                c.writeErrMessage(ErrorCode.ER_UNKNOWN_COM_ERROR, "Unsupported statement");
+                break;
+            default:
+                c.execute(stmt, ServerParse.START);
         }
     }
 
