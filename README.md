@@ -45,3 +45,7 @@ alibaba_cobar@googlegroups.com
 
 ## License
 Cobar is under the Apache 2.0 license. See the [LICENSE](https://github.com/alibaba/cobar/blob/master/LICENSE) file for details.
+
+
+
+CobarServer 修改添加cobar.home的文件夹

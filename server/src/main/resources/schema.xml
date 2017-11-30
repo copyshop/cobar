@@ -47,7 +47,7 @@
             <location>127.0.0.1:3306/dbtest3</location>
         </property>
         <property name="user">root</property>
-        <property name="password">engine</property>
+        <property name="password">67890</property>
         <property name="sqlMode">STRICT_TRANS_TABLES</property>
     </dataSource>
 

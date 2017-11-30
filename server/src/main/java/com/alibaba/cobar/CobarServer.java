@@ -84,6 +84,7 @@ public class CobarServer {
     }
 
     public void beforeStart(String dateFormat) {
+        System.setProperty("cobar.home", "/root/ideaworkstation/cobar");
         String home = System.getProperty("cobar.home");
         if (home == null) {
             SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
