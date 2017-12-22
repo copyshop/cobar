@@ -33,47 +33,47 @@ import com.alibaba.cobar.net.mysql.Reply323Packet;
  */
 public class MySQLConnectionAuthenticator implements NIOHandler {
 
-    private final MySQLConnection source;
-    private final ResponseHandler listener;
+    private final MySQLConnection sqlConnection;
+    private final ResponseHandler responseHandler;
 
-    public MySQLConnectionAuthenticator(MySQLConnection source, ResponseHandler listener) {
-        this.source = source;
-        this.listener = listener;
+    public MySQLConnectionAuthenticator(MySQLConnection mySQLConnection, ResponseHandler responseHandler) {
+        this.sqlConnection = mySQLConnection;
+        this.responseHandler = responseHandler;
     }
 
     @Override
     public void handle(byte[] data) {
         try {
-            HandshakePacket packet = source.getHandshake();
+            HandshakePacket packet = sqlConnection.getHandshake();
             if (packet == null) {
                 // 设置握手数据包
                 packet = new HandshakePacket();
                 packet.read(data);
-                source.setHandshake(packet);
+                sqlConnection.setHandshake(packet);
 
-                source.setThreadId(packet.threadId);
+                sqlConnection.setThreadId(packet.threadId);
 
                 // 设置字符集编码
                 int charsetIndex = (packet.serverCharsetIndex & 0xff);
                 String charset = CharsetUtil.getDbCharset(charsetIndex);
                 if (charset != null) {
-                    source.setCharsetIndex(charsetIndex);
-                    source.setCharset(CharsetUtil.getCharset(charsetIndex));
-                    source.setDbCharset(charset);
+                    sqlConnection.setCharsetIndex(charsetIndex);
+                    sqlConnection.setCharset(CharsetUtil.getCharset(charsetIndex));
+                    sqlConnection.setDbCharset(charset);
 
                 } else {
                     throw new RuntimeException("Unknown charsetIndex:" + charsetIndex);
                 }
 
                 // 发送认证数据包
-                source.authenticate();
+                sqlConnection.authenticate();
             } else { // 处理认证结果
                 switch (data[4]) {
                     case OkPacket.FIELD_COUNT:
-                        source.setHandler(new MySQLConnectionHandler(source));
-                        source.setAuthenticated(true);
-                        if (listener != null) {
-                            listener.connectionAcquired(source);
+                        sqlConnection.setHandler(new MySQLConnectionHandler(sqlConnection));
+                        sqlConnection.setAuthenticated(true);
+                        if (responseHandler != null) {
+                            responseHandler.connectionAcquired(sqlConnection);
                         }
                         break;
                     case ErrorPacket.FIELD_COUNT:
@@ -88,8 +88,8 @@ public class MySQLConnectionAuthenticator implements NIOHandler {
                 }
             }
         } catch (RuntimeException e) {
-            if (listener != null) {
-                listener.connectionError(e, source);
+            if (responseHandler != null) {
+                responseHandler.connectionError(e, sqlConnection);
             }
             throw e;
         }
@@ -99,12 +99,12 @@ public class MySQLConnectionAuthenticator implements NIOHandler {
         // 发送323响应认证数据包
         Reply323Packet r323 = new Reply323Packet();
         r323.packetId = ++packetId;
-        String pass = source.getPassword();
+        String pass = sqlConnection.getPassword();
         if (pass != null && pass.length() > 0) {
-            byte[] seed = source.getHandshake().seed;
+            byte[] seed = sqlConnection.getHandshake().seed;
             r323.seed = SecurityUtil.scramble323(pass, new String(seed)).getBytes();
         }
-        r323.write(source);
+        r323.write(sqlConnection);
     }
 
 }

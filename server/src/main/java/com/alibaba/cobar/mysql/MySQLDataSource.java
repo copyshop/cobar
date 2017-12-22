@@ -130,33 +130,30 @@ public final class MySQLDataSource {
                 s.append(activeCount).append(",size=").append(size).append(']');
                 ALARM.error(s.toString());
             }
-
             // 检查池中是否有可用资源
             final Channel[] items = this.items;
             for (int i = 0; idleCount > 0 && i < items.length; i++) {
                 if (items[i] != null) {
-                    Channel c = items[i];
+                    Channel channel = items[i];
                     items[i] = null;
                     --idleCount;
-                    if (c.isClosed()) {
+                    if (channel.isClosed()) {
                         continue;
                     } else {
                         ++activeCount;
-                        return c;
+                        return channel;
                     }
                 }
             }
-
             // 将创建新连接，在此先假设创建成功。
             ++activeCount;
         } finally {
             lock.unlock();
         }
-
         // 创建新的资源
-        Channel c = factory.make(this);
+        Channel channel = factory.make(this);
         try {
-            c.connect(node.getConfig().getWaitTimeout());
+            channel.connect(node.getConfig().getWaitTimeout());
         } catch (Exception e) {
             lock.lock();
             try {
@@ -164,18 +161,17 @@ public final class MySQLDataSource {
             } finally {
                 lock.unlock();
             }
-            c.closeNoActive();
+            channel.closeNoActive();
             throw e;
         }
-        return c;
+        return channel;
     }
 
-    public void releaseChannel(Channel c) {
+    public void releaseChannel(Channel channel) {
         // 状态检查
-        if (c == null || c.isClosed()) {
+        if (channel == null || channel.isClosed()) {
             return;
         }
-
         // 释放资源
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -185,17 +181,16 @@ public final class MySQLDataSource {
                 if (items[i] == null) {
                     ++idleCount;
                     --activeCount;
-                    c.setLastActiveTime(TimeUtil.currentTimeMillis());
-                    items[i] = c;
+                    channel.setLastActiveTime(TimeUtil.currentTimeMillis());
+                    items[i] = channel;
                     return;
                 }
             }
         } finally {
             lock.unlock();
         }
-
         // 关闭多余的资源
-        c.close();
+        channel.close();
     }
 
     public void deActive() {
@@ -244,5 +239,4 @@ public final class MySQLDataSource {
             lock.unlock();
         }
     }
-
 }

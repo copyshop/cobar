@@ -158,20 +158,18 @@ public final class NIOProcessor {
     private void frontendCheck() {
         Iterator<Entry<Long, FrontendConnection>> it = frontends.entrySet().iterator();
         while (it.hasNext()) {
-            FrontendConnection c = it.next().getValue();
-
+            FrontendConnection connection = it.next().getValue();
             // 删除空连接
-            if (c == null) {
+            if (connection == null) {
                 it.remove();
                 continue;
             }
-
             // 清理已关闭连接，否则空闲检查。
-            if (c.isClosed()) {
+            if (connection.isClosed()) {
                 it.remove();
-                c.cleanup();
+                connection.cleanup();
             } else {
-                c.idleCheck();
+                connection.idleCheck();
             }
         }
     }
@@ -180,22 +178,19 @@ public final class NIOProcessor {
     private void backendCheck() {
         Iterator<Entry<Long, BackendConnection>> it = backends.entrySet().iterator();
         while (it.hasNext()) {
-            BackendConnection c = it.next().getValue();
-
+            BackendConnection connection = it.next().getValue();
             // 删除空连接
-            if (c == null) {
+            if (connection == null) {
                 it.remove();
                 continue;
             }
-
             // 清理已关闭连接，否则空闲检查。
-            if (c.isClosed()) {
+            if (connection.isClosed()) {
                 it.remove();
-                c.cleanup();
+                connection.cleanup();
             } else {
-                c.idleCheck();
+                connection.idleCheck();
             }
         }
     }
-
 }

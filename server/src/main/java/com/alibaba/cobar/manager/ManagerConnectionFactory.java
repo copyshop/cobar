@@ -28,10 +28,10 @@ public class ManagerConnectionFactory extends FrontendConnectionFactory {
 
     @Override
     protected FrontendConnection getConnection(SocketChannel channel) {
-        ManagerConnection c = new ManagerConnection(channel);
-        c.setPrivileges(new CobarPrivileges());
-        c.setQueryHandler(new ManagerQueryHandler(c));
-        return c;
+        ManagerConnection managerConnection = new ManagerConnection(channel);
+        managerConnection.setPrivileges(new CobarPrivileges());
+        managerConnection.setQueryHandler(new ManagerQueryHandler(managerConnection));
+        return managerConnection;
     }
 
 }

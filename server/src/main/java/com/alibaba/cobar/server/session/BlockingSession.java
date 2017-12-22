@@ -45,6 +45,7 @@ import com.alibaba.cobar.server.parser.ServerParse;
  * @author xianmao.hexm
  */
 public class BlockingSession implements Session {
+
     private static final Logger LOGGER = Logger.getLogger(BlockingSession.class);
 
     private final ServerConnection source;
@@ -78,14 +79,14 @@ public class BlockingSession implements Session {
     }
 
     @Override
-    public void execute(RouteResultset rrs, int type) {
+    public void execute(RouteResultset routeResultset, int type) {
         if (LOGGER.isDebugEnabled()) {
             StringBuilder s = new StringBuilder();
-            LOGGER.debug(s.append(source).append(rrs).toString());
+            LOGGER.debug(s.append(source).append(routeResultset).toString());
         }
 
         // 检查路由结果是否为空
-        RouteResultsetNode[] nodes = rrs.getNodes();
+        RouteResultsetNode[] nodes = routeResultset.getNodes();
         if (nodes == null || nodes.length == 0) {
             source.writeErrMessage(ErrorCode.ER_NO_DB_ERROR, "No dataNode selected");
             return;
@@ -93,14 +94,14 @@ public class BlockingSession implements Session {
 
         // 选择执行方式
         if (nodes.length == 1) {
-            singleNodeExecutor.execute(nodes[0], this, rrs.getFlag());
+            singleNodeExecutor.execute(nodes[0], this, routeResultset.getFlag());
         } else {
             // 多数据节点，非事务模式下，执行的是可修改数据的SQL，则后端为事务模式。
             boolean autocommit = source.isAutocommit();
             if (autocommit && isModifySQL(type)) {
                 autocommit = false;
             }
-            multiNodeExecutor.execute(nodes, autocommit, this, rrs.getFlag());
+            multiNodeExecutor.execute(nodes, autocommit, this, routeResultset.getFlag());
         }
     }
 
@@ -246,9 +247,9 @@ public class BlockingSession implements Session {
      */
     private void kill() {
         for (RouteResultsetNode rrn : target.keySet()) {
-            Channel c = target.get(rrn);
-            if (c != null && c.isRunning()) {
-                c.kill();
+            Channel channel = target.get(rrn);
+            if (channel != null && channel.isRunning()) {
+                channel.kill();
             }
         }
     }

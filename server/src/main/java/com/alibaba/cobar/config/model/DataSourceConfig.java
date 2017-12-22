@@ -108,16 +108,6 @@ public final class DataSourceConfig {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("[name=")
-            .append(name)
-            .append(",host=")
-            .append(host)
-            .append(",port=")
-            .append(port)
-            .append(",database=")
-            .append(database)
-            .append(']')
-            .toString();
+        return "DataSourceConfig{" + "name='" + name + '\'' + ", type='" + type + '\'' + ", host='" + host + '\'' + ", port=" + port + ", user='" + user + '\'' + ", password='" + password + '\'' + ", database='" + database + '\'' + ", sqlMode='" + sqlMode + '\'' + ", sqlRecordCount=" + sqlRecordCount + '}';
     }
-
 }

@@ -34,6 +34,7 @@ import com.alibaba.cobar.server.parser.ServerParse;
  * @author xianmao.hexm
  */
 public class ServerQueryHandler implements FrontendQueryHandler {
+
     private static final Logger LOGGER = Logger.getLogger(ServerQueryHandler.class);
 
     private final ServerConnection source;
@@ -44,50 +45,50 @@ public class ServerQueryHandler implements FrontendQueryHandler {
 
     @Override
     public void query(String sql) {
-        ServerConnection c = this.source;
+        ServerConnection connection = this.source;
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(new StringBuilder().append(c).append(sql).toString());
+            LOGGER.debug(new StringBuilder().append(connection).append(sql).toString());
         }
         int rs = ServerParse.parse(sql);
         switch (rs & 0xff) {
             case ServerParse.EXPLAIN:
-                ExplainHandler.handle(sql, c, rs >>> 8);
+                ExplainHandler.handle(sql, connection, rs >>> 8);
                 break;
             case ServerParse.SET:
-                SetHandler.handle(sql, c, rs >>> 8);
+                SetHandler.handle(sql, connection, rs >>> 8);
                 break;
             case ServerParse.SHOW:
-                ShowHandler.handle(sql, c, rs >>> 8);
+                ShowHandler.handle(sql, connection, rs >>> 8);
                 break;
             case ServerParse.SELECT:
-                SelectHandler.handle(sql, c, rs >>> 8);
+                SelectHandler.handle(sql, connection, rs >>> 8);
                 break;
             case ServerParse.START:
-                StartHandler.handle(sql, c, rs >>> 8);
+                StartHandler.handle(sql, connection, rs >>> 8);
                 break;
             case ServerParse.BEGIN:
-                BeginHandler.handle(sql, c);
+                BeginHandler.handle(sql, connection);
                 break;
             case ServerParse.SAVEPOINT:
-                SavepointHandler.handle(sql, c);
+                SavepointHandler.handle(sql, connection);
                 break;
             case ServerParse.KILL:
-                KillHandler.handle(sql, rs >>> 8, c);
+                KillHandler.handle(sql, rs >>> 8, connection);
                 break;
             case ServerParse.KILL_QUERY:
-                c.writeErrMessage(ErrorCode.ER_UNKNOWN_COM_ERROR, "Unsupported command");
+                connection.writeErrMessage(ErrorCode.ER_UNKNOWN_COM_ERROR, "Unsupported command");
                 break;
             case ServerParse.USE:
-                UseHandler.handle(sql, c, rs >>> 8);
+                UseHandler.handle(sql, connection, rs >>> 8);
                 break;
             case ServerParse.COMMIT:
-                c.commit();
+                connection.commit();
                 break;
             case ServerParse.ROLLBACK:
-                c.rollback();
+                connection.rollback();
                 break;
             default:
-                c.execute(sql, rs);
+                connection.execute(sql, rs);
         }
     }
 

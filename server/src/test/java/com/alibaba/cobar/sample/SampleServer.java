@@ -74,7 +74,6 @@ public class SampleServer {
             processors[i] = new NIOProcessor(name + "Processor" + i);
             processors[i].startup();
         }
-
         // startup server
         SampleConnectionFactory factory = new SampleConnectionFactory();
         server = new NIOAcceptor(name + "Server", SERVER_PORT, factory);
@@ -85,5 +84,4 @@ public class SampleServer {
         // end
         LOGGER.info("===============================================");
     }
-
 }

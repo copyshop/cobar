@@ -33,7 +33,7 @@ import com.alibaba.cobar.net.FrontendConnection;
  * 2                     warning_count
  * 2                     Status Flags
  *
- * @see http://forge.mysql.com/wiki/MySQL_Internals_ClientServer_Protocol#EOF_Packet
+ *  http://forge.mysql.com/wiki/MySQL_Internals_ClientServer_Protocol#EOF_Packet
  * </pre>
  *
  * @author xianmao.hexm 2010-7-16 上午10:55:53
@@ -42,6 +42,7 @@ public class EOFPacket extends MySQLPacket {
     public static final byte FIELD_COUNT = (byte) 0xfe;
 
     public byte fieldCount = FIELD_COUNT;
+    //  上次命令引起的警告数
     public int warningCount;
     public int status = 2;
 
@@ -55,9 +56,9 @@ public class EOFPacket extends MySQLPacket {
     }
 
     @Override
-    public ByteBuffer write(ByteBuffer buffer, FrontendConnection c) {
+    public ByteBuffer write(ByteBuffer buffer, FrontendConnection connection) {
         int size = calcPacketSize();
-        buffer = c.checkWriteBuffer(buffer, c.getPacketHeaderSize() + size);
+        buffer = connection.checkWriteBuffer(buffer, connection.getPacketHeaderSize() + size);
         BufferUtil.writeUB3(buffer, size);
         buffer.put(packetId);
         buffer.put(fieldCount);

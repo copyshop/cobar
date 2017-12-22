@@ -74,7 +74,7 @@ public final class RollbackExecutor extends NodeExecutor {
     }
 
     /**
-     * @param finish how many tasks finished
+     * @param finished how many tasks finished
      * @return is this last task
      */
     private boolean decrementCountBy(int finished) {

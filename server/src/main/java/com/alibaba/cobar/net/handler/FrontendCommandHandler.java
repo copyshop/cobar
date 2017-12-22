@@ -22,62 +22,73 @@ import com.alibaba.cobar.net.mysql.MySQLPacket;
 import com.alibaba.cobar.statistic.CommandCount;
 
 /**
- * 前端命令处理器
+ * 前端命令处理器，处理一些常用sql 命令， use select等
  *
  * @author xianmao.hexm
  */
 public class FrontendCommandHandler implements NIOHandler {
 
-    protected final FrontendConnection source;
-    protected final CommandCount commands;
+    protected final FrontendConnection frontendConnection;
+    protected final CommandCount commandCount;
 
-    public FrontendCommandHandler(FrontendConnection source) {
-        this.source = source;
-        this.commands = source.getProcessor().getCommands();
+    public FrontendCommandHandler(FrontendConnection frontendConnection) {
+        this.frontendConnection = frontendConnection;
+        this.commandCount = frontendConnection.getProcessor().getCommands();
     }
 
     @Override
     public void handle(byte[] data) {
+        System.out.print("packet length: ");
+        for (int i = 0; i < 3; i++) {
+            System.out.print(data[i] + "    ");
+        }
+        System.out.println();
+        System.out.println("packet num: " + data[3]);
+        System.out.print("statement: ");
+        for (int i = 4; i < data.length; i++) {
+            System.out.print(data[i] + "    ");
+        }
+        System.out.println();
         switch (data[4]) {
             case MySQLPacket.COM_INIT_DB:
-                commands.doInitDB();
-                source.initDB(data);
+                commandCount.doInitDB();
+                frontendConnection.initDB(data);
                 break;
             case MySQLPacket.COM_QUERY:
-                commands.doQuery();
-                source.query(data);
+                commandCount.doQuery();
+                frontendConnection.query(data);
                 break;
             case MySQLPacket.COM_PING:
-                commands.doPing();
-                source.ping();
+                commandCount.doPing();
+                frontendConnection.ping();
                 break;
             case MySQLPacket.COM_QUIT:
-                commands.doQuit();
-                source.close();
+                commandCount.doQuit();
+                frontendConnection.close();
                 break;
             case MySQLPacket.COM_PROCESS_KILL:
-                commands.doKill();
-                source.kill(data);
+                commandCount.doKill();
+                frontendConnection.kill(data);
                 break;
             case MySQLPacket.COM_STMT_PREPARE:
-                commands.doStmtPrepare();
-                source.stmtPrepare(data);
+                commandCount.doStmtPrepare();
+                frontendConnection.stmtPrepare(data);
                 break;
             case MySQLPacket.COM_STMT_EXECUTE:
-                commands.doStmtExecute();
-                source.stmtExecute(data);
+                commandCount.doStmtExecute();
+                frontendConnection.stmtExecute(data);
                 break;
             case MySQLPacket.COM_STMT_CLOSE:
-                commands.doStmtClose();
-                source.stmtClose(data);
+                commandCount.doStmtClose();
+                frontendConnection.stmtClose(data);
                 break;
             case MySQLPacket.COM_HEARTBEAT:
-                commands.doHeartbeat();
-                source.heartbeat(data);
+                commandCount.doHeartbeat();
+                frontendConnection.heartbeat(data);
                 break;
             default:
-                commands.doOther();
-                source.writeErrMessage(ErrorCode.ER_UNKNOWN_COM_ERROR, "Unknown command");
+                commandCount.doOther();
+                frontendConnection.writeErrMessage(ErrorCode.ER_UNKNOWN_COM_ERROR, "Unknown command");
         }
     }
 

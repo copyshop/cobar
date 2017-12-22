@@ -142,6 +142,7 @@ import com.alibaba.cobar.parser.util.Pair;
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class MySQLExprParser extends MySQLParser {
+
     public MySQLExprParser(MySQLLexer lexer) {
         this(lexer, MySQLFunctionManager.INSTANCE_MYSQL_DEFAULT, true, DEFAULT_CHARSET);
     }
@@ -536,8 +537,7 @@ public class MySQLExprParser extends MySQLParser {
     /**
      * <code>higherExpr ( ('+'|'-') higherExpr)+</code>
      */
-    private Expression arithmeticTermOperatorExpression(String consumed, String consumedUp)
-        throws SQLSyntaxErrorException {
+    private Expression arithmeticTermOperatorExpression(String consumed, String consumedUp) throws SQLSyntaxErrorException {
         Expression temp;
         for (Expression expr = arithmeticFactorOperatorExpression(consumed, consumedUp); ; ) {
             switch (lexer.token()) {
@@ -560,8 +560,7 @@ public class MySQLExprParser extends MySQLParser {
     /**
      * <code>higherExpr ( ('*'|'/'|'%'|'DIV'|'MOD') higherExpr)+</code>
      */
-    private Expression arithmeticFactorOperatorExpression(String consumed, String consumedUp)
-        throws SQLSyntaxErrorException {
+    private Expression arithmeticFactorOperatorExpression(String consumed, String consumedUp) throws SQLSyntaxErrorException {
         Expression temp;
         for (Expression expr = bitXORExpression(consumed, consumedUp); ; ) {
             switch (lexer.token()) {
@@ -659,15 +658,11 @@ public class MySQLExprParser extends MySQLParser {
         Expression first = primaryExpression(consumed, consumedUp);
         if (lexer.token() == USR_VAR) {
             if (first instanceof LiteralString) {
-                StringBuilder str = new StringBuilder().append('\'')
-                    .append(((LiteralString) first).getString())
-                    .append('\'')
-                    .append(lexer.stringValue());
+                StringBuilder str = new StringBuilder().append('\'').append(((LiteralString) first).getString()).append('\'').append(lexer.stringValue());
                 lexer.nextToken();
                 return new UserExpression(str.toString()).setCacheEvalRst(cacheEvalRst);
             } else if (first instanceof Identifier) {
-                StringBuilder str = new StringBuilder().append(((Identifier) first).getIdText()).append(
-                    lexer.stringValue());
+                StringBuilder str = new StringBuilder().append(((Identifier) first).getIdText()).append(lexer.stringValue());
                 lexer.nextToken();
                 return new UserExpression(str.toString()).setCacheEvalRst(cacheEvalRst);
             }
@@ -697,12 +692,7 @@ public class MySQLExprParser extends MySQLParser {
                 lexer.nextToken();
                 return new LiteralBitField(null, tempStr).setCacheEvalRst(cacheEvalRst);
             case LITERAL_HEX:
-                LiteralHexadecimal hex = new LiteralHexadecimal(
-                    null,
-                    lexer.getSQL(),
-                    lexer.getOffsetCache(),
-                    lexer.getSizeCache(),
-                    charset);
+                LiteralHexadecimal hex = new LiteralHexadecimal(null, lexer.getSQL(), lexer.getOffsetCache(), lexer.getSizeCache(), charset);
                 lexer.nextToken();
                 return hex.setCacheEvalRst(cacheEvalRst);
             case LITERAL_BOOL_FALSE:
@@ -1021,12 +1011,7 @@ public class MySQLExprParser extends MySQLParser {
                 if (consumed.charAt(0) != '_') {
                     return new Identifier(null, consumed, consumedUp).setCacheEvalRst(cacheEvalRst);
                 }
-                LiteralHexadecimal hex = new LiteralHexadecimal(
-                    consumed,
-                    lexer.getSQL(),
-                    lexer.getOffsetCache(),
-                    lexer.getSizeCache(),
-                    charset);
+                LiteralHexadecimal hex = new LiteralHexadecimal(consumed, lexer.getSQL(), lexer.getOffsetCache(), lexer.getSizeCache(), charset);
                 lexer.nextToken();
                 return hex.setCacheEvalRst(cacheEvalRst);
             case LITERAL_CHARS:
@@ -1317,8 +1302,7 @@ public class MySQLExprParser extends MySQLParser {
         }
     }
 
-    private static Pair<String, Pair<Expression, Expression>> constructTypePair(String typeName, Expression exp1,
-                                                                                Expression exp2) {
+    private static Pair<String, Pair<Expression, Expression>> constructTypePair(String typeName, Expression exp1, Expression exp2) {
         return new Pair<String, Pair<Expression, Expression>>(typeName, new Pair<Expression, Expression>(exp1, exp2));
     }
 

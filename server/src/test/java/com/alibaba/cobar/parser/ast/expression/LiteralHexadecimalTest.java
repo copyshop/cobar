@@ -33,10 +33,12 @@ public class LiteralHexadecimalTest extends TestCase {
     public void testUtf8() throws Exception {
         String sql = "x'E982B1E7A195275C73'";
         LiteralHexadecimal hex = (LiteralHexadecimal) new MySQLExprParser(new MySQLLexer(sql), "utf-8").expression();
+        System.out.println(hex.evaluation(null));
         Assert.assertEquals("邱硕'\\s", hex.evaluation(null));
 
         sql = "x'd0A'";
         hex = (LiteralHexadecimal) new MySQLExprParser(new MySQLLexer(sql), "utf-8").expression();
+        System.out.println(hex.evaluation(null));
         Assert.assertEquals("\r\n", hex.evaluation(null));
     }
 

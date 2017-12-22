@@ -40,6 +40,8 @@ import com.alibaba.cobar.util.NameableExecutor;
 import com.alibaba.cobar.util.TimeUtil;
 
 /**
+ * https://dev.mysql.com/doc/refman/5.7/en/version-tokens.html
+ *
  * @author xianmao.hexm 2011-4-19 下午02:58:59
  */
 public class CobarServer {
@@ -129,19 +131,19 @@ public class CobarServer {
         timer.schedule(dataNodeHeartbeat(), 0L, system.getDataNodeHeartbeatPeriod());
 
         // startup manager
-        ManagerConnectionFactory mf = new ManagerConnectionFactory();
-        mf.setCharset(system.getCharset());
-        mf.setIdleTimeout(system.getIdleTimeout());
-        manager = new NIOAcceptor(NAME + "Manager", system.getManagerPort(), mf);
+        ManagerConnectionFactory managerConnectionFactory = new ManagerConnectionFactory();
+        managerConnectionFactory.setCharset(system.getCharset());
+        managerConnectionFactory.setIdleTimeout(system.getIdleTimeout());
+        manager = new NIOAcceptor(NAME + "Manager", system.getManagerPort(), managerConnectionFactory);
         manager.setProcessors(processors);
         manager.start();
         LOGGER.info(manager.getName() + " is started and listening on " + manager.getPort());
 
         // startup server
-        ServerConnectionFactory sf = new ServerConnectionFactory();
-        sf.setCharset(system.getCharset());
-        sf.setIdleTimeout(system.getIdleTimeout());
-        server = new NIOAcceptor(NAME + "Server", system.getServerPort(), sf);
+        ServerConnectionFactory serverConnectionFactory = new ServerConnectionFactory();
+        serverConnectionFactory.setCharset(system.getCharset());
+        serverConnectionFactory.setIdleTimeout(system.getIdleTimeout());
+        server = new NIOAcceptor(NAME + "Server", system.getServerPort(), serverConnectionFactory);
         server.setProcessors(processors);
         server.start();
         timer.schedule(clusterHeartbeat(), 0L, system.getClusterHeartbeatPeriod());

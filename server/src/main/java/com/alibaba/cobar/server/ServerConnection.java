@@ -151,7 +151,6 @@ public class ServerConnection extends FrontendConnection {
             writeErrMessage(ErrorCode.ER_PARSE_ERROR, msg == null ? e.getClass().getSimpleName() : msg);
             return;
         }
-
         // session执行
         session.execute(rrs, type);
     }

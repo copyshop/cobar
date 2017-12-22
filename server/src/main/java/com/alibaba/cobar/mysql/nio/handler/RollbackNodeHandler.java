@@ -57,7 +57,7 @@ public class RollbackNodeHandler extends MultiNodeHandler {
         for (final RouteResultsetNode node : session.getTargetKeys()) {
             if (node == null) {
                 try {
-                    logger.error("null is contained in RoutResultsetNodes, source = " + session.getSource());
+                    logger.error("null is contained in RoutResultsetNodes, frontendConnection = " + session.getSource());
                 } catch (Exception e) {
                 }
                 continue;

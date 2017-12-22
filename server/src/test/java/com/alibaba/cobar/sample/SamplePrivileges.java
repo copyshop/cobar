@@ -47,5 +47,4 @@ public class SamplePrivileges implements FrontendPrivileges {
         SampleConfig conf = SampleServer.getInstance().getConfig();
         return conf.getUserSchemas().get(user);
     }
-
 }

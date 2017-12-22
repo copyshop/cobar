@@ -177,16 +177,14 @@ public final class MultiNodeExecutor extends NodeExecutor {
     /**
      * 新通道的执行
      */
-    private void newExecute(final RouteResultsetNode rrn, final boolean autocommit, final BlockingSession ss,
-                            final int flag) {
+    private void newExecute(final RouteResultsetNode rrn, final boolean autocommit, final BlockingSession ss, final int flag) {
         final ServerConnection sc = ss.getSource();
 
         // 检查数据节点是否存在
         CobarConfig conf = CobarServer.getInstance().getConfig();
         final MySQLDataNode dn = conf.getDataNodes().get(rrn.getName());
         if (dn == null) {
-            handleFailure(ss, rrn, new SimpleErrInfo(new UnknownDataNodeException("Unknown dataNode '" + rrn.getName()
-                + "'"), ErrorCode.ER_BAD_DB_ERROR, sc, rrn));
+            handleFailure(ss, rrn, new SimpleErrInfo(new UnknownDataNodeException("Unknown dataNode '" + rrn.getName() + "'"), ErrorCode.ER_BAD_DB_ERROR, sc, rrn));
             return;
         }
 
@@ -387,9 +385,6 @@ public final class MultiNodeExecutor extends NodeExecutor {
         });
     }
 
-    /**
-     * @throws nothing never throws any exception
-     */
     private void handleSuccessEOF(BlockingSession ss, BinaryPacket bin) {
         if (decrementCountAndIsZero()) {
             if (isFail.get()) {
@@ -410,9 +405,7 @@ public final class MultiNodeExecutor extends NodeExecutor {
         }
     }
 
-    /**
-     * @throws nothing never throws any exception
-     */
+
     private void handleSuccessOK(BlockingSession ss, RouteResultsetNode rrn, boolean autocommit, OkPacket ok) {
         if (decrementCountAndIsZero()) {
             if (isFail.get()) {
@@ -429,7 +422,8 @@ public final class MultiNodeExecutor extends NodeExecutor {
                 }
 
                 if (source.isAutocommit()) {
-                    if (!autocommit) { // 前端非事务模式，后端事务模式，则需要自动递交后端事务。
+                    if (!autocommit) {
+                        // 前端非事务模式，后端事务模式，则需要自动递交后端事务。
                         icExecutor.commit(ok, ss, ss.getTarget().size());
                     } else {
                         ss.release();
@@ -455,7 +449,7 @@ public final class MultiNodeExecutor extends NodeExecutor {
                 errInfo.logErr();
             }
         } catch (Exception e) {
-            LOGGER.warn("handleFailure failed in " + getClass().getSimpleName() + ", source = " + ss.getSource(), e);
+            LOGGER.warn("handleFailure failed in " + getClass().getSimpleName() + ", frontendConnection = " + ss.getSource(), e);
         }
         if (decrementCountAndIsZero()) {
             notifyFailure(ss);
@@ -464,8 +458,6 @@ public final class MultiNodeExecutor extends NodeExecutor {
 
     /**
      * 通知，执行异常
-     *
-     * @throws nothing never throws any exception
      */
     private void notifyFailure(BlockingSession ss) {
         try {

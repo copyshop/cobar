@@ -245,7 +245,7 @@ public class MySQLHeartbeat {
     }
 
     /**
-     * switch data source
+     * switch data frontendConnection
      */
     private void switchSource(String reason) {
         if (!isStop.get()) {

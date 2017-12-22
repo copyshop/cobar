@@ -119,6 +119,7 @@ public abstract class BackendConnection extends AbstractConnection {
     @Override
     public void handle(byte[] data) {
         try {
+            System.out.println(">>>" + "我是BackendConnection hander();");
             handler.handle(data);
         } catch (Throwable e) {
             error(ErrorCode.ERR_HANDLE_DATA, e);

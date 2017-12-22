@@ -38,17 +38,17 @@ public class FrontendAuthenticator implements NIOHandler {
     private static final Logger LOGGER = Logger.getLogger(FrontendAuthenticator.class);
     private static final byte[] AUTH_OK = new byte[]{7, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0};
 
-    protected final FrontendConnection source;
+    protected final FrontendConnection frontendConnection;
 
-    public FrontendAuthenticator(FrontendConnection source) {
-        this.source = source;
+    public FrontendAuthenticator(FrontendConnection frontendConnection) {
+        this.frontendConnection = frontendConnection;
     }
 
     @Override
     public void handle(byte[] data) {
         // check quit packet
         if (data.length == QuitPacket.QUIT.length && data[4] == MySQLPacket.COM_QUIT) {
-            source.close();
+            frontendConnection.close();
             return;
         }
 
@@ -56,7 +56,7 @@ public class FrontendAuthenticator implements NIOHandler {
         auth.read(data);
 
         // check user
-        if (!checkUser(auth.user, source.getHost())) {
+        if (!checkUser(auth.user, frontendConnection.getHost())) {
             failure(ErrorCode.ER_ACCESS_DENIED_ERROR, "Access denied for user '" + auth.user + "'");
             return;
         }
@@ -82,11 +82,11 @@ public class FrontendAuthenticator implements NIOHandler {
     }
 
     protected boolean checkUser(String user, String host) {
-        return source.getPrivileges().userExists(user, host);
+        return frontendConnection.getPrivileges().userExists(user, host);
     }
 
     protected boolean checkPassword(byte[] password, String user) {
-        String pass = source.getPrivileges().getPassword(user);
+        String pass = frontendConnection.getPrivileges().getPassword(user);
 
         // check null
         if (pass == null || pass.length() == 0) {
@@ -103,9 +103,9 @@ public class FrontendAuthenticator implements NIOHandler {
         // encrypt
         byte[] encryptPass = null;
         try {
-            encryptPass = SecurityUtil.scramble411(pass.getBytes(), source.getSeed());
+            encryptPass = SecurityUtil.scramble411(pass.getBytes(), frontendConnection.getSeed());
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.warn(source.toString(), e);
+            LOGGER.warn(frontendConnection.toString(), e);
             return false;
         }
         if (encryptPass != null && (encryptPass.length == password.length)) {
@@ -126,7 +126,7 @@ public class FrontendAuthenticator implements NIOHandler {
         if (schema == null) {
             return 0;
         }
-        FrontendPrivileges privileges = source.getPrivileges();
+        FrontendPrivileges privileges = frontendConnection.getPrivileges();
         if (!privileges.schemaExists(schema)) {
             return ErrorCode.ER_BAD_DB_ERROR;
         }
@@ -139,27 +139,27 @@ public class FrontendAuthenticator implements NIOHandler {
     }
 
     protected void success(AuthPacket auth) {
-        source.setAuthenticated(true);
-        source.setUser(auth.user);
-        source.setSchema(auth.database);
-        source.setCharsetIndex(auth.charsetIndex);
-        source.setHandler(new FrontendCommandHandler(source));
+        frontendConnection.setAuthenticated(true);
+        frontendConnection.setUser(auth.user);
+        frontendConnection.setSchema(auth.database);
+        frontendConnection.setCharsetIndex(auth.charsetIndex);
+        frontendConnection.setHandler(new FrontendCommandHandler(frontendConnection));
         if (LOGGER.isInfoEnabled()) {
             StringBuilder s = new StringBuilder();
-            s.append(source).append('\'').append(auth.user).append("' login success");
+            s.append(frontendConnection).append('\'').append(auth.user).append("' login success");
             byte[] extra = auth.extra;
             if (extra != null && extra.length > 0) {
                 s.append(",extra:").append(new String(extra));
             }
             LOGGER.info(s.toString());
         }
-        ByteBuffer buffer = source.allocate();
-        source.write(source.writeToBuffer(AUTH_OK, buffer));
+        ByteBuffer buffer = frontendConnection.allocate();
+        frontendConnection.write(frontendConnection.writeToBuffer(AUTH_OK, buffer));
     }
 
     protected void failure(int errno, String info) {
-        LOGGER.error(source.toString() + info);
-        source.writeErrMessage((byte) 2, errno, info);
+        LOGGER.error(frontendConnection.toString() + info);
+        frontendConnection.writeErrMessage((byte) 2, errno, info);
     }
 
 }

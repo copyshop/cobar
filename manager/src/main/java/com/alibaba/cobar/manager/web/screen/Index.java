@@ -53,8 +53,7 @@ public class Index extends AbstractController implements InitializingBean {
     }
 
     @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<ClusterDO> list = xmlAccesser.getClusterDAO().listAllCluster();
         List<Map<String, Object>> clusterList = new ArrayList<Map<String, Object>>();
         ListSortUtil.sortClusterBySortId(list);
@@ -84,8 +83,7 @@ public class Index extends AbstractController implements InitializingBean {
             request.getSession().removeAttribute("lastRequest");
         }
 
-        return new ModelAndView("index", new FluenceHashMap<String, Object>().putKeyValue("clusterList", clusterList)
-                                                                             .putKeyValue("result", result));
+        return new ModelAndView("index", new FluenceHashMap<String, Object>().putKeyValue("clusterList", clusterList).putKeyValue("result", result));
     }
 
 }

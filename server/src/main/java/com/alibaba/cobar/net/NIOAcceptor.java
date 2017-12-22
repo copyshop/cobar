@@ -96,12 +96,12 @@ public final class NIOAcceptor extends Thread {
         try {
             channel = serverChannel.accept();
             channel.configureBlocking(false);
-            FrontendConnection c = factory.make(channel);
-            c.setAccepted(true);
-            c.setId(ID_GENERATOR.getId());
+            FrontendConnection frontendConnection = factory.make(channel);
+            frontendConnection.setAccepted(true);
+            frontendConnection.setId(ID_GENERATOR.getId());
             NIOProcessor processor = nextProcessor();
-            c.setProcessor(processor);
-            processor.postRegister(c);
+            frontendConnection.setProcessor(processor);
+            processor.postRegister(frontendConnection);
         } catch (Throwable e) {
             closeChannel(channel);
             LOGGER.warn(getName(), e);

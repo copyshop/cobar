@@ -53,14 +53,14 @@ public class OkPacket extends MySQLPacket {
     public void read(BinaryPacket bin) {
         packetLength = bin.packetLength;
         packetId = bin.packetId;
-        MySQLMessage mm = new MySQLMessage(bin.data);
-        fieldCount = mm.read();
-        affectedRows = mm.readLength();
-        insertId = mm.readLength();
-        serverStatus = mm.readUB2();
-        warningCount = mm.readUB2();
-        if (mm.hasRemaining()) {
-            this.message = mm.readBytesWithLength();
+        MySQLMessage sqlMessage = new MySQLMessage(bin.data);
+        fieldCount = sqlMessage.read();
+        affectedRows = sqlMessage.readLength();
+        insertId = sqlMessage.readLength();
+        serverStatus = sqlMessage.readUB2();
+        warningCount = sqlMessage.readUB2();
+        if (sqlMessage.hasRemaining()) {
+            this.message = sqlMessage.readBytesWithLength();
         }
     }
 

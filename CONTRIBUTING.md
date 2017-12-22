@@ -1,6 +1,6 @@
 # Contribution Guide
 
-Cobar is a community driven open source project and we welcome any contributor.
+Cobar is a community driven open frontendConnection project and we welcome any contributor.
 
 This document outlines some conventions about development workflow, commit message formatting, contact points and other resources to make it easier to get your contribution accepted.
 

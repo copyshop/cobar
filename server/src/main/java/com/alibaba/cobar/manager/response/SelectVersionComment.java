@@ -47,34 +47,34 @@ public final class SelectVersionComment {
         eof.packetId = ++packetId;
     }
 
-    public static void execute(ManagerConnection c) {
-        ByteBuffer buffer = c.allocate();
+    public static void execute(ManagerConnection connection) {
+        ByteBuffer buffer = connection.allocate();
 
         // write header
-        buffer = header.write(buffer, c);
+        buffer = header.write(buffer, connection);
 
         // write fields
         for (FieldPacket field : fields) {
-            buffer = field.write(buffer, c);
+            buffer = field.write(buffer, connection);
         }
 
         // write eof
-        buffer = eof.write(buffer, c);
+        buffer = eof.write(buffer, connection);
 
         // write rows
         byte packetId = eof.packetId;
         RowDataPacket row = new RowDataPacket(FIELD_COUNT);
         row.add(VERSION_COMMENT);
         row.packetId = ++packetId;
-        buffer = row.write(buffer, c);
+        buffer = row.write(buffer, connection);
 
         // write last eof
         EOFPacket lastEof = new EOFPacket();
         lastEof.packetId = ++packetId;
-        buffer = lastEof.write(buffer, c);
+        buffer = lastEof.write(buffer, connection);
 
         // post write
-        c.write(buffer);
+        connection.write(buffer);
     }
 
 }

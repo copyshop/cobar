@@ -1,3 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cobars>
+    <cobar>
+        <property name="id">1</property>
+        <property name="clusterId">1</property>
+        <property name="name">test-yin</property>
+        <property name="status">Active</property>
+        <property name="host">127.0.0.1</property>
+        <property name="serverPort">8066</property>
+        <property name="port">9066</property>
+        <property name="user">test</property>
+        <!-- password is 123456-->
+        <property name="password">84C60C2177C173A2</property>
+        <property name="time_diff">0</property>
+    </cobar>
 </cobars>

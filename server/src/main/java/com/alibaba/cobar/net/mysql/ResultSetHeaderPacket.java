@@ -46,7 +46,9 @@ import com.alibaba.cobar.net.FrontendConnection;
  */
 public class ResultSetHeaderPacket extends MySQLPacket {
 
+    //Field结构计数
     public int fieldCount;
+    //可选字段，一般情况下不应该出现。只有像SHOW COLUMNS这种语句的执行结果才会用到额外信息（标识表格的列数量）。
     public long extra;
 
     public void read(byte[] data) {
@@ -60,9 +62,9 @@ public class ResultSetHeaderPacket extends MySQLPacket {
     }
 
     @Override
-    public ByteBuffer write(ByteBuffer buffer, FrontendConnection c) {
+    public ByteBuffer write(ByteBuffer buffer, FrontendConnection connection) {
         int size = calcPacketSize();
-        buffer = c.checkWriteBuffer(buffer, c.getPacketHeaderSize() + size);
+        buffer = connection.checkWriteBuffer(buffer, connection.getPacketHeaderSize() + size);
         BufferUtil.writeUB3(buffer, size);
         buffer.put(packetId);
         BufferUtil.writeLength(buffer, fieldCount);

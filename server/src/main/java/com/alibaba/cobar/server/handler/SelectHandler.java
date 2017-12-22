@@ -25,26 +25,29 @@ import com.alibaba.cobar.server.response.SelectLastInsertId;
 import com.alibaba.cobar.server.response.SelectUser;
 import com.alibaba.cobar.server.response.SelectVersion;
 import com.alibaba.cobar.server.response.SelectVersionComment;
+import org.apache.log4j.Logger;
 
 /**
  * @author xianmao.hexm
  */
 public final class SelectHandler {
 
-    public static void handle(String stmt, ServerConnection c, int offs) {
+    private static final Logger LOGGER = Logger.getLogger(SelectHandler.class);
+
+    public static void handle(String stmt, ServerConnection connection, int offs) {
         int offset = offs;
         switch (ServerParseSelect.parse(stmt, offs)) {
             case ServerParseSelect.VERSION_COMMENT:
-                SelectVersionComment.response(c);
+                SelectVersionComment.response(connection);
                 break;
             case ServerParseSelect.DATABASE:
-                SelectDatabase.response(c);
+                SelectDatabase.response(connection);
                 break;
             case ServerParseSelect.USER:
-                SelectUser.response(c);
+                SelectUser.response(connection);
                 break;
             case ServerParseSelect.VERSION:
-                SelectVersion.response(c);
+                SelectVersion.response(connection);
                 break;
             case ServerParseSelect.LAST_INSERT_ID:
                 // offset = ParseUtil.move(stmt, 0, "select".length());
@@ -64,7 +67,7 @@ public final class SelectHandler {
                 }
                 offset = ServerParseSelect.indexAfterLastInsertIdFunc(stmt, offset);
                 offset = ServerParseSelect.skipAs(stmt, offset);
-                SelectLastInsertId.response(c, stmt, offset);
+                SelectLastInsertId.response(connection, stmt, offset);
                 break;
             case ServerParseSelect.IDENTITY:
                 // offset = ParseUtil.move(stmt, 0, "select".length());
@@ -86,11 +89,10 @@ public final class SelectHandler {
                 offset = ServerParseSelect.indexAfterIdentity(stmt, offset);
                 String orgName = stmt.substring(indexOfAtAt, offset);
                 offset = ServerParseSelect.skipAs(stmt, offset);
-                SelectIdentity.response(c, stmt, offset, orgName);
+                SelectIdentity.response(connection, stmt, offset, orgName);
                 break;
             default:
-                c.execute(stmt, ServerParse.SELECT);
+                connection.execute(stmt, ServerParse.SELECT);
         }
     }
-
 }

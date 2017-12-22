@@ -51,6 +51,7 @@ public class ManagerConnection extends FrontendConnection {
             @Override
             public void run() {
                 try {
+                    LOGGER.info("我是ManagerConnection handle().");
                     handler.handle(data);
                 } catch (Throwable t) {
                     error(ErrorCode.ERR_HANDLE_DATA, t);

@@ -74,14 +74,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
+                    <frontendConnection>1.6</frontendConnection>
                     <target>1.6</target>
                     <encoding>${project.encoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
+                <artifactId>maven-frontendConnection-plugin</artifactId>
                 <version>2.1.2</version>
                 <configuration>
                     <attach>true</attach>
@@ -102,25 +102,6 @@
                     <excludes>
                         <exclude>**/.svn/**</exclude>
                     </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <configuration>
-                    <sourceExcludes>
-                        <sourceExclude>**/.svn/**</sourceExclude>
-                    </sourceExcludes>
-                    <downloadSources>true</downloadSources>
-                    <outputDirectory>classes</outputDirectory>
-                    <additionalConfig>
-                        <file>
-                            <name>.settings/org.eclipse.core.resources.prefs</name>
-                            <content>
-                                <![CDATA[eclipse.preferences.version=1${line.separator}encoding/<project>=${project.encoding}${line.separator}]]>
-                            </content>
-                        </file>
-                    </additionalConfig>
                 </configuration>
             </plugin>
         </plugins>

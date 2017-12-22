@@ -49,6 +49,7 @@ import com.alibaba.cobar.manager.util.Pair;
 /**
  * @author haiqing.zhuhq 2011-6-20
  */
+
 /**
  * ????cobar???????????
  */
@@ -102,19 +103,19 @@ public class CobarAdapter extends JdbcDaoSupport implements DisposableBean, Coba
 
         @Override
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-            ProcessorStatus p = new ProcessorStatus();
-            p.setProcessorId(rs.getString(P_NAME));
-            p.setNetIn(rs.getLong(P_NET_IN));
-            p.setNetOut(rs.getLong(P_NET_OUT));
-            p.setrQueue(rs.getInt(R_QUEUE));
-            p.setwQueue(rs.getInt(W_QUEUE));
-            p.setConnections(rs.getInt(FC_COUNT));
-            p.setFreeBuffer(rs.getLong(FREE_BUFFER));
-            p.setTotalBuffer(rs.getLong(TOTAL_BUFFER));
-            p.setRequestCount(rs.getLong(REACT_COUNT));
-            p.setBc_count(rs.getLong(BC_COUNT));
-            p.setSampleTimeStamp(System.currentTimeMillis());
-            return p;
+            ProcessorStatus processorStatus = new ProcessorStatus();
+            processorStatus.setProcessorId(rs.getString(P_NAME));
+            processorStatus.setNetIn(rs.getLong(P_NET_IN));
+            processorStatus.setNetOut(rs.getLong(P_NET_OUT));
+            processorStatus.setrQueue(rs.getInt(R_QUEUE));
+            processorStatus.setwQueue(rs.getInt(W_QUEUE));
+            processorStatus.setConnections(rs.getInt(FC_COUNT));
+            processorStatus.setFreeBuffer(rs.getLong(FREE_BUFFER));
+            processorStatus.setTotalBuffer(rs.getLong(TOTAL_BUFFER));
+            processorStatus.setRequestCount(rs.getLong(REACT_COUNT));
+            processorStatus.setBc_count(rs.getLong(BC_COUNT));
+            processorStatus.setSampleTimeStamp(System.currentTimeMillis());
+            return processorStatus;
         }
 
     }
@@ -333,7 +334,7 @@ public class CobarAdapter extends JdbcDaoSupport implements DisposableBean, Coba
                 ResultSet rs = null;
                 try {
                     long time1 = System.currentTimeMillis();
-                    rs = stmt.executeQuery("show @@status.time");
+                    rs = stmt.executeQuery("SHOW @@status.time");
                     long time2 = System.currentTimeMillis();
                     if (rs.next()) {
                         return new Pair<Long, Long>(time1 + (time2 - time1) / 2, rs.getLong(1));
@@ -401,8 +402,7 @@ public class CobarAdapter extends JdbcDaoSupport implements DisposableBean, Coba
         try {
             return null != getVersion();
         } catch (CannotGetJdbcConnectionException ex) {
-            logger.error(new StringBuilder("checkConnection error for Url:").append(((BasicDataSource) this.getDataSource()).getUrl())
-                                                                            .toString());
+            logger.error(new StringBuilder("checkConnection error for Url:").append(((BasicDataSource) this.getDataSource()).getUrl()).toString());
             return false;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

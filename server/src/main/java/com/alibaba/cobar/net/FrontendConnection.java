@@ -43,6 +43,7 @@ import com.alibaba.cobar.util.TimeUtil;
  * @author xianmao.hexm
  */
 public abstract class FrontendConnection extends AbstractConnection {
+
     private static final Logger LOGGER = Logger.getLogger(FrontendConnection.class);
 
     protected long id;
@@ -218,9 +219,9 @@ public abstract class FrontendConnection extends AbstractConnection {
     }
 
     public void initDB(byte[] data) {
-        MySQLMessage mm = new MySQLMessage(data);
-        mm.position(5);
-        String db = mm.readString();
+        MySQLMessage mySQLMessage = new MySQLMessage(data);
+        mySQLMessage.position(5);
+        String db = mySQLMessage.readString();
 
         // 检查schema是否已经设置
         if (schema != null) {
@@ -345,27 +346,32 @@ public abstract class FrontendConnection extends AbstractConnection {
         super.register(selector);
         if (!isClosed.get()) {
             // 生成认证数据
-            byte[] rand1 = RandomUtil.randomBytes(8);
-            byte[] rand2 = RandomUtil.randomBytes(12);
+            byte[] rand8 = RandomUtil.randomBytes(8);
+            byte[] rand12 = RandomUtil.randomBytes(12);
 
             // 保存认证数据
-            byte[] seed = new byte[rand1.length + rand2.length];
-            System.arraycopy(rand1, 0, seed, 0, rand1.length);
-            System.arraycopy(rand2, 0, seed, rand1.length, rand2.length);
+            byte[] seed = new byte[rand8.length + rand12.length];
+            System.arraycopy(rand8, 0, seed, 0, rand8.length);
+            System.arraycopy(rand12, 0, seed, rand8.length, rand12.length);
             this.seed = seed;
 
             // 发送握手数据包
-            HandshakePacket hs = new HandshakePacket();
-            hs.packetId = 0;
-            hs.protocolVersion = Versions.PROTOCOL_VERSION;
-            hs.serverVersion = Versions.SERVER_VERSION;
-            hs.threadId = id;
-            hs.seed = rand1;
-            hs.serverCapabilities = getServerCapabilities();
-            hs.serverCharsetIndex = (byte) (charsetIndex & 0xff);
-            hs.serverStatus = 2;
-            hs.restOfScrambleBuff = rand2;
-            hs.write(this);
+            HandshakePacket handshakePacket = new HandshakePacket();
+            handshakePacket.packetId = 0;
+            // 1 byte的协议版本号
+            handshakePacket.protocolVersion = Versions.PROTOCOL_VERSION;
+            handshakePacket.serverVersion = Versions.SERVER_VERSION;
+            // 4 byte服务线程id（AcceptIdGenerator生成）
+            handshakePacket.threadId = id;
+            // 8 byte 随机挑战数
+            handshakePacket.seed = rand8;
+            // 2 byte 服务器权能标志
+            handshakePacket.serverCapabilities = getServerCapabilities();
+            // 1 byte 字符编码
+            handshakePacket.serverCharsetIndex = (byte) (charsetIndex & 0xff);
+            handshakePacket.serverStatus = 2;
+            handshakePacket.restOfScrambleBuff = rand12;
+            handshakePacket.write(this);
         }
     }
 
@@ -376,6 +382,7 @@ public abstract class FrontendConnection extends AbstractConnection {
             @Override
             public void run() {
                 try {
+                    LOGGER.info("异步处理前端数据");
                     handler.handle(data);
                 } catch (Throwable t) {
                     error(ErrorCode.ERR_HANDLE_DATA, t);
@@ -415,18 +422,7 @@ public abstract class FrontendConnection extends AbstractConnection {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("[thread=")
-            .append(Thread.currentThread().getName())
-            .append(",class=")
-            .append(getClass().getSimpleName())
-            .append(",host=")
-            .append(host)
-            .append(",port=")
-            .append(port)
-            .append(",schema=")
-            .append(schema)
-            .append(']')
-            .toString();
+        return new StringBuilder().append("[thread=").append(Thread.currentThread().getName()).append(",class=").append(getClass().getSimpleName()).append(",host=").append(host).append(",port=").append(port).append(",schema=").append(schema).append(']').toString();
     }
 
     private final static byte[] encodeString(String src, String charset) {
@@ -442,5 +438,4 @@ public abstract class FrontendConnection extends AbstractConnection {
             return src.getBytes();
         }
     }
-
 }

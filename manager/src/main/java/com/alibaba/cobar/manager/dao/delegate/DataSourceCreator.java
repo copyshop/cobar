@@ -52,15 +52,11 @@ public class DataSourceCreator implements DataSourceFactory, InitializingBean {
 
     @Override
     public DataSource createDataSource(String ip, int port, String user, String password) {
+        System.out.println(ip + " --- " + port + " --- " + user + " --- " + password);
         BasicDataSource ds = new BasicDataSource();
         ds.setUsername(user);
         ds.setPassword(password);
-        ds.setUrl(new StringBuilder().append("jdbc:mysql://")
-                                     .append(ip)
-                                     .append(":")
-                                     .append(port)
-                                     .append("/")
-                                     .toString());
+        ds.setUrl(new StringBuilder().append("jdbc:mysql://").append(ip).append(":").append(port).append("/").toString());
         ds.setDriverClassName(driverClassName);
         ds.setMaxActive(maxActive);
         ds.setMinIdle(minIdle);

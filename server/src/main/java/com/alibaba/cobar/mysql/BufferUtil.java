@@ -111,6 +111,12 @@ public class BufferUtil {
         }
     }
 
+    /**
+     * 使用LengthEncodedInteger编码的整数可能会使用1, 3, 4, 或者9 个字节，具体使用字节取决于数值的大小
+     *
+     * @param length
+     * @return
+     */
     public static final int getLength(long length) {
         if (length < 251) {
             return 1;

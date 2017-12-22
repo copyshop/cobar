@@ -27,10 +27,10 @@ public class SampleConnectionFactory extends FrontendConnectionFactory {
 
     @Override
     protected FrontendConnection getConnection(SocketChannel channel) {
-        SampleConnection c = new SampleConnection(channel);
-        c.setPrivileges(new SamplePrivileges());
-        c.setQueryHandler(new SampleQueryHandler(c));
-        return c;
+        SampleConnection connection = new SampleConnection(channel);
+        connection.setPrivileges(new SamplePrivileges());
+        connection.setQueryHandler(new SampleQueryHandler(connection));
+        return connection;
     }
 
 }

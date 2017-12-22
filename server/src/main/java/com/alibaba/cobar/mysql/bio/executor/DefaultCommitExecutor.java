@@ -84,7 +84,7 @@ public class DefaultCommitExecutor extends NodeExecutor {
     }
 
     /**
-     * @param finish how many tasks finished
+     * @param finished how many tasks finished
      * @return is this last task
      */
     private boolean decrementCountBy(int finished) {
@@ -126,9 +126,7 @@ public class DefaultCommitExecutor extends NodeExecutor {
         for (RouteResultsetNode rrn : target.keySet()) {
             if (rrn == null) {
                 try {
-                    getLogger().error(
-                        "null is contained in RoutResultsetNodes, source = " + session.getSource()
-                            + ", bindChannel = " + target);
+                    getLogger().error("null is contained in RoutResultsetNodes, frontendConnection = " + session.getSource() + ", bindChannel = " + target);
                 } catch (Exception e) {
                 }
                 continue;

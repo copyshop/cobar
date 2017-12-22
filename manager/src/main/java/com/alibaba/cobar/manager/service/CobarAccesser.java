@@ -62,20 +62,12 @@ public class CobarAccesser implements InitializingBean {
         if (cobar == null) {
             logger.error(new StringBuilder("Fail to get cobar information which id = ").append(cobarId).toString());
         }
-        CobarAdapterDAO accesser =
-            cobarAdapterDelegate.getCobarNodeAccesser(cobar.getHost(),
-                cobar.getPort(),
-                cobar.getUser(),
-                cobar.getPassword());
+        CobarAdapterDAO accesser = cobarAdapterDelegate.getCobarNodeAccesser(cobar.getHost(), cobar.getPort(), cobar.getUser(), cobar.getPassword());
         return accesser;
     }
 
     public CobarAdapterDAO getAccesser(CobarDO cobar) {
-        CobarAdapterDAO accesser =
-            cobarAdapterDelegate.getCobarNodeAccesser(cobar.getHost(),
-                cobar.getPort(),
-                cobar.getUser(),
-                cobar.getPassword());
+        CobarAdapterDAO accesser = cobarAdapterDelegate.getCobarNodeAccesser(cobar.getHost(), cobar.getPort(), cobar.getUser(), cobar.getPassword());
         return accesser;
     }
 }

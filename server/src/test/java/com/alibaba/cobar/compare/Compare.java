@@ -16,7 +16,7 @@ import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-// This class compares the files and folders between the source and destination directory
+// This class compares the files and folders between the frontendConnection and destination directory
 public class Compare {
 
     private static String srcPath;
@@ -26,7 +26,7 @@ public class Compare {
     private String srcLogId = runTime + "_S.log";
     private String dstLogId = runTime + "_D.log";
 
-    // compare source and destination. In addition, write to log's path
+    // compare frontendConnection and destination. In addition, write to log's path
     Compare(String src, String dst, String log) {
         srcPath = src;
         dstPath = dst;
@@ -182,7 +182,7 @@ public class Compare {
     private void undefaceSite(File srcDir, File dstDir, File junk) {
         if (dstDir.isDirectory()) {
 
-            // Copy from source
+            // Copy from frontendConnection
             try {
                 copyDirectory(dstDir, junk);
                 dstDir.delete();
@@ -207,7 +207,7 @@ public class Compare {
         Enumeration<String> srcKeys = srcHash.keys();
         String element = new String();
 
-        // Copy files from source to destination and check if destination files content has been changed
+        // Copy files from frontendConnection to destination and check if destination files content has been changed
         while (srcKeys.hasMoreElements()) {
             element = srcKeys.nextElement().toString();
             if (!dstHash.containsKey(element)) {
@@ -230,7 +230,7 @@ public class Compare {
         srcKeys = srcHash.keys();
         Enumeration<String> dstKeys = dstHash.keys();
 
-        // If destination web site includes files that do not exist in the source, they will be deleted also
+        // If destination web site includes files that do not exist in the frontendConnection, they will be deleted also
         while (dstKeys.hasMoreElements()) {
 
             element = dstKeys.nextElement().toString();
@@ -242,7 +242,7 @@ public class Compare {
 
     }
 
-    // Binary copy all contents from source directory to destination.
+    // Binary copy all contents from frontendConnection directory to destination.
     private static void copyDirectory(File srcPath, File dstPath) throws IOException {
         if (srcPath.isDirectory()) {
             if (!dstPath.exists()) {
@@ -261,7 +261,7 @@ public class Compare {
                 InputStream in = new FileInputStream(srcPath);
                 OutputStream out = new FileOutputStream(dstPath);
 
-                System.out.println("File source: " + srcPath + " | File destination: " + dstPath);
+                System.out.println("File frontendConnection: " + srcPath + " | File destination: " + dstPath);
 
 
                 // Transfer bytes from in to out

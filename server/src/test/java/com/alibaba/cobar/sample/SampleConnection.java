@@ -26,6 +26,7 @@ import com.alibaba.cobar.net.FrontendConnection;
  * @author xianmao.hexm 2011-4-21 上午11:22:57
  */
 public class SampleConnection extends FrontendConnection {
+    
     private static final Logger LOGGER = Logger.getLogger(SampleConnection.class);
 
     public SampleConnection(SocketChannel channel) {

@@ -46,6 +46,7 @@ import com.alibaba.cobar.net.FrontendConnection;
  * @author xianmao.hexm 2010-7-23 上午01:05:55
  */
 public class RowDataPacket extends MySQLPacket {
+    
     private static final byte NULL_MARK = (byte) 251;
 
     public final int fieldCount;

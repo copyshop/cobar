@@ -34,6 +34,7 @@ public class ExecutorTestMain {
             public void run() {
                 for (; ; ) {
                     long c = count.get();
+                    System.out.println(">>>" + c);
                     try {
                         Thread.sleep(5000L);
                     } catch (InterruptedException e) {
@@ -52,7 +53,6 @@ public class ExecutorTestMain {
             public void run() {
                 for (; ; ) {
                     executor.execute(new Runnable() {
-
                         @Override
                         public void run() {
                             count.incrementAndGet();
@@ -67,7 +67,6 @@ public class ExecutorTestMain {
             public void run() {
                 for (; ; ) {
                     executor.execute(new Runnable() {
-
                         @Override
                         public void run() {
                             count.incrementAndGet();
@@ -77,5 +76,4 @@ public class ExecutorTestMain {
             }
         }.start();
     }
-
 }

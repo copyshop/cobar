@@ -163,6 +163,12 @@ public final class MySQLChannel implements Channel {
         this.isRunning = running;
     }
 
+    /**
+     * bio
+     *
+     * @param timeout
+     * @throws Exception
+     */
     @Override
     public void connect(long timeout) throws Exception {
         // 网络IO参数设置
@@ -179,24 +185,24 @@ public final class MySQLChannel implements Channel {
         out = new BufferedOutputStream(socket.getOutputStream(), OUTPUT_STREAM_BUFFER);
 
         // 完成连接和初始化
-        FutureTask<Channel> ft = new FutureTask<Channel>(new Callable<Channel>() {
+        FutureTask<Channel> channelFutureTask = new FutureTask<Channel>(new Callable<Channel>() {
 
             @Override
             public Channel call() throws Exception {
                 return handshake();
             }
         });
-        CobarServer.getInstance().getInitExecutor().execute(ft);
+        CobarServer.getInstance().getInitExecutor().execute(channelFutureTask);
         try {
-            ft.get(timeout, TimeUnit.MILLISECONDS);
+            channelFutureTask.get(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            ft.cancel(true);
+            channelFutureTask.cancel(true);
             throw e;
         } catch (ExecutionException e) {
-            ft.cancel(true);
+            channelFutureTask.cancel(true);
             throw e;
         } catch (TimeoutException e) {
-            ft.cancel(true);
+            channelFutureTask.cancel(true);
             throw e;
         }
     }
@@ -211,8 +217,9 @@ public final class MySQLChannel implements Channel {
             详细见：http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-troubleshooting.html#qandaitem-15-1-15
                     https://dev.mysql.com/doc/relnotes/connector-j/en/news-5-1-13.html
             */
-            if (this.charsetIndex != 45 && sc.getCharsetIndex() != 33)
+            if (this.charsetIndex != 45 && sc.getCharsetIndex() != 33) {
                 sendCharset(sc.getCharsetIndex());
+            }
         }
         if (this.txIsolation != sc.getTxIsolation()) {
             sendTxIsolation(sc.getTxIsolation());

@@ -32,45 +32,45 @@ import com.alibaba.cobar.net.mysql.RowDataPacket;
  */
 public class SampleResponseHandler {
 
-    public static void response(SampleConnection c, String message) {
+    public static void response(SampleConnection connection, String message) {
         byte packetId = 0;
-        ByteBuffer buffer = c.allocate();
+        ByteBuffer buffer = connection.allocate();
 
         // header
-        ResultSetHeaderPacket header = new ResultSetHeaderPacket();
-        header.packetId = ++packetId;
-        header.fieldCount = 1;
-        buffer = header.write(buffer, c);
+        ResultSetHeaderPacket headerPacket = new ResultSetHeaderPacket();
+        headerPacket.packetId = ++packetId;
+        headerPacket.fieldCount = 1;
+        buffer = headerPacket.write(buffer, connection);
 
         // fields
-        FieldPacket[] fields = new FieldPacket[header.fieldCount];
+        FieldPacket[] fields = new FieldPacket[headerPacket.fieldCount];
         for (FieldPacket field : fields) {
             field = new FieldPacket();
             field.packetId = ++packetId;
             field.charsetIndex = CharsetUtil.getIndex("Cp1252");
             field.name = "SampleServer".getBytes();
             field.type = Fields.FIELD_TYPE_VAR_STRING;
-            buffer = field.write(buffer, c);
+            buffer = field.write(buffer, connection);
         }
 
         // eof
         EOFPacket eof = new EOFPacket();
         eof.packetId = ++packetId;
-        buffer = eof.write(buffer, c);
+        buffer = eof.write(buffer, connection);
 
         // rows
-        RowDataPacket row = new RowDataPacket(header.fieldCount);
-        row.add(message != null ? encode(message, c.getCharset()) : encode("HelloWorld!", c.getCharset()));
+        RowDataPacket row = new RowDataPacket(headerPacket.fieldCount);
+        row.add(message != null ? encode(message, connection.getCharset()) : encode("HelloWorld!", connection.getCharset()));
         row.packetId = ++packetId;
-        buffer = row.write(buffer, c);
+        buffer = row.write(buffer, connection);
 
         // write lastEof
         EOFPacket lastEof = new EOFPacket();
         lastEof.packetId = ++packetId;
-        buffer = lastEof.write(buffer, c);
+        buffer = lastEof.write(buffer, connection);
 
         // write buffer
-        c.write(buffer);
+        connection.write(buffer);
     }
 
     private static byte[] encode(String src, String charset) {
@@ -84,5 +84,4 @@ public class SampleResponseHandler {
             return src.getBytes();
         }
     }
-
 }

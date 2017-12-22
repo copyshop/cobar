@@ -44,6 +44,7 @@ import com.alibaba.cobar.net.FrontendConnection;
  * @author xianmao.hexm 2010-7-14 下午05:18:15
  */
 public class HandshakePacket extends MySQLPacket {
+
     private static final byte[] FILLER_13 = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     public byte protocolVersion;
@@ -58,35 +59,35 @@ public class HandshakePacket extends MySQLPacket {
     public void read(BinaryPacket bin) {
         packetLength = bin.packetLength;
         packetId = bin.packetId;
-        MySQLMessage mm = new MySQLMessage(bin.data);
-        protocolVersion = mm.read();
-        serverVersion = mm.readBytesWithNull();
-        threadId = mm.readUB4();
-        seed = mm.readBytesWithNull();
-        serverCapabilities = mm.readUB2();
-        serverCharsetIndex = mm.read();
-        serverStatus = mm.readUB2();
-        mm.move(13);
-        restOfScrambleBuff = mm.readBytesWithNull();
+        MySQLMessage mySQLMessage = new MySQLMessage(bin.data);
+        protocolVersion = mySQLMessage.read();
+        serverVersion = mySQLMessage.readBytesWithNull();
+        threadId = mySQLMessage.readUB4();
+        seed = mySQLMessage.readBytesWithNull();
+        serverCapabilities = mySQLMessage.readUB2();
+        serverCharsetIndex = mySQLMessage.read();
+        serverStatus = mySQLMessage.readUB2();
+        mySQLMessage.move(13);
+        restOfScrambleBuff = mySQLMessage.readBytesWithNull();
     }
 
     public void read(byte[] data) {
-        MySQLMessage mm = new MySQLMessage(data);
-        packetLength = mm.readUB3();
-        packetId = mm.read();
-        protocolVersion = mm.read();
-        serverVersion = mm.readBytesWithNull();
-        threadId = mm.readUB4();
-        seed = mm.readBytesWithNull();
-        serverCapabilities = mm.readUB2();
-        serverCharsetIndex = mm.read();
-        serverStatus = mm.readUB2();
-        mm.move(13);
-        restOfScrambleBuff = mm.readBytesWithNull();
+        MySQLMessage mySQLMessage = new MySQLMessage(data);
+        packetLength = mySQLMessage.readUB3();
+        packetId = mySQLMessage.read();
+        protocolVersion = mySQLMessage.read();
+        serverVersion = mySQLMessage.readBytesWithNull();
+        threadId = mySQLMessage.readUB4();
+        seed = mySQLMessage.readBytesWithNull();
+        serverCapabilities = mySQLMessage.readUB2();
+        serverCharsetIndex = mySQLMessage.read();
+        serverStatus = mySQLMessage.readUB2();
+        mySQLMessage.move(13);
+        restOfScrambleBuff = mySQLMessage.readBytesWithNull();
     }
 
-    public void write(FrontendConnection c) {
-        ByteBuffer buffer = c.allocate();
+    public void write(FrontendConnection frontendConnection) {
+        ByteBuffer buffer = frontendConnection.allocate();
         BufferUtil.writeUB3(buffer, calcPacketSize());
         buffer.put(packetId);
         buffer.put(protocolVersion);
@@ -99,7 +100,8 @@ public class HandshakePacket extends MySQLPacket {
         buffer.put(FILLER_13);
         // buffer.position(buffer.position() + 13);
         BufferUtil.writeWithNull(buffer, restOfScrambleBuff);
-        c.write(buffer);
+        //网络中传输
+        frontendConnection.write(buffer);
     }
 
     @Override

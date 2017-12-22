@@ -1,6 +1,9 @@
 package com.alibaba.cobar.compare;
 
-// This class executes the AntiDef application
+
+/**
+ * 这个是检测文件是否发生改变
+ */
 class AntiDef {
 
     /**
@@ -12,11 +15,11 @@ class AntiDef {
 
     /*
      * Start the application using command-line arguments:
-     * -s - source folder (backup of the application)
+     * -s - frontendConnection folder (backup of the application)
      * -d - destination path (application server directory)
      * -l - the path to the log file in case of defacement
      * -t - interval time for defacement checking (default: 60 seconds)
-     * -f - if present, in case of defacement, all source files will be copied to the destination (default: false)
+     * -f - if present, in case of defacement, all frontendConnection files will be copied to the destination (default: false)
 
     */
     private static void start(String[] args) {

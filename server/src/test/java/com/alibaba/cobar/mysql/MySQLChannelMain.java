@@ -25,11 +25,11 @@ public class MySQLChannelMain {
 
     public Channel getChannel() throws Exception {
         DataSourceConfig config = new DataSourceConfig();
-        config.setHost("10.20.153.177");
+        config.setHost("127.0.0.1");
         config.setPort(3306);
-        config.setUser("offer");
-        config.setPassword("offer");
-        config.setDatabase("offer1");
+        config.setUser("root");
+        config.setPassword("67890");
+        config.setDatabase("mytest");
         MySQLDataSource ds = new MySQLDataSource(null, 0, config, 1);
         return ds.getChannel();
     }
@@ -39,5 +39,4 @@ public class MySQLChannelMain {
         Channel channel = test.getChannel();
         channel.close();
     }
-
 }

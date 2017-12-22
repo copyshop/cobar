@@ -23,22 +23,20 @@ import com.alibaba.cobar.net.handler.FrontendQueryHandler;
  * @author xianmao.hexm
  */
 public class SampleQueryHandler implements FrontendQueryHandler {
+
     private static final Logger LOGGER = Logger.getLogger(SampleQueryHandler.class);
 
-    private SampleConnection source;
+    private SampleConnection connection;
 
-    public SampleQueryHandler(SampleConnection source) {
-        this.source = source;
+    public SampleQueryHandler(SampleConnection connection) {
+        this.connection = connection;
     }
 
     @Override
     public void query(String sql) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(new StringBuilder().append(source).append(sql).toString());
-        }
-
+        LOGGER.info(new StringBuilder().append(connection).append(sql).toString());
         // sample response
-        SampleResponseHandler.response(source, sql);
+        SampleResponseHandler.response(connection, sql);
     }
 
 }

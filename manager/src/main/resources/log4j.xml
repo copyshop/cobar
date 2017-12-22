@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
  - Copyright 1999-2012 Alibaba Group.
  -  
  - Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +12,21 @@
  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  - See the License for the specific language governing permissions and
  - limitations under the License.
--->
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+--><!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 
-  <appender name="STDOUT" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="file" value="/home/admin/logs/stdout.log" />
-    <param name="append" value="true" />
-    <param name="encoding" value="UTF-8" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p %m%n" />
-    </layout>
-  </appender>
+    <appender name="STDOUT" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="/home/admin/logs/stdout.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="UTF-8"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p %m%n"/>
+        </layout>
+    </appender>
 
-  <root>
-    <level value="info" />
-    <appender-ref ref="STDOUT" />
-  </root>
+    <root>
+        <level value="info"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
 
 </log4j:configuration>

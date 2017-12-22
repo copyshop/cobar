@@ -65,7 +65,7 @@ public class CommitNodeHandler extends MultiNodeHandler {
         for (RouteResultsetNode rrn : session.getTargetKeys()) {
             if (rrn == null) {
                 try {
-                    logger.error("null is contained in RoutResultsetNodes, source = " + session.getSource());
+                    logger.error("null is contained in RoutResultsetNodes, frontendConnection = " + session.getSource());
                 } catch (Exception e) {
                 }
                 continue;

@@ -95,8 +95,10 @@ public final class NIOReactor {
                             if (att != null && key.isValid()) {
                                 int readyOps = key.readyOps();
                                 if ((readyOps & SelectionKey.OP_READ) != 0) {
+                                    LOGGER.info("SelectionKey.OP_READ");
                                     read((NIOConnection) att);
                                 } else if ((readyOps & SelectionKey.OP_WRITE) != 0) {
+                                    LOGGER.info("SelectionKey.OP_WRITE");
                                     write((NIOConnection) att);
                                 } else {
                                     key.cancel();
@@ -115,21 +117,21 @@ public final class NIOReactor {
         }
 
         private void register(Selector selector) {
-            NIOConnection c = null;
-            while ((c = registerQueue.poll()) != null) {
+            NIOConnection connection = null;
+            while ((connection = registerQueue.poll()) != null) {
                 try {
-                    c.register(selector);
+                    connection.register(selector);
                 } catch (Throwable e) {
-                    c.error(ErrorCode.ERR_REGISTER, e);
+                    connection.error(ErrorCode.ERR_REGISTER, e);
                 }
             }
         }
 
-        private void read(NIOConnection c) {
+        private void read(NIOConnection connection) {
             try {
-                c.read();
+                connection.read();
             } catch (Throwable e) {
-                c.error(ErrorCode.ERR_READ, e);
+                connection.error(ErrorCode.ERR_READ, e);
             }
         }
 
@@ -151,11 +153,12 @@ public final class NIOReactor {
 
         @Override
         public void run() {
-            NIOConnection c = null;
+            NIOConnection connection = null;
             for (; ; ) {
                 try {
-                    if ((c = writeQueue.take()) != null) {
-                        write(c);
+                    if ((connection = writeQueue.take()) != null) {
+                        LOGGER.info("SelectionKey.OP_READ");
+                        write(connection);
                     }
                 } catch (Throwable e) {
                     LOGGER.warn(name, e);
@@ -163,13 +166,12 @@ public final class NIOReactor {
             }
         }
 
-        private void write(NIOConnection c) {
+        private void write(NIOConnection connection) {
             try {
-                c.writeByQueue();
+                connection.writeByQueue();
             } catch (Throwable e) {
-                c.error(ErrorCode.ERR_WRITE_BY_QUEUE, e);
+                connection.error(ErrorCode.ERR_WRITE_BY_QUEUE, e);
             }
         }
     }
-
 }

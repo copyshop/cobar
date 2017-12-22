@@ -46,11 +46,11 @@ public class BinaryPacket extends MySQLPacket {
     }
 
     @Override
-    public ByteBuffer write(ByteBuffer buffer, FrontendConnection c) {
-        buffer = c.checkWriteBuffer(buffer, c.getPacketHeaderSize());
+    public ByteBuffer write(ByteBuffer buffer, FrontendConnection frontendConnection) {
+        buffer = frontendConnection.checkWriteBuffer(buffer, frontendConnection.getPacketHeaderSize());
         BufferUtil.writeUB3(buffer, calcPacketSize());
         buffer.put(packetId);
-        buffer = c.writeToBuffer(data, buffer);
+        buffer = frontendConnection.writeToBuffer(data, buffer);
         return buffer;
     }
 

@@ -47,7 +47,7 @@ import com.alibaba.cobar.server.session.BlockingSession;
 import com.alibaba.cobar.util.StringUtil;
 
 /**
- * 单节点数据执行器
+ * 单节点数据执行器,处理mysql返回
  *
  * @author xianmao.hexm
  */
@@ -118,50 +118,48 @@ public final class SingleNodeExecutor extends NodeExecutor {
     /**
      * 新数据通道的执行
      */
-    private void newExecute(final RouteResultsetNode rrn, final BlockingSession ss, final int flag) {
-        final ServerConnection sc = ss.getSource();
-
+    private void newExecute(final RouteResultsetNode routeResultsetNode, final BlockingSession blockingSession, final int flag) {
+        final ServerConnection serverConnection = blockingSession.getSource();
         // 检查数据节点是否存在
         CobarConfig conf = CobarServer.getInstance().getConfig();
-        final MySQLDataNode dn = conf.getDataNodes().get(rrn.getName());
-        if (dn == null) {
-            LOGGER.warn(new StringBuilder().append(sc).append(rrn).toString(), new UnknownDataNodeException());
-            handleError(ErrorCode.ER_BAD_DB_ERROR, "Unknown dataNode '" + rrn.getName() + "'", ss);
+        final MySQLDataNode mySQLDataNode = conf.getDataNodes().get(routeResultsetNode.getName());
+        if (mySQLDataNode == null) {
+            LOGGER.warn(new StringBuilder().append(serverConnection).append(routeResultsetNode).toString(), new UnknownDataNodeException());
+            handleError(ErrorCode.ER_BAD_DB_ERROR, "Unknown dataNode '" + routeResultsetNode.getName() + "'", blockingSession);
             return;
         }
 
         // 提交执行任务
-        sc.getProcessor().getExecutor().execute(new Runnable() {
+        serverConnection.getProcessor().getExecutor().execute(new Runnable() {
             @Override
             public void run() {
                 // 取得数据通道
-                int i = rrn.getReplicaIndex();
-                Channel c = null;
+                int i = routeResultsetNode.getReplicaIndex();
+                Channel channel = null;
                 try {
-                    c = (i == DEFAULT_REPLICA_INDEX) ? dn.getChannel() : dn.getChannel(i);
+                    channel = (i == DEFAULT_REPLICA_INDEX) ? mySQLDataNode.getChannel() : mySQLDataNode.getChannel(i);
                 } catch (Exception e) {
-                    LOGGER.warn(new StringBuilder().append(sc).append(rrn).toString(), e);
+                    LOGGER.warn(new StringBuilder().append(serverConnection).append(routeResultsetNode).toString(), e);
                     String msg = e.getMessage();
-                    handleError(ErrorCode.ER_BAD_DB_ERROR, msg == null ? e.getClass().getSimpleName() : msg, ss);
+                    handleError(ErrorCode.ER_BAD_DB_ERROR, msg == null ? e.getClass().getSimpleName() : msg, blockingSession);
                     return;
                 }
 
                 // 检查连接是否已关闭。
-                if (sc.isClosed()) {
-                    c.release();
+                if (serverConnection.isClosed()) {
+                    channel.release();
                     endRunning();
                     return;
                 }
 
                 // 绑定数据通道
-                c.setRunning(true);
-                Channel old = ss.getTarget().put(rrn, c);
-                if (old != null && old != c) {
+                channel.setRunning(true);
+                Channel old = blockingSession.getTarget().put(routeResultsetNode, channel);
+                if (old != null && old != channel) {
                     old.close();
                 }
-
                 // 执行
-                execute0(rrn, ss, c, flag);
+                execute0(routeResultsetNode, blockingSession, channel, flag);
             }
         });
     }
@@ -229,8 +227,7 @@ public final class SingleNodeExecutor extends NodeExecutor {
     /**
      * 处理结果集数据
      */
-    private void handleResultSet(RouteResultsetNode rrn, BlockingSession ss, MySQLChannel mc, BinaryPacket bin, int flag)
-        throws IOException {
+    private void handleResultSet(RouteResultsetNode rrn, BlockingSession ss, MySQLChannel mc, BinaryPacket bin, int flag) throws IOException {
         final ServerConnection sc = ss.getSource();
 
         bin.packetId = ++packetId;// HEADER
@@ -280,8 +277,7 @@ public final class SingleNodeExecutor extends NodeExecutor {
     /**
      * 处理RowData数据
      */
-    private void handleRowData(RouteResultsetNode rrn, BlockingSession ss, MySQLChannel mc, ByteBuffer bb, byte id)
-        throws IOException {
+    private void handleRowData(RouteResultsetNode rrn, BlockingSession ss, MySQLChannel mc, ByteBuffer bb, byte id) throws IOException {
         final ServerConnection sc = ss.getSource();
         this.packetId = id;
         BinaryPacket bin = null;
@@ -330,8 +326,7 @@ public final class SingleNodeExecutor extends NodeExecutor {
     /**
      * 下一个数据接收任务
      */
-    private void handleNext(final RouteResultsetNode rrn, final BlockingSession ss, final MySQLChannel mc,
-                            final ByteBuffer bb, final byte id) {
+    private void handleNext(final RouteResultsetNode rrn, final BlockingSession ss, final MySQLChannel mc, final ByteBuffer bb, final byte id) {
         final ServerConnection sc = ss.getSource();
         sc.getProcessor().getExecutor().execute(new Runnable() {
             @Override

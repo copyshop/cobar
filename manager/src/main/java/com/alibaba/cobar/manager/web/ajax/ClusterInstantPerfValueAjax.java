@@ -79,28 +79,28 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
     private long groupByPList(List<ProcessorStatus> list, int type) {
         long result = 0;
         switch (type) {
-        case NET_IN:
-            for (ProcessorStatus p : list) {
-                result += p.getNetIn();
-            }
-            break;
-        case NET_OUT:
-            for (ProcessorStatus p : list) {
-                result += p.getNetOut();
-            }
-            break;
-        case CONNECTION:
-            for (ProcessorStatus p : list) {
-                result += p.getConnections();
-            }
-            break;
-        case REQUEST_COUNT:
-            for (ProcessorStatus p : list) {
-                result += p.getRequestCount();
-            }
-            break;
-        default:
-            throw new IllegalArgumentException("invalid parameter");
+            case NET_IN:
+                for (ProcessorStatus p : list) {
+                    result += p.getNetIn();
+                }
+                break;
+            case NET_OUT:
+                for (ProcessorStatus p : list) {
+                    result += p.getNetOut();
+                }
+                break;
+            case CONNECTION:
+                for (ProcessorStatus p : list) {
+                    result += p.getConnections();
+                }
+                break;
+            case REQUEST_COUNT:
+                for (ProcessorStatus p : list) {
+                    result += p.getRequestCount();
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("invalid parameter");
         }
         return result;
     }
@@ -108,13 +108,13 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
     private long groupByCList(List<CommandStatus> list, int type) {
         long result = 0;
         switch (type) {
-        case REQUEST_COUNT:
-            for (CommandStatus p : list) {
-                result += p.getQuery();
-            }
-            break;
-        default:
-            throw new IllegalArgumentException("invalid parameter");
+            case REQUEST_COUNT:
+                for (CommandStatus p : list) {
+                    result += p.getQuery();
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("invalid parameter");
         }
         return result;
     }
@@ -132,7 +132,8 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
             }
             ServerStatus ss = perfAccesser.getServerStatus();
             int memoryUsage = 0;
-            if (ss.getTotalMemory() != 0) memoryUsage = Math.round(ss.getUsedMemory() * 100 / ss.getTotalMemory());
+            if (ss.getTotalMemory() != 0)
+                memoryUsage = Math.round(ss.getUsedMemory() * 100 / ss.getTotalMemory());
             result.add(new Pair<Long, Integer>(node.getId(), memoryUsage));
         }
         return result;
@@ -142,16 +143,16 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
     private List<Map<String, Object>> getClusterThroughput(AjaxParams params) {
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 
-        JSONArray array = params.getArray();
+        JSONArray jsonArray = params.getArray();
         JSONObject json = null;
         Map<Long, JSONObject> cobarRequest = new HashMap<Long, JSONObject>();
 
-        for (int i = 0; i < array.size(); i++) {
-            JSONObject js = array.getJSONObject(i);
-            if ("cluster".equals(js.getString("flag"))) {
-                json = js;
-            } else if ("cobar".equals(js.getString("flag"))) {
-                cobarRequest.put(js.getLong("id"), js);
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            if ("cluster".equals(jsonObject.getString("flag"))) {
+                json = jsonObject;
+            } else if ("cobar".equals(jsonObject.getString("flag"))) {
+                cobarRequest.put(jsonObject.getLong("id"), jsonObject);
             }
         }
 
@@ -173,7 +174,7 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
                 continue;
             }
 
-            AjaxResult re = new AjaxResult();
+            AjaxResult ajaxResult = new AjaxResult();
             List<ProcessorStatus> list = perfAccesser.listProccessorStatus();
             List<CommandStatus> cmdList = perfAccesser.listCommandStatus();
 
@@ -185,38 +186,26 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
             cluster.addNetIn(cobarNetIn);
             cluster.addNetOut(cobarNetOut);
 
-            re.setId(node.getId());
-            re.setFlag("cobar");
-            re.setNetIn(cobarNetIn);
-            re.setNetOut(cobarNetOut);
-            re.setConnection(groupByPList(list, CONNECTION));
-            re.setRequest(cobarRequestCount);
+            ajaxResult.setId(node.getId());
+            ajaxResult.setFlag("cobar");
+            ajaxResult.setNetIn(cobarNetIn);
+            ajaxResult.setNetOut(cobarNetOut);
+            ajaxResult.setConnection(groupByPList(list, CONNECTION));
+            ajaxResult.setRequest(cobarRequestCount);
 
             timestamp = list.get(list.size() - 1).getSampleTimeStamp();
-            re.setTimestamp(timestamp);
+            ajaxResult.setTimestamp(timestamp);
 
             JSONObject jsonTmp = cobarRequest.get(node.getId());
             if (jsonTmp != null) {
-                re.setNetIn_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(cobarNetIn,
-                                                                                           jsonTmp.getLong("netIn"),
-                                                                                           timestamp,
-                                                                                           jsonTmp.getLong("timestamp"),
-                                                                                           1000.0))));
-                re.setNetOut_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(cobarNetOut,
-                                                                                            jsonTmp.getLong("netOut"),
-                                                                                            timestamp,
-                                                                                            jsonTmp.getLong("timestamp"),
-                                                                                            1000.0))));
-                re.setRequest_deriv(FormatUtil.formatNumber(Math.round(MathUtil.getDerivate(cobarRequestCount,
-                                                                                            jsonTmp.getLong("reCount"),
-                                                                                            timestamp,
-                                                                                            jsonTmp.getLong("timestamp"),
-                                                                                            1000.0))));
+                ajaxResult.setNetIn_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(cobarNetIn, jsonTmp.getLong("netIn"), timestamp, jsonTmp.getLong("timestamp"), 1000.0))));
+                ajaxResult.setNetOut_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(cobarNetOut, jsonTmp.getLong("netOut"), timestamp, jsonTmp.getLong("timestamp"), 1000.0))));
+                ajaxResult.setRequest_deriv(FormatUtil.formatNumber(Math.round(MathUtil.getDerivate(cobarRequestCount, jsonTmp.getLong("reCount"), timestamp, jsonTmp.getLong("timestamp"), 1000.0))));
             }
 
             Map<String, Object> map = null;
             try {
-                map = util.describe(re);
+                map = util.describe(ajaxResult);
             } catch (Exception e) {
                 logger.error(e);
                 throw new RuntimeException(e);
@@ -228,21 +217,9 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
         cluster.setTimestamp(timestamp);
         if (null != json && json.getLong("netIn") != -1) {
             long o_tiemstamp = json.getLong("timestamp");
-            cluster.setNetIn_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(cluster.getNetIn(),
-                                                                                            json.getLong("netIn"),
-                                                                                            timestamp,
-                                                                                            o_tiemstamp,
-                                                                                            1000.0))));
-            cluster.setNetOut_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(cluster.getNetOut(),
-                                                                                             json.getLong("netOut"),
-                                                                                             timestamp,
-                                                                                             o_tiemstamp,
-                                                                                             1000.0))));
-            cluster.setRequest_deriv(FormatUtil.formatNumber(Math.round(MathUtil.getDerivate(cluster.getRequest(),
-                                                                                             json.getLong("reCount"),
-                                                                                             timestamp,
-                                                                                             o_tiemstamp,
-                                                                                             1000.0))));
+            cluster.setNetIn_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(cluster.getNetIn(), json.getLong("netIn"), timestamp, o_tiemstamp, 1000.0))));
+            cluster.setNetOut_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(cluster.getNetOut(), json.getLong("netOut"), timestamp, o_tiemstamp, 1000.0))));
+            cluster.setRequest_deriv(FormatUtil.formatNumber(Math.round(MathUtil.getDerivate(cluster.getRequest(), json.getLong("reCount"), timestamp, o_tiemstamp, 1000.0))));
         }
         Map<String, Object> m = null;
         try {
@@ -299,21 +276,9 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
 
         if (json != null && json.getLong("netIn") != -1) {
             long o_tiemstamp = json.getLong("timestamp");
-            rs.setNetIn_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(rs.getNetIn(),
-                                                                                       json.getLong("netIn"),
-                                                                                       rs.getTimestamp(),
-                                                                                       o_tiemstamp,
-                                                                                       1000.0))));
-            rs.setNetOut_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(rs.getNetOut(),
-                                                                                        json.getLong("netOut"),
-                                                                                        rs.getTimestamp(),
-                                                                                        o_tiemstamp,
-                                                                                        1000.0))));
-            rs.setRequest_deriv(FormatUtil.formatNumber(Math.round(MathUtil.getDerivate(rs.getRequest(),
-                                                                                        json.getLong("reCount"),
-                                                                                        rs.getTimestamp(),
-                                                                                        o_tiemstamp,
-                                                                                        1000.0))));
+            rs.setNetIn_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(rs.getNetIn(), json.getLong("netIn"), rs.getTimestamp(), o_tiemstamp, 1000.0))));
+            rs.setNetOut_deriv(FormatUtil.formatNetwork(Math.round(MathUtil.getDerivate(rs.getNetOut(), json.getLong("netOut"), rs.getTimestamp(), o_tiemstamp, 1000.0))));
+            rs.setRequest_deriv(FormatUtil.formatNumber(Math.round(MathUtil.getDerivate(rs.getRequest(), json.getLong("reCount"), rs.getTimestamp(), o_tiemstamp, 1000.0))));
         }
 
         return rs;
@@ -343,8 +308,7 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         AjaxParams params = new AjaxParams(request);
         String jsonRst = null;
         String st = params.getValueType();
@@ -355,34 +319,34 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
         PropertyUtilsBean util = new PropertyUtilsBean();
 
         switch (type) {
-        case TYPE_COBAR_MEMORY_USAGE:
-            List<Pair<Long, Integer>> mList = listCobarMemoryUsage(params);
-            JSONArray mArray = JSONArray.fromObject(mList);
-            jsonRst = mArray.toString(2);
-            break;
-        case TYPE_CLUSTER_THROUGHPUT_INFO:
-            List<Map<String, Object>> list1 = getClusterThroughput(params);
-            JSONArray arrayMap = JSONArray.fromObject(list1);
-            jsonRst = arrayMap.toString(2);
-            break;
-        case TYPE_CLUSTER_INFO:
-            AjaxResult rs = getClusterInfo(params);
-            Map<String, Object> map = null;
-            try {
-                map = util.describe(rs);
-            } catch (Exception e) {
-                logger.error(e);
-                throw new RuntimeException(e);
-            }
-            jsonRst = JSONObject.fromObject(map).toString(2);
-            break;
-        case TYPE_STATUS:
-            List<Pair<Long, String>> sList = getStatus(params);
-            JSONArray sArray = JSONArray.fromObject(sList);
-            jsonRst = sArray.toString(2);
-            break;
-        default:
-            throw new IllegalArgumentException("parameter 'ValueType' is known: " + params.getValueType());
+            case TYPE_COBAR_MEMORY_USAGE:
+                List<Pair<Long, Integer>> mList = listCobarMemoryUsage(params);
+                JSONArray mArray = JSONArray.fromObject(mList);
+                jsonRst = mArray.toString(2);
+                break;
+            case TYPE_CLUSTER_THROUGHPUT_INFO:
+                List<Map<String, Object>> list1 = getClusterThroughput(params);
+                JSONArray arrayMap = JSONArray.fromObject(list1);
+                jsonRst = arrayMap.toString(2);
+                break;
+            case TYPE_CLUSTER_INFO:
+                AjaxResult rs = getClusterInfo(params);
+                Map<String, Object> map = null;
+                try {
+                    map = util.describe(rs);
+                } catch (Exception e) {
+                    logger.error(e);
+                    throw new RuntimeException(e);
+                }
+                jsonRst = JSONObject.fromObject(map).toString(2);
+                break;
+            case TYPE_STATUS:
+                List<Pair<Long, String>> sList = getStatus(params);
+                JSONArray sArray = JSONArray.fromObject(sList);
+                jsonRst = sArray.toString(2);
+                break;
+            default:
+                throw new IllegalArgumentException("parameter 'ValueType' is known: " + params.getValueType());
         }
         response.setHeader("Content-Type", "text/json; charset=utf-8");
         OutputStream out = response.getOutputStream();
@@ -391,6 +355,7 @@ public class ClusterInstantPerfValueAjax implements HttpRequestHandler, Initiali
     }
 
     private static final Map<String, Integer> valueTypeMap = new HashMap<String, Integer>();
+
     static {
         valueTypeMap.put("cobarServerLevelMemoryUsage", TYPE_COBAR_MEMORY_USAGE);
         valueTypeMap.put("cobarClusterLevelThroughput", TYPE_CLUSTER_THROUGHPUT_INFO);

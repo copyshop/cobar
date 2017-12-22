@@ -52,6 +52,7 @@ import com.alibaba.cobar.server.parser.ServerParse;
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  */
 public class NonBlockingSession implements Session {
+
     private static final Logger LOGGER = Logger.getLogger(NonBlockingSession.class);
 
     private final ServerConnection source;
@@ -93,14 +94,14 @@ public class NonBlockingSession implements Session {
     }
 
     @Override
-    public void execute(RouteResultset rrs, int type) {
+    public void execute(RouteResultset routeResultset, int type) {
         if (LOGGER.isDebugEnabled()) {
             StringBuilder s = new StringBuilder();
-            LOGGER.debug(s.append(source).append(rrs).toString());
+            LOGGER.debug(s.append(source).append(routeResultset).toString());
         }
 
         // 检查路由结果是否为空
-        RouteResultsetNode[] nodes = rrs.getNodes();
+        RouteResultsetNode[] nodes = routeResultset.getNodes();
         if (nodes == null || nodes.length == 0) {
             source.writeErrMessage(ErrorCode.ER_NO_DB_ERROR, "No dataNode selected");
             return;
@@ -159,23 +160,17 @@ public class NonBlockingSession implements Session {
         kill(new Runnable() {
             @Override
             public void run() {
-                new Terminator().nextInvocation(singleNodeHandler)
-                    .nextInvocation(multiNodeHandler)
-                    .nextInvocation(commitHandler)
-                    .nextInvocation(rollbackHandler)
-                    .nextInvocation(new Terminatable() {
-                        @Override
-                        public void terminate(Runnable runnable) {
-                            clearConnections(false);
-                        }
-                    })
-                    .nextInvocation(new Terminatable() {
-                        @Override
-                        public void terminate(Runnable runnable) {
-                            terminating.set(false);
-                        }
-                    })
-                    .invoke();
+                new Terminator().nextInvocation(singleNodeHandler).nextInvocation(multiNodeHandler).nextInvocation(commitHandler).nextInvocation(rollbackHandler).nextInvocation(new Terminatable() {
+                    @Override
+                    public void terminate(Runnable runnable) {
+                        clearConnections(false);
+                    }
+                }).nextInvocation(new Terminatable() {
+                    @Override
+                    public void terminate(Runnable runnable) {
+                        terminating.set(false);
+                    }
+                }).invoke();
             }
         });
     }

@@ -24,7 +24,7 @@ import com.alibaba.cobar.jdbc.util.StreamUtil;
 
 /**
  * From client to server during initial handshake.
- * 
+ * <p>
  * <pre>
  * Bytes                        Name
  * -----                        ----
@@ -35,15 +35,16 @@ import com.alibaba.cobar.jdbc.util.StreamUtil;
  * n (Null-Terminated String)   user
  * n (Length Coded Binary)      scramble_buff (1 + x bytes)
  * n (Null-Terminated String)   databasename (optional)
- * 
- * @see http://forge.mysql.com/wiki/MySQL_Internals_ClientServer_Protocol#Client_Authentication_Packet
+ *
+ * forge.mysql.com/wiki/MySQL_Internals_ClientServer_Protocol#Client_Authentication_Packet
  * </pre>
- * 
+ *
  * @author xianmao.hexm 2010-7-15 下午04:35:34
  */
 public class AuthPacket extends MySQLPacket {
 
     private static final byte[] FILLER = new byte[23];
+
     static {
         byte[] version = Driver.VERSION.getBytes();
         byte[] header = ByteUtil.getBytesWithLength(version.length);

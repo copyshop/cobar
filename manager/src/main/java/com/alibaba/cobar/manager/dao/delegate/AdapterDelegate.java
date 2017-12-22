@@ -33,7 +33,7 @@ import com.alibaba.cobar.manager.dao.CobarAdapterDAO;
 
 /**
  * (created at 2010-7-26)
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  * @author haiqing.zhuhq 2011-7-21
  */
@@ -80,26 +80,26 @@ public class AdapterDelegate implements InitializingBean, DisposableBean {
 
     protected CobarAdapter getCobarNodeAdapterInternal(String ip, int port, String user, String password) {
         final CobarAdapterKey key = new CobarAdapterKey(ip, port, user, password);
-        TimestampPair rst = null;
+        TimestampPair timestampPair = null;
 
         try {
             adapterMapLock.readLock().lock();
-            rst = adapterMap.get(key);
-            if (rst != null) {
-                return rst.refreshTime().getValue();
+            timestampPair = adapterMap.get(key);
+            if (timestampPair != null) {
+                return timestampPair.refreshTime().getValue();
             }
         } finally {
             adapterMapLock.readLock().unlock();
         }
         try {
             adapterMapLock.writeLock().lock();
-            rst = adapterMap.get(key);
-            if (rst != null) {
-                return rst.refreshTime().getValue();
+            timestampPair = adapterMap.get(key);
+            if (timestampPair != null) {
+                return timestampPair.refreshTime().getValue();
             }
-            rst = createAdapter(ip, port, user, password);
-            adapterMap.put(key, rst);
-            return rst.refreshTime().getValue();
+            timestampPair = createAdapter(ip, port, user, password);
+            adapterMap.put(key, timestampPair);
+            return timestampPair.refreshTime().getValue();
         } finally {
             adapterMapLock.writeLock().unlock();
         }
@@ -149,10 +149,7 @@ public class AdapterDelegate implements InitializingBean, DisposableBean {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("evictThread sweep adapter finished, toClose.size()="
-                         + toClose.size()
-                         + ", toCloseSet="
-                         + toClose.keySet());
+            logger.debug("evictThread sweep adapter finished, toClose.size()=" + toClose.size() + ", toCloseSet=" + toClose.keySet());
         }
         for (CobarAdapterKey key : toClose.keySet()) {
             try {

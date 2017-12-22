@@ -70,10 +70,10 @@ public class FieldPacket extends MySQLPacket {
      * 把字节数组转变成FieldPacket
      */
     public void read(byte[] data) {
-        MySQLMessage mm = new MySQLMessage(data);
-        this.packetLength = mm.readUB3();
-        this.packetId = mm.read();
-        readBody(mm);
+        MySQLMessage sqlMessage = new MySQLMessage(data);
+        this.packetLength = sqlMessage.readUB3();
+        this.packetId = sqlMessage.read();
+        readBody(sqlMessage);
     }
 
     /**
@@ -95,6 +95,11 @@ public class FieldPacket extends MySQLPacket {
         return buffer;
     }
 
+    /**
+     * 整形和字符串所占的长度，其中整形的长度能计算出来
+     *
+     * @return
+     */
     @Override
     public int calcPacketSize() {
         int size = (catalog == null ? 1 : BufferUtil.getLength(catalog));
@@ -103,7 +108,7 @@ public class FieldPacket extends MySQLPacket {
         size += (orgTable == null ? 1 : BufferUtil.getLength(orgTable));
         size += (name == null ? 1 : BufferUtil.getLength(name));
         size += (orgName == null ? 1 : BufferUtil.getLength(orgName));
-        size += 13;// 1+2+4+1+2+1+2
+        size += 13;// 1+2+4+1+2+1+2 整形所占的长度
         if (definition != null) {
             size += BufferUtil.getLength(definition);
         }
@@ -115,22 +120,22 @@ public class FieldPacket extends MySQLPacket {
         return "MySQL Field Packet";
     }
 
-    private void readBody(MySQLMessage mm) {
-        this.catalog = mm.readBytesWithLength();
-        this.db = mm.readBytesWithLength();
-        this.table = mm.readBytesWithLength();
-        this.orgTable = mm.readBytesWithLength();
-        this.name = mm.readBytesWithLength();
-        this.orgName = mm.readBytesWithLength();
-        mm.move(1);
-        this.charsetIndex = mm.readUB2();
-        this.length = mm.readUB4();
-        this.type = mm.read() & 0xff;
-        this.flags = mm.readUB2();
-        this.decimals = mm.read();
-        mm.move(FILLER.length);
-        if (mm.hasRemaining()) {
-            this.definition = mm.readBytesWithLength();
+    private void readBody(MySQLMessage sqlMessage) {
+        this.catalog = sqlMessage.readBytesWithLength();
+        this.db = sqlMessage.readBytesWithLength();
+        this.table = sqlMessage.readBytesWithLength();
+        this.orgTable = sqlMessage.readBytesWithLength();
+        this.name = sqlMessage.readBytesWithLength();
+        this.orgName = sqlMessage.readBytesWithLength();
+        sqlMessage.move(1);
+        this.charsetIndex = sqlMessage.readUB2();
+        this.length = sqlMessage.readUB4();
+        this.type = sqlMessage.read() & 0xff;
+        this.flags = sqlMessage.readUB2();
+        this.decimals = sqlMessage.read();
+        sqlMessage.move(FILLER.length);
+        if (sqlMessage.hasRemaining()) {
+            this.definition = sqlMessage.readBytesWithLength();
         }
     }
 
@@ -153,5 +158,4 @@ public class FieldPacket extends MySQLPacket {
             BufferUtil.writeWithLength(buffer, definition);
         }
     }
-
 }

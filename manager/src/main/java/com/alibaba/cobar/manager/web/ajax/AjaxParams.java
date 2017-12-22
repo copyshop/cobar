@@ -24,7 +24,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * (created at 2010-9-7)
- * 
+ *
  * @author <a href="mailto:shuo.qius@alibaba-inc.com">QIU Shuo</a>
  * @author wenfeng.cenwf 2011-3-25
  * @author haiqing.zhuhq 2011-9-1
@@ -52,13 +52,7 @@ public class AjaxParams extends AbstractAjaxParams {
 
     @Override
     protected void appendToStringBuilder(ToStringBuilder builder) {
-        builder.append("clusterId", clusterId)
-               .append("cobarNodeId", cobarNodeId)
-               .append("valueType", valueType)
-               .append("array", array)
-               .append("keyword", keyword)
-               .append("userId", userId)
-               .append("connectionId", connectionId);
+        builder.append("clusterId", clusterId).append("cobarNodeId", cobarNodeId).append("valueType", valueType).append("array", array).append("keyword", keyword).append("userId", userId).append("connectionId", connectionId);
     }
 
     public long getCobarNodeId() {

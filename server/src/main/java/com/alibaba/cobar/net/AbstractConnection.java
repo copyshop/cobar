@@ -30,11 +30,15 @@ import com.alibaba.cobar.config.ErrorCode;
 import com.alibaba.cobar.net.buffer.BufferPool;
 import com.alibaba.cobar.net.buffer.BufferQueue;
 import com.alibaba.cobar.util.TimeUtil;
+import org.apache.log4j.Logger;
 
 /**
  * @author xianmao.hexm
  */
 public abstract class AbstractConnection implements NIOConnection {
+
+    private static final Logger LOGGER = Logger.getLogger(NIOReactor.class);
+
     private static final int OP_NOT_READ = ~SelectionKey.OP_READ;
     private static final int OP_NOT_WRITE = ~SelectionKey.OP_WRITE;
 
@@ -156,6 +160,7 @@ public abstract class AbstractConnection implements NIOConnection {
 
     @Override
     public void read() throws IOException {
+        LOGGER.info("我执行了 read 方法");
         ByteBuffer buffer = this.readBuffer;
         int got = channel.read(buffer);
         lastReadTime = TimeUtil.currentTimeMillis();
@@ -169,7 +174,9 @@ public abstract class AbstractConnection implements NIOConnection {
         int offset = readBufferOffset, length = 0, position = buffer.position();
         for (; ; ) {
             length = getPacketLength(buffer, offset);
-            if (length == -1) {// 未达到可计算数据包长度的数据
+            if (length == -1) {
+                // 未达到可计算数据包长度的数据
+                // Tells whether there are any elements between the current position and the limit
                 if (!buffer.hasRemaining()) {
                     checkReadBuffer(buffer, offset, position);
                 }

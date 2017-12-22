@@ -29,16 +29,16 @@ import com.alibaba.cobar.manager.response.SelectVersionComment;
  */
 public final class SelectHandler {
 
-    public static void handle(String stmt, ManagerConnection c, int offset) {
+    public static void handle(String stmt, ManagerConnection connection, int offset) {
         switch (ManagerParseSelect.parse(stmt, offset)) {
             case VERSION_COMMENT:
-                SelectVersionComment.execute(c);
+                SelectVersionComment.execute(connection);
                 break;
             case SESSION_AUTO_INCREMENT:
-                SelectSessionAutoIncrement.execute(c);
+                SelectSessionAutoIncrement.execute(connection);
                 break;
             default:
-                c.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
+                connection.writeErrMessage(ErrorCode.ER_YES, "Unsupported statement");
         }
     }
 
