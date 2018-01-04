@@ -114,7 +114,9 @@ server.xml配置如下
 
 2.3 命令行
 ```
-mysql -h192.168.0.1 -utest -ptest -P8066 -Ddbtest
+mysql -h127.0.0.1 -utest -ptest -P8066 -Ddbtest
+
+mysql -h127.0.0.1 -utest -ptest -P9066 -Ddbtest
 ```
 
 
