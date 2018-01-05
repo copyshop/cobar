@@ -184,7 +184,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <frontendConnection>1.6</frontendConnection>
+                    <source>1.6</source>
                     <target>1.6</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
@@ -206,9 +206,6 @@
                     <execution>
                         <id>add-frontendConnection</id>
                         <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-frontendConnection</goal>
-                        </goals>
                         <configuration>
                             <sources>
                                 <frontendConnection>src/main/java</frontendConnection>
@@ -244,6 +241,17 @@
                         <exclude>**/jdbcmock/testcase/*.java</exclude>
                     </excludes>
                     <skip>false</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>tomcat-maven-plugin</artifactId>
+                <version>1.1</version>
+                <configuration>
+                    <path>/${artifactId}</path>
+                    <port>8080</port>
+                    <uriEncoding>UTF-8</uriEncoding>
+                    <server>tomcat6</server>
                 </configuration>
             </plugin>
         </plugins>

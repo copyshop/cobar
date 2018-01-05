@@ -1,0 +1,1 @@
+修改manager下面的web-inf下面的:xmlpath.properties对应的值
